@@ -1,10 +1,10 @@
 # CG 2024/2025
 
-## Group T0xG0y
+## Group T07G02
 | Name             | Number    | E-Mail             |
 | ---------------- | --------- | ------------------ |
-| John Doe         | 201901010 | ...                |
-| Jane Doe         | 201901011 | ...                |
+| Bruno Huang      | 202207517 | up202207517@up.pt  |
+| Ricardo Yang     | 202208465 | up202208465@up.pt  |
 
 ----
 
