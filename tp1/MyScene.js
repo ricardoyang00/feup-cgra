@@ -78,11 +78,6 @@ export class MyScene extends CGFscene {
 
     // Draw axis
     if (this.displayAxis) this.axis.display();
-    if (this.displayDiamond) this.diamond.display();
-    if (this.displayTriangle) this.triangle.display();
-    if (this.displayParallelogram) this.parallelogram.display();
-    if (this.displayTriangleSmall) this.triangleSmall.display();
-    if (this.displayTriangleBig) this.triangleBig.display();
 
     this.setDefaultAppearance();
 
@@ -109,9 +104,11 @@ export class MyScene extends CGFscene {
 
     // ---- BEGIN Primitive drawing section
 
-    //this.diamond.display();
-
-    //this.triangle.display();
+    if (this.displayDiamond) this.diamond.display();
+    if (this.displayTriangle) this.triangle.display();
+    if (this.displayParallelogram) this.parallelogram.display();
+    if (this.displayTriangleSmall) this.triangleSmall.display();
+    if (this.displayTriangleBig) this.triangleBig.display();
 
     // ---- END Primitive drawing section
   }
