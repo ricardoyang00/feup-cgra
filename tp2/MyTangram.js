@@ -12,7 +12,6 @@ import { MyTriangleBig } from "./MyTriangleBig.js";
 export class MyTangram extends CGFobject {
 	constructor(scene) {
 		super(scene);
-		this.initBuffers();
 
         this.scene.diamond = new MyDiamond(this.scene);
         this.scene.parallelogram = new MyParallelogram(this.scene);
