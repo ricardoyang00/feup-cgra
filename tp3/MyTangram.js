@@ -65,4 +65,5 @@ export class MyTangram extends CGFobject {
         this.scene.triangleBig.display();
         this.scene.popMatrix();
     };
+
 }
