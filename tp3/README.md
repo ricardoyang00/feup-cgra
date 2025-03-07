@@ -11,5 +11,6 @@
 
 
 - Each tangram piece was assigned a material with the correct color and high specular, as shown in Figure 2. The MyDiamond piece (green) uses a custom material adjustable via the interface.
+
 ![](screenshots/cg-t07g02-tp3-2.png)
 <p align="center" justify="center">Figure 2 - MyTangram colored<br/><br/>
