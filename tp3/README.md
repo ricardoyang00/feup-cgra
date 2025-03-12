@@ -21,3 +21,10 @@
 
 ![](screenshots/cg-t07g02-tp3-3.png)
 <p align="center" justify="center">Figure 3 - Dynamic stack and slice Prism<br/><br/>
+
+
+- In part 3 of the exercise, we adjusted the normals of the prism to make the lighting transitions smoother, reducing the visibility of the edges and giving it an appearance closer to a cylinder, as shown in Figure 4.
+
+![](screenshots/cg-t07g02-tp3-4.png)
+<p align="center" justify="center">Figure 4 - Dynamic stack and slice approximate Cylinder<br/><br/>
+
