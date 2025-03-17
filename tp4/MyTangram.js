@@ -88,7 +88,7 @@ export class MyTangram extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.yellowMaterial.apply();        // yellow
+        //this.yellowMaterial.apply();        // yellow
         this.textureMaterial.apply();       // texture
         this.scene.rotate(Math.PI, 0, 1, 0);
         this.scene.translate(1, -1, 0);
@@ -96,14 +96,14 @@ export class MyTangram extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.redMaterial.apply();           // red
+        //this.redMaterial.apply();           // red
         this.textureMaterial.apply();       // texture
         this.scene.translate(4, -1, 0);
         this.scene.triangleRed.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.purpleMaterial.apply();        // purple
+        //this.purpleMaterial.apply();        // purple
         this.textureMaterial.apply();       // texture
         this.scene.rotate(Math.PI, 0, 0, 1);
         this.scene.translate(1, 0, 0);
@@ -111,7 +111,7 @@ export class MyTangram extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.pinkMaterial.apply();          // pink
+        //this.pinkMaterial.apply();          // pink
         this.textureMaterial.apply();       // texture
         this.scene.translate(-4.5, -1, 0);
         this.scene.scale(1.5, 1.5, 1);
@@ -119,14 +119,14 @@ export class MyTangram extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.blueMaterial.apply();          // blue
+        //this.blueMaterial.apply();          // blue
         this.textureMaterial.apply();       // texture
         this.scene.translate(1, -1, 0);
         this.scene.triangleBlue.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.orangeMaterial.apply();        // orange
+        //this.orangeMaterial.apply();        // orange
         this.textureMaterial.apply();       // texture
         this.scene.translate(-2, 0, 0);
         this.scene.triangleOrange.display();
