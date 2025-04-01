@@ -14,3 +14,8 @@
 
 ![](screenshots/cg-t07g02-tp5-2.png)
 <p align="center" justify="center">Figure 2 - Teapot grayscale<br/><br/>
+
+- We created `water.vert` and `water.frag` shaders based on `texture2`. The vertex shader uses `waterMap.jpg` as a heightmap to displace vertices along the Z-axis based on the blue channel, creating waves controlled by the `heightScale` uniform. The fragment shader applies `waterTex.jpg`, animating its coordinates with timeFactor to simulate flowing water. Using `fract()`, texture coordinates wrap seamlessly for continuous movement.
+
+![](screenshots/cg-t07g02-tp5-3.png)
+<p align="center" justify="center">Figure 3 - Water Effect<br/><br/>

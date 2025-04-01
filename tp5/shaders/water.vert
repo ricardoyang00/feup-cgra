@@ -19,7 +19,7 @@ void main() {
         animatedCoord.y -= 1.0; // Wrap around the texture coordinates
     }
 
-    float height = texture2D(uSampler2, animatedCoord).r;
+    float height = texture2D(uSampler2, animatedCoord).b;
 
     vec3 displacedPosition = aVertexPosition + vec3(0.0, 0.0, height * heightScale);
 

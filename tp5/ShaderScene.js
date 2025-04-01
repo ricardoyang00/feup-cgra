@@ -108,7 +108,10 @@ export class ShaderScene extends CGFscene {
 		this.testShaders[10].setUniformsValues({ timeFactor: 0 });
 
 		// water shader
-		this.testShaders[12].setUniformsValues({ uSampler2: 1 });
+		this.testShaders[12].setUniformsValues({ 
+			uSampler: 0,
+			uSampler2: 1 
+		});
 		this.testShaders[12].setUniformsValues({ heightScale: 0.05 });
 
 		// Shaders interface variables
@@ -200,11 +203,7 @@ export class ShaderScene extends CGFscene {
 
 	// called when the scale factor changes on the interface
 	onScaleFactorChanged(v) {
-		if (this.selectedExampleShader === 12) { // Water shader
-			this.testShaders[this.selectedExampleShader].setUniformsValues({ heightScale: this.scaleFactor });
-		} else {
-			this.testShaders[this.selectedExampleShader].setUniformsValues({ normScale: this.scaleFactor });
-		}
+		this.testShaders[this.selectedExampleShader].setUniformsValues({ normScale: this.scaleFactor });
 	}
 
 	// called periodically (as per setUpdatePeriod() in init())
