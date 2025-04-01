@@ -133,7 +133,7 @@ export class ShaderScene extends CGFscene {
 
 		// set the scene update period 
 		// (to invoke the update() method every 50ms or as close as possible to that )
-		this.setUpdatePeriod(50);
+		this.setUpdatePeriod(20);
 
 	};
 
