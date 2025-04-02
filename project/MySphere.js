@@ -29,12 +29,11 @@ export class MySphere extends CGFobject {
 
                 // Calculate vertex position
                 const x = sinPhi * cosTheta;
-                const y = sinPhi * sinTheta;
-                const z = cosPhi;
+                const y = cosPhi;
+                const z = sinPhi * sinTheta;
 
                 this.vertices.push(x, y, z);
 
-                // Normalize the normals
                 this.normals.push(x, y, z);
 
                 // Texture coordinates

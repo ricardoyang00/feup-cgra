@@ -1,6 +1,6 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
-import { MySphere } from "./MySphere.js"
+import { MyPanorama } from "./MyPanorama.js";
 
 /**
  * MyScene
@@ -31,12 +31,13 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64);
-    this.sphere = new MySphere(this, 10, 10);
-
-    this.sphereTexture = new CGFtexture(this, "textures/earth.jpg");
 
     this.displayAxis = true;
     this.displayNormals = false;
+
+    this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
+
+    this.panorama = new MyPanorama(this, this.panoramaTexture);
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -48,10 +49,10 @@ export class MyScene extends CGFscene {
   }
   initCameras() {
     this.camera = new CGFcamera(
-      0.4,
+      1,
       0.1,
-      1000,
-      vec3.fromValues(200, 200, 200),
+      500,
+      vec3.fromValues(50, 0, 50),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -94,6 +95,10 @@ export class MyScene extends CGFscene {
     // Apply transformations corresponding to the camera position relative to the origin
     this.applyViewMatrix();
 
+    this.gl.depthMask(false);
+    this.panorama.display();
+    this.gl.depthMask(true); 
+
     // Draw axis
     if (this.displayAxis) this.axis.display();
 
@@ -102,14 +107,5 @@ export class MyScene extends CGFscene {
     this.scale(25, 25, 25);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     //this.plane.display();
-
-    this.sphereTexture.bind();
-    this.sphere.display();
-
-    if (this.displayNormals) {
-      this.sphere.enableNormalViz();
-    } else {
-      this.sphere.disableNormalViz();
-    }
   }
 }

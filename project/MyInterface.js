@@ -20,7 +20,6 @@ export class MyInterface extends CGFinterface {
         this.initKeys();
 
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
-        this.gui.add(this.scene, 'displayNormals').name('Display Normals');
 
         return true;
     }
