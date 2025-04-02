@@ -29,7 +29,7 @@ export class MyScene extends CGFscene {
     this.setUpdatePeriod(50);
 
     //Initialize scene objects
-    this.axis = new CGFaxis(this, 20, 1);
+    this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64);
     this.sphere = new MySphere(this, 10, 10);
 
@@ -40,7 +40,9 @@ export class MyScene extends CGFscene {
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
-    this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
+    this.lights[0].setDiffuse(1.5, 1.5, 1.5, 1.0);
+    this.lights[0].setSpecular(1.5, 1.5, 1.5, 1.0);
+    this.lights[0].setAmbient(0.5, 0.5, 0.5, 1.0);
     this.lights[0].enable();
     this.lights[0].update();
   }

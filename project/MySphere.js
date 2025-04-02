@@ -30,7 +30,7 @@ export class MySphere extends CGFobject {
                 // Calculate vertex position
                 const x = sinPhi * cosTheta;
                 const y = sinPhi * sinTheta;
-                const z = cosPhi; // Adjusted to align poles along Y-axis
+                const z = cosPhi;
 
                 this.vertices.push(x, y, z);
 
@@ -47,8 +47,8 @@ export class MySphere extends CGFobject {
                     const current = stack * (this.slices + 1) + slice;
                     const next = current + this.slices + 1;
 
-                    this.indices.push(current, current + 1, next);
-                    this.indices.push(current + 1, next + 1, next);
+                    this.indices.push(current, next, current + 1);
+                    this.indices.push(current + 1, next, next + 1);
                 }
             }
         }
