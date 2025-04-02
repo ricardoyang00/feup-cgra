@@ -1,5 +1,6 @@
-import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
+import { MySphere } from "./MySphere.js"
 
 /**
  * MyScene
@@ -30,6 +31,12 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
+    this.sphere = new MySphere(this, 10, 10);
+
+    this.sphereTexture = new CGFtexture(this, "textures/earth.jpg");
+
+    this.displayAxis = true;
+    this.displayNormals = false;
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -86,12 +93,21 @@ export class MyScene extends CGFscene {
     this.applyViewMatrix();
 
     // Draw axis
-    this.axis.display();
+    if (this.displayAxis) this.axis.display();
 
     this.setDefaultAppearance();
 
-    this.scale(400, 1, 400);
+    this.scale(25, 25, 25);
     this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.plane.display();
+    //this.plane.display();
+
+    this.sphereTexture.bind();
+    this.sphere.display();
+
+    if (this.displayNormals) {
+      this.sphere.enableNormalViz();
+    } else {
+      this.sphere.disableNormalViz();
+    }
   }
 }
