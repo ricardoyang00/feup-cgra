@@ -17,8 +17,11 @@ export class MyPanorama {
     }
 
     display() {
+        const camPos = this.scene.camera.position;
+
         this.scene.pushMatrix();
         
+        this.scene.translate(camPos[0], camPos[1], camPos[2]);
         this.scene.scale(200, 200, 200);
         
         this.material.apply();

@@ -49,7 +49,7 @@ export class MyScene extends CGFscene {
   }
   initCameras() {
     this.camera = new CGFcamera(
-      1,
+      1.2,
       0.1,
       500,
       vec3.fromValues(50, 0, 50),
@@ -60,16 +60,33 @@ export class MyScene extends CGFscene {
     var text = "Keys pressed: ";
     var keysPressed = false;
 
+    const speed = 10;
+
     // Check for key codes e.g. in https://keycode.info/
     if (this.gui.isKeyPressed("KeyW")) {
       text += " W ";
+      this.camera.position[2] -= speed; // Move forward
       keysPressed = true;
     }
 
     if (this.gui.isKeyPressed("KeyS")) {
       text += " S ";
+      this.camera.position[2] += speed; // Move back
       keysPressed = true;
     }
+
+    if (this.gui.isKeyPressed("KeyA")) {
+      text += " A ";
+      this.camera.position[0] -= speed; // Move left
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyD")) {
+        text += " D ";
+        this.camera.position[0] += speed; // Move right
+        keysPressed = true;
+    }
+
     if (keysPressed)
       console.log(text);
   }
