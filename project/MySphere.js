@@ -1,10 +1,11 @@
 import { CGFobject } from '../lib/CGF.js';
 
 export class MySphere extends CGFobject {
-    constructor(scene, slices, stacks) {
+    constructor(scene, slices, stacks, inverted = false) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
+        this.inverted = inverted;
         this.initBuffers();
     }
 
@@ -34,7 +35,11 @@ export class MySphere extends CGFobject {
 
                 this.vertices.push(x, y, z);
 
-                this.normals.push(x, y, z);
+                if (this.inverted) {
+                    this.normals.push(-x, -y, -z);
+                } else {
+                    this.normals.push(x, y, z);
+                }
 
                 // Texture coordinates
                 const u = slice / this.slices;
@@ -46,8 +51,13 @@ export class MySphere extends CGFobject {
                     const current = stack * (this.slices + 1) + slice;
                     const next = current + this.slices + 1;
 
-                    this.indices.push(current, next, current + 1);
-                    this.indices.push(current + 1, next, next + 1);
+                    if (this.inverted) {
+                        this.indices.push(current, next, current + 1);
+                        this.indices.push(current + 1, next, next + 1);
+                    } else {
+                        this.indices.push(current, current + 1, next);
+                        this.indices.push(current + 1, next + 1, next);
+                    }
                 }
             }
         }

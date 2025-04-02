@@ -6,7 +6,7 @@ export class MyPanorama {
         this.scene = scene;
         this.texture = texture;
 
-        this.sphere = new MySphere(scene, 50, 50);
+        this.sphere = new MySphere(scene, 50, 50, true);
 
         this.material = new CGFappearance(scene);
         this.material.setAmbient(0, 0, 0, 1);    
