@@ -9,6 +9,12 @@ import { MyPanorama } from "./MyPanorama.js";
 export class MyScene extends CGFscene {
   constructor() {
     super();
+    this.lastT = null;
+    this.deltaT = null;
+    this.velocity = 0;
+    this.acceleration = 0.1;
+    this.maxSpeed = 20;
+    this.deceleration = 0.05;
   }
   init(application) {
     super.init(application);
@@ -60,38 +66,65 @@ export class MyScene extends CGFscene {
     var text = "Keys pressed: ";
     var keysPressed = false;
 
-    const speed = 10;
-
     // Check for key codes e.g. in https://keycode.info/
-    if (this.gui.isKeyPressed("KeyW")) {
-      text += " W ";
-      this.camera.position[2] -= speed; // Move forward
-      keysPressed = true;
+    const directions = {
+        KeyW: { axis: 2, sign: -1 }, // Move forward (negative Z)
+        KeyS: { axis: 2, sign: 1 },  // Move back (positive Z)
+        KeyA: { axis: 0, sign: -1 }, // Move left (negative X)
+        KeyD: { axis: 0, sign: 1 }   // Move right (positive X)
+    };
+
+    if (!this.lastDirection) {
+      this.lastDirection = { axis: null, sign: 0 };
     }
 
-    if (this.gui.isKeyPressed("KeyS")) {
-      text += " S ";
-      this.camera.position[2] += speed; // Move back
-      keysPressed = true;
+    for (const key in directions) {
+      if (this.gui.isKeyPressed(key)) {
+          const { axis, sign } = directions[key];
+          text += ` ${key.replace("Key", "")} `;
+
+          // Check if the new direction is opposite to the last direction
+          if (this.lastDirection.axis === axis && this.lastDirection.sign !== sign) {
+            // Brake when moving in the opposite direction
+            this.velocity = Math.max(this.velocity - this.acceleration * 2, 0);
+        
+            // If velocity reaches 0, switch direction
+            if (this.velocity === 0) {
+                this.lastDirection = { axis, sign };
+            }
+          } else {
+              // Accelerate when moving in the same direction or switching to a new direction
+              this.velocity = Math.min(this.velocity + this.acceleration, this.maxSpeed);
+              this.lastDirection = { axis, sign }; // Update last direction
+          }
+
+          this.camera.position[axis] += sign * this.velocity;
+          keysPressed = true;
+      }
+  }
+
+    if (!keysPressed && this.velocity > 0) {
+      // Decelerate when no keys are pressed
+      this.velocity = Math.max(this.velocity - this.deceleration, 0);
+
+      // Continue moving in the last direction
+      if (this.lastDirection.axis !== null) {
+          this.camera.position[this.lastDirection.axis] += this.lastDirection.sign * this.velocity;
+      }
     }
 
-    if (this.gui.isKeyPressed("KeyA")) {
-      text += " A ";
-      this.camera.position[0] -= speed; // Move left
-      keysPressed = true;
-    }
-
-    if (this.gui.isKeyPressed("KeyD")) {
-        text += " D ";
-        this.camera.position[0] += speed; // Move right
-        keysPressed = true;
-    }
+    //console.log(`Current speed: ${this.velocity.toFixed(2)}`);
 
     if (keysPressed)
       console.log(text);
   }
 
   update(t) {
+    if (this.lastT != null) {
+        this.deltaT = t - this.lastT;
+    }
+    this.lastT = t;
+
     this.checkKeys();
   }
 
