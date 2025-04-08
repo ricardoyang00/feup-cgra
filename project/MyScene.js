@@ -1,6 +1,7 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
+import { MyWindow } from "./MyWindow.js";
 
 /**
  * MyScene
@@ -37,6 +38,7 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64);
+    this.window = new MyWindow(this);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -157,5 +159,7 @@ export class MyScene extends CGFscene {
     this.scale(25, 25, 25);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     //this.plane.display();
+
+    this.window.display();
   }
 }
