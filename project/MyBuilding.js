@@ -26,11 +26,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             0, 
-            (this.numFloorsCentral * floorHeight) / 2, 
-            this.centralWidth / 2
+            - this.centralWidth / 2,
+            (this.numFloorsCentral * floorHeight) / 2
         ); 
-        // Align the bottom and back
-        this.scene.scale(this.centralWidth, this.numFloorsCentral * floorHeight, this.centralWidth); 
+        this.scene.scale(this.centralWidth, this.centralWidth, this.numFloorsCentral * floorHeight);
         this.centralModule.display();
         this.scene.popMatrix();
     
@@ -38,11 +37,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             -(this.centralWidth + this.sideWidth) / 2,
-            (this.numFloorsSide * floorHeight) / 2,
-            this.sideWidth / 2
+            - this.sideWidth / 2,
+            (this.numFloorsSide * floorHeight) / 2
         ); 
-        // Align the bottom and back
-        this.scene.scale(this.sideWidth, this.numFloorsSide * floorHeight, this.sideWidth); 
+        this.scene.scale(this.sideWidth, this.sideWidth, this.numFloorsSide * floorHeight);
         this.sideModule.display();
         this.scene.popMatrix();
     
@@ -50,11 +48,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             (this.centralWidth + this.sideWidth) / 2,
-            (this.numFloorsSide * floorHeight) / 2,
-            this.sideWidth / 2
+            - this.sideWidth / 2,
+            (this.numFloorsSide * floorHeight) / 2
         ); 
-        // Align the bottom and back
-        this.scene.scale(this.sideWidth, this.numFloorsSide * floorHeight, this.sideWidth); 
+        this.scene.scale(this.sideWidth, this.sideWidth, this.numFloorsSide * floorHeight);
         this.sideModule.display();
         this.scene.popMatrix();
     }

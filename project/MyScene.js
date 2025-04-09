@@ -44,7 +44,7 @@ export class MyScene extends CGFscene {
     this.window = new MyWindow(this);
     this.door = new MyDoor(this);
     this.heliport = new MyHeliport(this);
-    this.building = new MyBuilding(this, 10, 10, [0.5, 0.5, 0.5, 1]);
+    this.building = new MyBuilding(this, 10, 4, [0.5, 0.5, 0.5, 1]);
 
     this.displayAxis = true;
     this.displayNormals = false;
