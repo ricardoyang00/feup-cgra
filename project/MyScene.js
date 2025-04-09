@@ -2,6 +2,9 @@ import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyWindow } from "./MyWindow.js";
+import { MyDoor } from "./MyDoor.js";
+import { MyHeliport } from "./MyHeliport.js";
+import { MyBuilding } from "./MyBuilding.js";
 
 /**
  * MyScene
@@ -39,6 +42,9 @@ export class MyScene extends CGFscene {
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64);
     this.window = new MyWindow(this);
+    this.door = new MyDoor(this);
+    this.heliport = new MyHeliport(this);
+    this.building = new MyBuilding(this, 10, 10, [0.5, 0.5, 0.5, 1]);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -60,7 +66,7 @@ export class MyScene extends CGFscene {
       1.2,
       0.1,
       500,
-      vec3.fromValues(50, 0, 50),
+      vec3.fromValues(50, 1, 50),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -137,6 +143,10 @@ export class MyScene extends CGFscene {
     this.setShininess(10.0);
   }
   display() {
+    if (this.camera.position[1] < 0) {
+      this.camera.position[1] = 0.1;
+    }
+
     // ---- BEGIN Background, camera and axis setup
     // Clear image and depth buffer everytime we update the scene
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -148,7 +158,7 @@ export class MyScene extends CGFscene {
     this.applyViewMatrix();
 
     this.gl.depthMask(false);
-    this.panorama.display();
+    //this.panorama.display();
     this.gl.depthMask(true); 
 
     // Draw axis
@@ -156,10 +166,32 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
-    this.scale(25, 25, 25);
+    
+    // plane size
+    this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     //this.plane.display();
+    
+    this.setDefaultAppearance();
 
-    this.window.display();
+    // Display the building
+    this.pushMatrix();
+    this.translate(0, 0, 0);
+    this.scale(0.01, 0.01, 0.01);
+    this.building.display();
+    this.popMatrix();
+
+    this.setDefaultAppearance();
+
+    //display door
+    /*this.scale(0.1, 0.1, 0.1);
+    this.door.display();
+    */
+
+    // display heliport
+    /*this.scale(0.1, 0.1, 0.1);
+    this.heliport.display();*/
+    
+    //this.window.display();
   }
 }
