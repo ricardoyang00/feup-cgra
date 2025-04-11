@@ -36,6 +36,10 @@ export class MyBuilding extends CGFobject {
         // Create door
         this.doorTexture = new CGFtexture(scene, 'textures/door.jpg');
         this.door = new MyQuad(scene);
+
+        // Create sign
+        this.signTexture = new CGFtexture(scene, 'textures/firefighter.jpg');
+        this.sign = new MyQuad(scene);
     }
 
     display() {
@@ -50,6 +54,9 @@ export class MyBuilding extends CGFobject {
 
         // Display heliport
         this.displayHeliport();
+
+        // Display sign
+        this.displaySign();
 
         // Display door
         this.displayDoor();
@@ -83,6 +90,21 @@ export class MyBuilding extends CGFobject {
         this.heliportTexture.bind();
         this.heliport.display();
         this.heliportTexture.unbind();
+        this.scene.popMatrix();
+    }
+
+    displaySign() {
+        this.scene.pushMatrix();
+        this.scene.translate(
+            0,
+            -this.centralDepth - 0.01,
+            this.floorHeight / 2 + 0.5
+        );
+        this.scene.scale(1, 1, 0.2);
+        this.scene.rotate(Math.PI / 2, 1, 0, 0);
+        this.signTexture.bind();
+        this.sign.display();
+        this.signTexture.unbind();
         this.scene.popMatrix();
     }
 
