@@ -2,13 +2,13 @@ import { CGFobject, CGFappearance } from '../lib/CGF.js';
 import { MyQuad } from './MyQuad.js';
 
 /**
- * MyUnitCubeQuad
+ * MyModule
  * @constructor
  * @param scene - Reference to MyScene object
  * @param color - Color to tint the texture
  * @param texture - Texture to apply to the cube
  */
-export class MyUnitCubeQuad extends CGFobject {
+export class MyModule extends CGFobject {
     constructor(scene, color, texture = null) {
         super(scene);
         this.scene.quad = new MyQuad(this.scene);

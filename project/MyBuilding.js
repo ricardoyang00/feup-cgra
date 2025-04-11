@@ -1,5 +1,5 @@
 import { CGFobject, CGFtexture, CGFappearance } from '../lib/CGF.js';
-import { MyUnitCubeQuad } from './MyUnitCubeQuad.js';
+import { MyModule } from './MyModule.js';
 import { MyQuad } from './MyQuad.js';
 import { MyWindow } from './MyWindow.js';
 
@@ -26,8 +26,8 @@ export class MyBuilding extends CGFobject {
         this.brickTexture = new CGFtexture(scene, 'textures/brick.jpg');
 
         // Create modules
-        this.sideModule = new MyUnitCubeQuad(scene, buildingColor, this.brickTexture);
-        this.centralModule = new MyUnitCubeQuad(scene, buildingColor, this.brickTexture);
+        this.sideModule = new MyModule(scene, buildingColor, this.brickTexture);
+        this.centralModule = new MyModule(scene, buildingColor, this.brickTexture);
 
         // Create heliport
         this.heliportTexture = new CGFtexture(scene, 'textures/heliport.png');
@@ -66,8 +66,8 @@ export class MyBuilding extends CGFobject {
 
         // Display windows
         this.displayWindows(centralModuleX, this.numFloorsCentral, this.centralWidth, this.centralDepth, true);
-        this.displayWindows(leftModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
-        this.displayWindows(rightModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
+        this.displayWindows(leftModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth);
+        this.displayWindows(rightModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth);
     }
 
     displayModule(xOffset, width, depth, numFloors, module, skipRight = false, skipLeft = false) {
@@ -127,7 +127,7 @@ export class MyBuilding extends CGFobject {
         this.scene.popMatrix();
     }
 
-    displayWindows(xOffset, numFloors, moduleWidth, moduleDepth, isCentralModule) {
+    displayWindows(xOffset, numFloors, moduleWidth, moduleDepth, isCentralModule = false) {
         const windowSpacing = moduleWidth / (this.numWindowsPerFloor + 1); // Spacing between windows
 
         for (let floor = 0; floor < numFloors; floor++) {
