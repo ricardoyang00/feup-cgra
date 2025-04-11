@@ -1,22 +1,20 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
-import { MyQuad } from './MyQuad.js'; // Assuming MyQuad is a class for rendering a quad
+import { CGFobject } from '../lib/CGF.js';
+import { MyQuad } from './MyQuad.js';
 
 export class MyWindow extends CGFobject {
-    constructor(scene) {
+    constructor(scene, windowTexture) {
         super(scene);
         this.scene = scene;
-        this.windowTexture = new CGFtexture(scene, 'textures/window.jpg');
+        this.windowTexture = windowTexture
         this.quad = new MyQuad(scene);
     }
 
     display() {
-        // Bind
         this.scene.pushMatrix();
         this.windowTexture.bind();
 
         this.quad.display();
 
-        // Unbind 
         this.windowTexture.unbind();
         this.scene.popMatrix();
     }

@@ -42,7 +42,22 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.window = new MyWindow(this);
     this.door = new MyDoor(this);
-    this.building = new MyBuilding(this, 10, 12, 4, [0.5, 0.5, 0.5, 1]);
+
+    this.buildingWidth = 10;
+    this.buildingDepth = 12;
+    this.numFloorsSide = 4;
+    this.numWindowsPerFloor = 3;
+    this.windowTexture = new CGFtexture(this, "textures/window.jpg");
+    this.buildingColor = [0.5, 0.5, 0.5, 1];
+    this.building = new MyBuilding(
+                      this, 
+                      this.buildingWidth, 
+                      this.buildingDepth, 
+                      this.numFloorsSide, 
+                      this.numWindowsPerFloor, 
+                      this.windowTexture, 
+                      this.buildingColor
+                    );
 
     this.displayAxis = true;
     this.displayNormals = false;
