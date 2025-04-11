@@ -16,6 +16,7 @@ export class MyBuilding extends CGFobject {
         this.buildingColor = buildingColor;
 
         // Calculate module dimensions
+        this.floorHeight = 1;
         this.centralWidth = totalWidth / 3;
         this.centralDepth = totalDepth / 3;
         this.sideWidth = this.centralWidth * 0.75;
@@ -27,76 +28,81 @@ export class MyBuilding extends CGFobject {
 
         // Create heliport
         this.heliportTexture = new CGFtexture(scene, 'textures/heliport.png');
-        this.heliportQuad = new MyQuad(scene);
+        this.heliport = new MyQuad(scene);
 
         // Create windows
         this.window = new MyWindow(scene, windowType);
+
+        // Create door
+        this.doorTexture = new CGFtexture(scene, 'textures/door.jpg');
+        this.door = new MyQuad(scene);
     }
 
     display() {
-        const floorHeight = 1; // Height of each floor
-        
-        const centralMooduleX = 0;
+        const centralModuleX = 0;
         const leftModuleX = -(this.centralWidth + this.sideWidth) / 2;
         const rightModuleX = (this.centralWidth + this.sideWidth) / 2;
 
-        // Display the central module
-        this.scene.pushMatrix();
-        this.scene.translate(
-            centralMooduleX, 
-            - this.centralDepth / 2,
-            (this.numFloorsCentral * floorHeight) / 2
-        ); 
-        this.scene.scale(this.centralWidth, this.centralDepth, this.numFloorsCentral * floorHeight);
-        this.centralModule.display();
-        this.scene.popMatrix();
-    
-        // Display the left side module
-        this.scene.pushMatrix();
-        this.scene.translate(
-            leftModuleX,
-            - this.sideDepth / 2,
-            (this.numFloorsSide * floorHeight) / 2
-        ); 
-        this.scene.scale(this.sideWidth, this.sideDepth, this.numFloorsSide * floorHeight);
-        this.sideModule.display();
-        this.scene.popMatrix();
-    
-        // Display the right side module
-        this.scene.pushMatrix();
-        this.scene.translate(
-            rightModuleX,
-            - this.sideDepth / 2,
-            (this.numFloorsSide * floorHeight) / 2
-        ); 
-        this.scene.scale(this.sideWidth, this.sideDepth, this.numFloorsSide * floorHeight);
-        this.sideModule.display();
-        this.scene.popMatrix();
+        // Display building components
+        this.displayModule(centralModuleX, this.centralWidth, this.centralDepth, this.numFloorsCentral, this.centralModule);
+        this.displayModule(leftModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule);
+        this.displayModule(rightModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule);
 
-        // Display the heliport on top of the central module
+        // Display heliport
+        this.displayHeliport();
+
+        // Display door
+        this.displayDoor();
+
+        // Display windows
+        this.displayWindows(centralModuleX, this.numFloorsCentral, this.centralWidth, this.centralDepth, true);
+        this.displayWindows(leftModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
+        this.displayWindows(rightModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
+    }
+
+    displayModule(xOffset, width, depth, numFloors, module) {
         this.scene.pushMatrix();
         this.scene.translate(
-            0, 
-            - this.centralDepth / 2,
-            (this.numFloorsCentral * floorHeight) + 0.01
+            xOffset,
+            - depth / 2,
+            (numFloors * this.floorHeight) / 2
+        );
+        this.scene.scale(width, depth, numFloors * this.floorHeight);
+        module.display();
+        this.scene.popMatrix();
+    }
+
+    displayHeliport() {
+        this.scene.pushMatrix();
+        this.scene.translate(
+            0,
+            -this.centralDepth / 2,
+            (this.numFloorsCentral * this.floorHeight) + 0.01
         );
         this.scene.scale(2, 2, 1);
         this.heliportTexture.bind();
-        this.heliportQuad.display();
+        this.heliport.display();
         this.heliportTexture.unbind();
         this.scene.popMatrix();
-
-        // Display windows on the central module
-        this.displayWindows(floorHeight, centralMooduleX, this.numFloorsCentral, this.centralWidth, this.centralDepth, true);
-
-        // Display windows on the left side module
-        this.displayWindows(floorHeight, leftModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
-
-        // Display windows on the right side module
-        this.displayWindows(floorHeight, rightModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
     }
 
-    displayWindows(floorHeight, xOffset, numFloors, moduleWidth, moduleDepth, isCentralModule) {
+    displayDoor() {
+        this.scene.pushMatrix();
+        this.scene.translate(
+            0,
+            - this.centralDepth - 0.01,
+            this.floorHeight / 2 - 0.12 // Adjusted to align the bottom of the door
+        );
+        const doorAspectRatio = 612 / 408; // Aspect ratio of the door texture
+        this.scene.scale(doorAspectRatio, 1, 0.75);
+        this.scene.rotate(Math.PI / 2, 1, 0, 0);
+        this.doorTexture.bind();
+        this.door.display();
+        this.doorTexture.unbind();
+        this.scene.popMatrix();
+    }
+
+    displayWindows(xOffset, numFloors, moduleWidth, moduleDepth, isCentralModule) {
         const windowSpacing = moduleWidth / (this.numWindowsPerFloor + 1); // Spacing between windows
 
         for (let floor = 0; floor < numFloors; floor++) {
@@ -109,7 +115,7 @@ export class MyBuilding extends CGFobject {
                 this.scene.translate(
                     xOffset - moduleWidth / 2 + i * windowSpacing, // Position windows along the width
                     - moduleDepth - 0.01, // Position windows along the depth
-                    floor * floorHeight + floorHeight / 2 // Position windows at the center of each floor
+                    floor * this.floorHeight + this.floorHeight / 2 // Position windows at the center of each floor
                 );
                 this.scene.rotate(Math.PI / 2, 1, 0, 0);
                 this.scene.scale(0.5, 0.5, 0.1);
