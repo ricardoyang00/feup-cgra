@@ -1,4 +1,4 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFtexture, CGFappearance } from '../lib/CGF.js';
 import { MyUnitCubeQuad } from './MyUnitCubeQuad.js';
 import { MyQuad } from './MyQuad.js';
 import { MyWindow } from './MyWindow.js';
@@ -22,9 +22,12 @@ export class MyBuilding extends CGFobject {
         this.sideWidth = this.centralWidth * 0.75;
         this.sideDepth = this.centralDepth * 0.75;
 
+        // Create building texture
+        this.brickTexture = new CGFtexture(scene, 'textures/brick.jpg');
+
         // Create modules
-        this.sideModule = new MyUnitCubeQuad(scene, buildingColor);
-        this.centralModule = new MyUnitCubeQuad(scene, buildingColor);
+        this.sideModule = new MyUnitCubeQuad(scene, buildingColor, this.brickTexture);
+        this.centralModule = new MyUnitCubeQuad(scene, buildingColor, this.brickTexture);
 
         // Create heliport
         this.heliportTexture = new CGFtexture(scene, 'textures/heliport.png');
@@ -49,8 +52,8 @@ export class MyBuilding extends CGFobject {
 
         // Display building components
         this.displayModule(centralModuleX, this.centralWidth, this.centralDepth, this.numFloorsCentral, this.centralModule);
-        this.displayModule(leftModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule);
-        this.displayModule(rightModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule);
+        this.displayModule(leftModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule, true, false);
+        this.displayModule(rightModuleX, this.sideWidth, this.sideDepth, this.numFloorsSide, this.sideModule, false, true);
 
         // Display heliport
         this.displayHeliport();
@@ -67,7 +70,7 @@ export class MyBuilding extends CGFobject {
         this.displayWindows(rightModuleX, this.numFloorsSide, this.sideWidth, this.sideDepth, false);
     }
 
-    displayModule(xOffset, width, depth, numFloors, module) {
+    displayModule(xOffset, width, depth, numFloors, module, skipRight = false, skipLeft = false) {
         this.scene.pushMatrix();
         this.scene.translate(
             xOffset,
@@ -75,7 +78,7 @@ export class MyBuilding extends CGFobject {
             (numFloors * this.floorHeight) / 2
         );
         this.scene.scale(width, depth, numFloors * this.floorHeight);
-        module.display();
+        module.display(skipRight, skipLeft);
         this.scene.popMatrix();
     }
 

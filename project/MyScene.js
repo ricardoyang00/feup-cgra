@@ -1,8 +1,6 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
-import { MyWindow } from "./MyWindow.js";
-import { MyDoor } from "./MyDoor.js";
 import { MyBuilding } from "./MyBuilding.js";
 
 /**
@@ -40,8 +38,6 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64);
-    this.window = new MyWindow(this);
-    this.door = new MyDoor(this);
 
     this.buildingWidth = 10;
     this.buildingDepth = 12;
@@ -195,12 +191,5 @@ export class MyScene extends CGFscene {
     this.popMatrix();
 
     this.setDefaultAppearance();
-
-    //display door
-    /*this.scale(0.1, 0.1, 0.1);
-    this.door.display();
-    */
-    
-    //this.window.display();
   }
 }

@@ -5,62 +5,77 @@ import { MyQuad } from './MyQuad.js';
  * MyUnitCubeQuad
  * @constructor
  * @param scene - Reference to MyScene object
+ * @param color - Color to tint the texture
+ * @param texture - Texture to apply to the cube
  */
 export class MyUnitCubeQuad extends CGFobject {
-    constructor(scene, color) {
+    constructor(scene, color, texture = null) {
         super(scene);
         this.scene.quad = new MyQuad(this.scene);
 
         // Create an appearance for the cube with the given color
         this.cubeAppearance = new CGFappearance(this.scene);
+
+        // Set the texture if provided
+        if (texture) {
+            this.cubeAppearance.setTexture(texture);
+            this.cubeAppearance.setTextureWrap('REPEAT', 'REPEAT');
+        }
+
         this.cubeAppearance.setAmbient(...color);
         this.cubeAppearance.setDiffuse(...color);
         this.cubeAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
         this.cubeAppearance.setShininess(10.0);
     }
 
-    display() {
+    display(skipRight = false, skipLeft = false) {
         this.cubeAppearance.apply();
 
-        // Bottom (-Y)
+        // Front
         this.scene.pushMatrix();
         this.scene.rotate(Math.PI / 2, 1, 0, 0);
         this.scene.translate(0, 0, 0.5);
         this.scene.quad.display();
         this.scene.popMatrix();
 
-        // Top (+Y)
+        // Back
         this.scene.pushMatrix();
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);
         this.scene.translate(0, 0, 0.5);
         this.scene.quad.display();
         this.scene.popMatrix();
 
-        // Front (+Z)
+        // Top
         this.scene.pushMatrix();
         this.scene.translate(0, 0, 0.5);
         this.scene.quad.display();
         this.scene.popMatrix();
 
-        // Back (-Z)
-        this.scene.pushMatrix();
+        // Bottom
+        /*this.scene.pushMatrix();
         this.scene.rotate(Math.PI, 0, 1, 0);
         this.scene.translate(0, 0, 0.5);
         this.scene.quad.display();
-        this.scene.popMatrix();
+        this.scene.popMatrix();*/
 
-        // Right (+X)
-        this.scene.pushMatrix();
-        this.scene.rotate(Math.PI / 2, 0, 1, 0);
-        this.scene.translate(0, 0, 0.5);
-        this.scene.quad.display();
-        this.scene.popMatrix();
+        // Right
+        if (!skipRight) {
+            this.scene.pushMatrix();
+            this.scene.rotate(Math.PI / 2, 0, 1, 0);
+            this.scene.translate(0, 0, 0.5);
+            this.scene.rotate(-Math.PI / 2, 0, 0, 1); // Rotate texture to align bricks horizontally
+            this.scene.quad.display();
+            this.scene.popMatrix();
+        }
 
-        // Left (-X)
-        this.scene.pushMatrix();
-        this.scene.rotate(-Math.PI / 2, 0, 1, 0);
-        this.scene.translate(0, 0, 0.5);
-        this.scene.quad.display();
-        this.scene.popMatrix();
+        // Left
+        if (!skipLeft) {
+            this.scene.pushMatrix();
+            this.scene.rotate(-Math.PI / 2, 0, 1, 0);
+            this.scene.translate(0, 0, 0.5);
+            this.scene.rotate(-Math.PI / 2, 0, 0, 1); // Rotate texture to align bricks horizontally
+            this.scene.quad.display();
+            this.scene.popMatrix();
+        }
     }
 }
