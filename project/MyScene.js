@@ -3,7 +3,6 @@ import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyWindow } from "./MyWindow.js";
 import { MyDoor } from "./MyDoor.js";
-import { MyHeliport } from "./MyHeliport.js";
 import { MyBuilding } from "./MyBuilding.js";
 
 /**
@@ -43,7 +42,6 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.window = new MyWindow(this);
     this.door = new MyDoor(this);
-    this.heliport = new MyHeliport(this);
     this.building = new MyBuilding(this, 10, 12, 4, [0.5, 0.5, 0.5, 1]);
 
     this.displayAxis = true;
@@ -187,10 +185,6 @@ export class MyScene extends CGFscene {
     /*this.scale(0.1, 0.1, 0.1);
     this.door.display();
     */
-
-    // display heliport
-    /*this.scale(0.1, 0.1, 0.1);
-    this.heliport.display();*/
     
     //this.window.display();
   }

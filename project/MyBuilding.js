@@ -1,5 +1,6 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { MyUnitCubeQuad } from './MyUnitCubeQuad.js';
+import { MyQuad } from './MyQuad.js';
 
 export class MyBuilding extends CGFobject {
     constructor(scene, totalWidth, totalDepth, numFloorsSide, buildingColor) {
@@ -20,6 +21,10 @@ export class MyBuilding extends CGFobject {
         // Create modules
         this.sideModule = new MyUnitCubeQuad(scene, buildingColor);
         this.centralModule = new MyUnitCubeQuad(scene, buildingColor);
+
+        // Create heliport
+        this.heliportTexture = new CGFtexture(scene, 'textures/heliport.png');
+        this.heliportQuad = new MyQuad(scene);
     }
 
     display() {
@@ -56,6 +61,19 @@ export class MyBuilding extends CGFobject {
         ); 
         this.scene.scale(this.sideWidth, this.sideDepth, this.numFloorsSide * floorHeight);
         this.sideModule.display();
+        this.scene.popMatrix();
+
+        // Display the heliport on top of the central module
+        this.scene.pushMatrix();
+        this.scene.translate(
+            0, 
+            - this.centralDepth / 2,
+            (this.numFloorsCentral * floorHeight) + 0.01
+        );
+        this.scene.scale(2, 2, 1);
+        this.heliportTexture.bind();
+        this.heliportQuad.display();
+        this.heliportTexture.unbind();
         this.scene.popMatrix();
     }
 }
