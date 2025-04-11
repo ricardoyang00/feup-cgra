@@ -2,17 +2,20 @@ import { CGFobject } from '../lib/CGF.js';
 import { MyUnitCubeQuad } from './MyUnitCubeQuad.js';
 
 export class MyBuilding extends CGFobject {
-    constructor(scene, totalWidth, numFloorsSide, buildingColor) {
+    constructor(scene, totalWidth, totalDepth, numFloorsSide, buildingColor) {
         super(scene);
 
         this.totalWidth = totalWidth;
+        this.totalDepth = totalDepth;
         this.numFloorsSide = numFloorsSide;
         this.numFloorsCentral = numFloorsSide + 1; // Central module has one more floor
         this.buildingColor = buildingColor;
 
         // Calculate module dimensions
-        this.centralWidth = totalWidth / 3; // Central module width
-        this.sideWidth = this.centralWidth * 0.75; // Side modules are 75% of central module width
+        this.centralWidth = totalWidth / 3;
+        this.centralDepth = totalDepth / 3;
+        this.sideWidth = this.centralWidth * 0.75;
+        this.sideDepth = this.centralDepth * 0.75;
 
         // Create modules
         this.sideModule = new MyUnitCubeQuad(scene, buildingColor);
@@ -26,10 +29,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             0, 
-            - this.centralWidth / 2,
+            - this.centralDepth / 2,
             (this.numFloorsCentral * floorHeight) / 2
         ); 
-        this.scene.scale(this.centralWidth, this.centralWidth, this.numFloorsCentral * floorHeight);
+        this.scene.scale(this.centralWidth, this.centralDepth, this.numFloorsCentral * floorHeight);
         this.centralModule.display();
         this.scene.popMatrix();
     
@@ -37,10 +40,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             -(this.centralWidth + this.sideWidth) / 2,
-            - this.sideWidth / 2,
+            - this.sideDepth / 2,
             (this.numFloorsSide * floorHeight) / 2
         ); 
-        this.scene.scale(this.sideWidth, this.sideWidth, this.numFloorsSide * floorHeight);
+        this.scene.scale(this.sideWidth, this.sideDepth, this.numFloorsSide * floorHeight);
         this.sideModule.display();
         this.scene.popMatrix();
     
@@ -48,10 +51,10 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(
             (this.centralWidth + this.sideWidth) / 2,
-            - this.sideWidth / 2,
+            - this.sideDepth / 2,
             (this.numFloorsSide * floorHeight) / 2
         ); 
-        this.scene.scale(this.sideWidth, this.sideWidth, this.numFloorsSide * floorHeight);
+        this.scene.scale(this.sideWidth, this.sideDepth, this.numFloorsSide * floorHeight);
         this.sideModule.display();
         this.scene.popMatrix();
     }
