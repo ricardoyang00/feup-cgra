@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyBuilding } from "./MyBuilding.js";
@@ -41,7 +41,7 @@ export class MyScene extends CGFscene {
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
-    this.plane = new MyPlane(this, 64);
+    this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
 
     this.buildingWidth = 10;
     this.buildingDepth = 12;
@@ -70,6 +70,12 @@ export class MyScene extends CGFscene {
     this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
+
+
+    this.grassTexture = new CGFtexture(this, "textures/grass3.jpg");
+    this.planeMaterial = new CGFappearance(this);
+    this.planeMaterial.setTexture(this.grassTexture);
+    this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -184,12 +190,12 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
-    
-    // plane size
+    // Apply plane material and display the plane
+    this.planeMaterial.apply();
     this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
-    
+
     this.setDefaultAppearance();
 
     // Display the building
@@ -200,32 +206,12 @@ export class MyScene extends CGFscene {
     this.popMatrix();
     */
 
-    /*this.pushMatrix();
+    //// FOREST
+    this.pushMatrix();
+    
     this.scale(0.01, 0.01, 0.01);
     this.rotate(Math.PI/2, 1, 0, 0); 
-    this.cone.display();
-    this.popMatrix();
-
-    this.pushMatrix();
-    this.translate(0.02,0,0);
-    this.scale(0.01, 0.01, 0.01);
-    this.rotate(Math.PI/2, 1, 0, 0); 
-    this.pyramid.display();
-    this.popMatrix();*/
-
-    /*
-    this.pushMatrix();
-    this.translate(0.02,0,-0.001);
-    this.scale(0.01,0.01,0.01);
-    this.rotate(Math.PI/2, 1, 0, 0); 
-    this.tree.display();
-    this.popMatrix();
-    */
-
-    this.pushMatrix();
-    this.translate(0, 0, -0.001);
-    this.scale(0.01, 0.01, 0.01);
-    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
     this.forest.display();
     this.popMatrix();
 
