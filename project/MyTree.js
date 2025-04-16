@@ -1,6 +1,6 @@
 import { CGFobject, CGFtexture } from '../lib/CGF.js';
-import { MyCone } from './MyCone.js';
 import { MyPyramid } from './MyPyramid.js';
+import { MyCylinder } from './MyCylinder.js';
 
 /**
  * MyTree
@@ -13,7 +13,7 @@ import { MyPyramid } from './MyPyramid.js';
  * @param foliageColor - RGB color of the foliage (e.g., [0, 1, 0] for green)
  */
 export class MyTree extends CGFobject {
-    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.2, treeHeight = 2, foliageColor = [0, 0.8, 0]) {
+    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.1, treeHeight = 2, foliageColor = [0, 0.8, 0]) {
         super(scene);
 
         this.rotation = rotation;
@@ -24,12 +24,12 @@ export class MyTree extends CGFobject {
 
         this.foliageHeight = 0.8 * this.treeHeight;
         this.numPyramids = Math.ceil(this.foliageHeight / 0.5);
-        this.pyramidBaseRadius = this.trunkRadius * 1.5;
+        this.pyramidBaseRadius = this.trunkRadius * 3;
 
         const trunkTexture = new CGFtexture(scene, 'textures/trunk.png');
         const leavesTexture = new CGFtexture(scene, 'textures/leaves3.jpg');
 
-        this.trunk = new MyCone(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture); 
+        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture); 
         this.foliage = [];
         for (let i = 0; i < this.numPyramids; i++) {
             const scaleFactor = 1 - (i / this.numPyramids);
@@ -48,7 +48,8 @@ export class MyTree extends CGFobject {
 
         // trunk
         this.scene.pushMatrix();
-        this.scene.scale(this.trunkRadius, (this.treeHeight - this.foliageHeight*0.9), this.trunkRadius);
+        const trunkHeight = this.treeHeight * 0.2;          // 20% of the tree height
+        this.scene.scale(this.trunkRadius, trunkHeight, this.trunkRadius);
         this.trunk.display();
         this.scene.popMatrix();
 
@@ -57,7 +58,7 @@ export class MyTree extends CGFobject {
             const scaleFactor = 1 - (i / this.numPyramids) * 0.6;
             const yOffset = (this.treeHeight - this.foliageHeight) + (i * (this.foliageHeight / this.numPyramids))/3;
 
-            const tiltAngle = (this.pseudoRandom(i) * 6) - 3; // -3° to +3°
+            const tiltAngle = (this.pseudoRandom(i) * 6) - 3;       // -3° to +3°
             const tiltAxis = [
                 this.pseudoRandom(i + 1) * 2 - 1,
                 0,

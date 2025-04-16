@@ -5,6 +5,7 @@ import { MyBuilding } from "./MyBuilding.js";
 import { MyCone } from "./MyCone.js";
 import { MyPyramid } from "./MyPyramid.js"; 
 import { MyTree } from "./MyTree.js";
+import { MyForest } from "./MyForest.js";
 
 /**
  * MyScene
@@ -61,6 +62,7 @@ export class MyScene extends CGFscene {
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
+    this.forest = new MyForest(this, 10, 10, 10, 10);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -174,7 +176,7 @@ export class MyScene extends CGFscene {
     this.applyViewMatrix();
 
     this.gl.depthMask(false);
-    //this.panorama.display();
+    this.panorama.display();
     this.gl.depthMask(true); 
 
     // Draw axis
@@ -211,11 +213,20 @@ export class MyScene extends CGFscene {
     this.pyramid.display();
     this.popMatrix();*/
 
+    /*
     this.pushMatrix();
     this.translate(0.02,0,-0.001);
     this.scale(0.01,0.01,0.01);
     this.rotate(Math.PI/2, 1, 0, 0); 
     this.tree.display();
+    this.popMatrix();
+    */
+
+    this.pushMatrix();
+    this.translate(0, 0, -0.001);
+    this.scale(0.01, 0.01, 0.01);
+    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.forest.display();
     this.popMatrix();
 
     this.setDefaultAppearance();
