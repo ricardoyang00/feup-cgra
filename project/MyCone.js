@@ -107,6 +107,10 @@ export class MyCone extends CGFobject {
     }
     
     display() {
+        if (this.texture) {
+            this.texture.bind();
+        }
+        
         this.coneAppearance.apply();
         super.display();
     }

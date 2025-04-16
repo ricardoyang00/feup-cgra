@@ -2,6 +2,9 @@ import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyBuilding } from "./MyBuilding.js";
+import { MyCone } from "./MyCone.js";
+import { MyPyramid } from "./MyPyramid.js"; 
+import { MyTree } from "./MyTree.js";
 
 /**
  * MyScene
@@ -54,6 +57,10 @@ export class MyScene extends CGFscene {
                       this.windowTexture, 
                       this.buildingColor
                     );
+
+    this.cone = new MyCone(this);
+    this.pyramid = new MyPyramid(this);
+    this.tree = new MyTree(this);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -179,15 +186,36 @@ export class MyScene extends CGFscene {
     // plane size
     this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
-    //this.plane.display();
+    this.plane.display();
     
     this.setDefaultAppearance();
 
     // Display the building
-    this.pushMatrix();
+    /*this.pushMatrix();
     this.translate(0, 0, 0);
     this.scale(0.01, 0.01, 0.01);
     this.building.display();
+    this.popMatrix();
+    */
+
+    /*this.pushMatrix();
+    this.scale(0.01, 0.01, 0.01);
+    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.cone.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.translate(0.02,0,0);
+    this.scale(0.01, 0.01, 0.01);
+    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.pyramid.display();
+    this.popMatrix();*/
+
+    this.pushMatrix();
+    this.translate(0.02,0,-0.001);
+    this.scale(0.01,0.01,0.01);
+    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.tree.display();
     this.popMatrix();
 
     this.setDefaultAppearance();
