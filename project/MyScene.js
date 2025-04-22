@@ -6,6 +6,7 @@ import { MyCone } from "./MyCone.js";
 import { MyPyramid } from "./MyPyramid.js"; 
 import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
+import { MyHeli } from "./MyHeli.js";
 
 /**
  * MyScene
@@ -63,6 +64,7 @@ export class MyScene extends CGFscene {
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
     this.forest = new MyForest(this, 10, 10, 10, 10);
+    this.helicopter = new MyHeli(this);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -207,12 +209,19 @@ export class MyScene extends CGFscene {
     */
 
     //// FOREST
-    this.pushMatrix();
+    /*this.pushMatrix();
     
     this.scale(0.01, 0.01, 0.01);
     this.rotate(Math.PI/2, 1, 0, 0); 
     this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
     this.forest.display();
+    this.popMatrix();*/
+
+    // Helicopter
+    this.pushMatrix();
+    this.scale(0.01, 0.01, 0.01);
+    this.translate(1, 1 , 1);
+    this.helicopter.display();
     this.popMatrix();
 
     this.setDefaultAppearance();
