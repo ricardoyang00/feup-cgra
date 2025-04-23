@@ -22,6 +22,9 @@ export class MyScene extends CGFscene {
     this.deceleration = 2;
     this.turnSpeed = 1;
 
+    this.heliportPosition = [0, 0, 0];
+    this.heliportRadius = 1;
+
     this.lakePosition = [17, 0, -17];
     this.lakeRadius = 10;
 
@@ -66,13 +69,13 @@ export class MyScene extends CGFscene {
     this.buildingColor = [0.5, 0.5, 0.5, 1];
     this.building = new MyBuilding(
       this, 
-                      this.buildingWidth, 
-                      this.buildingDepth, 
-                      this.numFloorsSide, 
-                      this.numWindowsPerFloor, 
-                      this.windowTexture, 
-                      this.buildingColor
-                    );
+      this.buildingWidth, 
+      this.buildingDepth, 
+      this.numFloorsSide, 
+      this.numWindowsPerFloor, 
+      this.windowTexture, 
+      this.buildingColor
+    );
                     
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
