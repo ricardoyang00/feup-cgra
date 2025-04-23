@@ -17,8 +17,8 @@ export class HeliPropeller extends CGFobject {
         this.bladeThickness = options.bladeThickness
         this.bladeOffset = options.bladeOffset
 
-        this.hub = new MyCylinder(scene, 12, 1);
-        this.blade = new MyCylinder(scene, 4, 1);
+        this.hub = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
+        this.blade = new MyCylinder(scene, 4, 1, [1, 1, 1, 1], null, true, false);
     }
 
     display() {
