@@ -10,13 +10,14 @@ import { CGFobject, CGFappearance } from '../lib/CGF.js';
  * @param texture - Texture to apply to the cone
  */
 export class MyCone extends CGFobject {
-    constructor(scene, slices = 8, stacks = 4, color = [1, 1, 1, 1], texture = null) {
+    constructor(scene, slices = 8, stacks = 4, color = [1, 1, 1, 1], texture = null, textureScale = 1) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
         
         this.coneAppearance = new CGFappearance(this.scene);
-        
+        this.textureScale = textureScale;
+
         if (texture) {
             this.coneAppearance.setTexture(texture);
             this.coneAppearance.setTextureWrap('REPEAT', 'REPEAT');
@@ -62,7 +63,7 @@ export class MyCone extends CGFobject {
                     normalZ/normalLength
                 );
                 
-                this.texCoords.push(slice / this.slices, 1 - (y));
+                this.texCoords.push((slice / this.slices) * this.textureScale, (1 - y) * this.textureScale);
             }
         }
         
@@ -89,8 +90,8 @@ export class MyCone extends CGFobject {
             this.vertices.push(x, 0, z);
             this.normals.push(0, -1, 0);
             this.texCoords.push(
-                0.5 + 0.5 * Math.cos(angle), 
-                0.5 + 0.5 * Math.sin(angle)
+                0.5 + 0.5 * Math.cos(angle) * this.textureScale, 
+                0.5 + 0.5 * Math.sin(angle) * this.textureScale
             );
             
             if (slice > 0) {

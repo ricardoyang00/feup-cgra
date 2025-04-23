@@ -1,5 +1,5 @@
 import { CGFobject, CGFtexture } from '../lib/CGF.js';
-import { MyPyramid } from './MyPyramid.js';
+import { MyCone } from './MyCone.js';
 import { MyCylinder } from './MyCylinder.js';
 
 /**
@@ -27,13 +27,19 @@ export class MyTree extends CGFobject {
         this.pyramidBaseRadius = this.trunkRadius * 3;
 
         const trunkTexture = new CGFtexture(scene, 'textures/trunk.png');
-        const leavesTexture = new CGFtexture(scene, 'textures/leaves3.jpg');
+        const leavesTextures = [
+            new CGFtexture(scene, 'textures/leaves5.png'),
+            new CGFtexture(scene, 'textures/leaves6.png'),
+            new CGFtexture(scene, 'textures/leaves7.png'),
+            new CGFtexture(scene, 'textures/leaves8.png')
+        ];
 
-        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture); 
+        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture, 2); 
         this.foliage = [];
         for (let i = 0; i < this.numPyramids; i++) {
             const scaleFactor = 1 - (i / this.numPyramids);
-            this.foliage.push(new MyPyramid(scene, 4, 1, [...this.foliageColor, 1], leavesTexture));
+            const randomTexture = leavesTextures[Math.floor(Math.random() * leavesTextures.length)];
+            this.foliage.push(new MyCone(scene, 16, 4, [...this.foliageColor, 1], randomTexture, 2));
         }
     }
 
