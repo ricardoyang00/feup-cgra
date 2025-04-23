@@ -14,6 +14,13 @@ export class MyHeli extends CGFobject {
         this.orientation = initOrientation;
         this.speed = initSpeed;
 
+        this.state = "ground";
+        this.cruisingAltitude = 5;
+        this.groundLevel = 1;
+        this.verticalSpeed = 2;
+        this.targetPosition = null; // position to automatically fly to
+        this.bucketIsEmpty = true;
+
         this.upperProp = new HeliPropeller(scene, {
             bladeCount: 4,
             hubRadius: 0.1,
@@ -54,18 +61,134 @@ export class MyHeli extends CGFobject {
         this.speed += v;
     }
     
+    initiateTakeoff() {
+        if (this.state === "ground") {
+            this.state = "taking_off";
+        } else if (this.state === "filling_bucket") {
+            this.state = "ascending_from_lake";
+        }
+    }
+
+    initiateLanding() {
+        if (this.state === "flying") {
+            if (this.scene.isOverLake(this.position) && this.bucketIsEmpty) {
+                this.state = "descending_to_lake";
+            } else {
+                const heliport = this.scene.heliportPosition;
+                const dx = heliport[0] - this.position[0];
+                const dz = heliport[2] - this.position[2];
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                
+                if (distance < 0.1) {
+                    // Already at heliport — just reorient and land
+                    this.state = "reorienting_to_land";
+                } else {
+                    // Need to fly to heliport
+                    this.state = "moving_to_heliport";
+                    this.targetPosition = heliport.slice();
+                    this.targetPosition[1] = this.cruisingAltitude;
+                }                
+            }
+        }
+    }
+
     update(dt) {
-        const vx = this.speed * Math.sin(this.orientation);
-        const vz = this.speed * Math.cos(this.orientation);
-        this.position[0] += vx * dt; // Update x position
-        this.position[2] += vz * dt; // Update z position
+        switch (this.state) {
+            case "taking_off":
+                this.position[1] += this.verticalSpeed * dt;
+                if (this.position[1] >= this.cruisingAltitude) {
+                    this.position[1] = this.cruisingAltitude;
+                    this.state = "flying";
+                }
+                break;
+        
+            case "flying":
+                const vx = this.speed * Math.sin(this.orientation);
+                const vz = this.speed * Math.cos(this.orientation);
+                this.position[0] += vx * dt;
+                this.position[2] += vz * dt;
+                break;
+
+            case "landing":
+                this.position[1] -= this.verticalSpeed * dt;
+                if (this.position[1] <= this.groundLevel) {
+                    this.position[1] = this.groundLevel;
+                    this.state = "ground";
+                    this.speed = 0;
+                }
+                break;
+
+            case "moving_to_heliport":
+                const dx = this.targetPosition[0] - this.position[0];
+                const dz = this.targetPosition[2] - this.position[2];
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                const targetAngle = Math.atan2(dx, dz);
+    
+                let angleDiff = targetAngle - this.orientation;
+                angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+                
+                const turnStep = this.scene.turnSpeed * dt;
+    
+                if (Math.abs(angleDiff) > 0.05) {
+                    // Rotate in place toward heliport, shortest path
+                    const turnAmount = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnStep);
+                    this.orientation += turnAmount;
+                    this.speed = 0;
+                } else {
+                    this.orientation = targetAngle;
+                    this.speed = 4;
+                    const vx = this.speed * Math.sin(this.orientation);
+                    const vz = this.speed * Math.cos(this.orientation);
+                    this.position[0] += vx * dt;
+                    this.position[2] += vz * dt;
+    
+                    if (distance < 0.1) {
+                        this.position[0] = this.targetPosition[0];
+                        this.position[2] = this.targetPosition[2];
+                        this.state = "reorienting_to_land";
+                    }
+                }
+                break;
+
+            case "reorienting_to_land":
+                let reorientAngleDiff = 0 - this.orientation;
+                reorientAngleDiff = Math.atan2(Math.sin(reorientAngleDiff), Math.cos(reorientAngleDiff));
+                const maxTurn = this.scene.turnSpeed * dt;
+                const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
+                this.turn(turnAmount);
+    
+                if (Math.abs(reorientAngleDiff) < 0.01) {
+                    this.orientation = 0;
+                    this.state = "landing";
+                }
+                break;
+
+            case "descending_to_lake":
+                this.position[1] -= this.verticalSpeed * dt;
+                if (this.position[1] <= 3) { // TODO: change 3 to rope length later
+                    this.position[1] = 3;
+                    this.state = "filling_bucket";
+                }
+                break;
+
+            case "filling_bucket":
+                // TODO: Bucket filling logic
+                break;
+    
+            case "ascending_from_lake":
+                this.position[1] += this.verticalSpeed * dt;
+                if (this.position[1] >= this.cruisingAltitude) {
+                    this.position[1] = this.cruisingAltitude;
+                    this.state = "flying";
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 
     display() {
-        if (this.position[1] < 1) {
-            this.position[1] = 1;
-        }
-
         /*this.scene.pushMatrix();
         this.scene.rotate(Math.PI / 2, 1, 0, 0);
         this.scene.translate(0, 0.5, 0);

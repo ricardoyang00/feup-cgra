@@ -7,7 +7,6 @@ import { MyPyramid } from "./MyPyramid.js";
 import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
-import { MyCylinder } from "./MyCylinder.js";
 
 /**
  * MyScene
@@ -19,10 +18,26 @@ export class MyScene extends CGFscene {
     this.lastT = null;
     this.deltaT = null;
 
-    this.acceleration = 5;
+    this.acceleration = 4;
     this.deceleration = 2;
     this.turnSpeed = 1;
+
+    this.heliportPosition = [0, 0, 0];
+    this.heliportRadius = 1;
+    this.lakePosition = [18, 1, 18];
+    this.lakeRadius = 10;
+
+    this.prevP = false;
+    this.prevL = false;
   }
+
+  isOverLake(position) {
+    const dx = position[0] - this.lakePosition[0];
+    const dz = position[2] - this.lakePosition[2];
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    return distance < this.lakeRadius;
+  }
+
   init(application) {
     super.init(application);
 
@@ -44,7 +59,7 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
-
+    
     this.buildingWidth = 10;
     this.buildingDepth = 12;
     this.numFloorsSide = 4;
@@ -52,7 +67,7 @@ export class MyScene extends CGFscene {
     this.windowTexture = new CGFtexture(this, "textures/window.jpg");
     this.buildingColor = [0.5, 0.5, 0.5, 1];
     this.building = new MyBuilding(
-                      this, 
+      this, 
                       this.buildingWidth, 
                       this.buildingDepth, 
                       this.numFloorsSide, 
@@ -60,12 +75,13 @@ export class MyScene extends CGFscene {
                       this.windowTexture, 
                       this.buildingColor
                     );
-
+                    
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
     this.forest = new MyForest(this, 10, 10, 10, 10);
     this.helicopter = new MyHeli(this);
+    this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -106,23 +122,41 @@ export class MyScene extends CGFscene {
     this.lastT = t;
     const dt = this.deltaT / 1000;
 
+    const rotateAllowed = this.helicopter.state !== "ground" 
+                        && this.helicopter.state !== "moving_to_heliport" 
+                        && this.helicopter.state !== "reorienting_to_land";
+
     if (this.gui.isKeyPressed("KeyW")) {
       this.helicopter.accelerate(this.acceleration * dt);
     }
     if (this.gui.isKeyPressed("KeyS")) {
-      this.helicopter.accelerate(-this.acceleration * dt);
+      this.helicopter.accelerate(-this.acceleration * dt * 0.8);
     }
-    if (this.gui.isKeyPressed("KeyA")) {
+    if (this.gui.isKeyPressed("KeyA") && rotateAllowed) {
       this.helicopter.turn(-this.turnSpeed * dt);
     }
-    if (this.gui.isKeyPressed("KeyD")) {
+    if (this.gui.isKeyPressed("KeyD") && rotateAllowed) {
       this.helicopter.turn(this.turnSpeed * dt);
     }
     if (this.gui.isKeyPressed("KeyR")) {
       this.helicopter.position = [0, 1, 0];
       this.helicopter.orientation = 0;
       this.helicopter.speed = 0;
+      this.helicopter.state = "ground";
     }
+
+    const currentP = this.gui.isKeyPressed("KeyP");
+    const currentL = this.gui.isKeyPressed("KeyL");
+
+    if (currentP && !this.prevP) {
+        this.helicopter.initiateTakeoff();
+    }
+    if (currentL && !this.prevL) {
+        this.helicopter.initiateLanding();
+    }
+
+    this.prevP = currentP;
+    this.prevL = currentL;
 
     if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
       const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * dt;
@@ -194,6 +228,12 @@ export class MyScene extends CGFscene {
     // Helicopter
     this.pushMatrix();
     this.helicopter.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.scale(0.1, 0.1, 0.1);
+    this.translate(1, 1, 0);
+    this.lakeModel.display();
     this.popMatrix();
 
     this.setDefaultAppearance();
