@@ -94,6 +94,10 @@ export class MyScene extends CGFscene {
     this.planeMaterial = new CGFappearance(this);
     this.planeMaterial.setTexture(this.grassTexture);
     this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
+    this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
+    this.planeMaterial.setDiffuse(0.8, 0.8, 0.8, 1.0); 
+    this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
+    this.planeMaterial.setShininess(10.0);
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -201,26 +205,27 @@ export class MyScene extends CGFscene {
     this.setDefaultAppearance();
 
     // Apply plane material and display the plane
+    this.pushMatrix();
     this.planeMaterial.apply();
     this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
+    this.popMatrix();
 
-    this.setDefaultAppearance();
 
     // Display the building
     /*this.pushMatrix();
-    this.translate(0, 0, 0);
-    this.scale(0.01, 0.01, 0.01);
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.translate(0, 10, 0);
+    this.scale(5, 5, 5);
     this.building.display();
-    this.popMatrix();
-    */
+    this.popMatrix();*/
+    
 
     //// FOREST
     /*this.pushMatrix();
-    
-    this.scale(0.01, 0.01, 0.01);
-    this.rotate(Math.PI/2, 1, 0, 0); 
+    this.scale(5, 5, 5);
+    //this.rotate(0, 1, 0, 0); 
     this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
     this.forest.display();
     this.popMatrix();*/
