@@ -18,10 +18,10 @@ export class MyScene extends CGFscene {
     super();
     this.lastT = null;
     this.deltaT = null;
-    this.velocity = 0;
-    this.acceleration = 0.05;
-    this.maxSpeed = 20;
-    this.deceleration = 0.025;
+
+    this.acceleration = 5;
+    this.deceleration = 2;
+    this.turnSpeed = 1;
   }
   init(application) {
     super.init(application);
@@ -67,8 +67,6 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 10, 10, 10, 10);
     this.helicopter = new MyHeli(this);
 
-    this.heliPosition = [0, 1, 0];
-
     this.displayAxis = true;
     this.displayNormals = false;
 
@@ -98,70 +96,44 @@ export class MyScene extends CGFscene {
       vec3.fromValues(0, 0, 0)
     );
   }
-  checkKeys() {
-    var text = "Keys pressed: ";
-    var keysPressed = false;
-
-    // Check for key codes e.g. in https://keycode.info/
-    const directions = {
-        KeyW: { axis: 2, sign: 1 },
-        KeyS: { axis: 2, sign: -1 },
-        KeyA: { axis: 0, sign: -1 },
-        KeyD: { axis: 0, sign: 1 }
-    };
-
-    if (!this.lastDirection) {
-      this.lastDirection = { axis: null, sign: 0 };
-    }
-
-    for (const key in directions) {
-      if (this.gui.isKeyPressed(key)) {
-          const { axis, sign } = directions[key];
-          text += ` ${key.replace("Key", "")} `;
-
-          // Check if the new direction is opposite to the last direction
-          if (this.lastDirection.axis === axis && this.lastDirection.sign !== sign) {
-            // Brake when moving in the opposite direction
-            this.velocity = Math.max(this.velocity - this.acceleration * 2, 0);
-        
-            // If velocity reaches 0, switch direction
-            if (this.velocity === 0) {
-                this.lastDirection = { axis, sign };
-            }
-          } else {
-              // Accelerate when moving in the same direction or switching to a new direction
-              this.velocity = Math.min(this.velocity + this.acceleration, this.maxSpeed);
-              this.lastDirection = { axis, sign }; // Update last direction
-          }
-
-          this.heliPosition[axis] += sign * this.velocity;
-          keysPressed = true;
-      }
-  }
-
-    if (!keysPressed && this.velocity > 0) {
-      // Decelerate when no keys are pressed
-      this.velocity = Math.max(this.velocity - this.deceleration, 0);
-
-      // Continue moving in the last direction
-      if (this.lastDirection.axis !== null) {
-          this.heliPosition[this.lastDirection.axis] += this.lastDirection.sign * this.velocity;
-      }
-    }
-
-    //console.log(`Current speed: ${this.velocity.toFixed(2)}`);
-
-    if (keysPressed)
-      console.log(text);
-  }
 
   update(t) {
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
+    } else {
+      this.deltaT = 0;
     }
     this.lastT = t;
+    const dt = this.deltaT / 1000;
 
-    this.checkKeys();
+    if (this.gui.isKeyPressed("KeyW")) {
+      this.helicopter.accelerate(this.acceleration * dt);
+    }
+    if (this.gui.isKeyPressed("KeyS")) {
+      this.helicopter.accelerate(-this.acceleration * dt);
+    }
+    if (this.gui.isKeyPressed("KeyA")) {
+      this.helicopter.turn(-this.turnSpeed * dt);
+    }
+    if (this.gui.isKeyPressed("KeyD")) {
+      this.helicopter.turn(this.turnSpeed * dt);
+    }
+    if (this.gui.isKeyPressed("KeyR")) {
+      this.helicopter.position = [0, 1, 0];
+      this.helicopter.orientation = 0;
+      this.helicopter.speed = 0;
+    }
+
+    if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
+      const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * dt;
+      this.helicopter.accelerate(speedChange);
+      // Prevent small oscillations around zero
+      if (Math.abs(this.helicopter.speed) < 0.01) {
+          this.helicopter.speed = 0;
+      }
+    }
+
+    this.helicopter.update(dt);
   }
 
   setDefaultAppearance() {
@@ -173,10 +145,6 @@ export class MyScene extends CGFscene {
   display() {
     if (this.camera.position[1] < 0) {
       this.camera.position[1] = 0.1;
-    }
-
-    if (this.heliPosition[1] < 1) {
-      this.heliPosition[1] = 1;
     }
 
     // ---- BEGIN Background, camera and axis setup
@@ -225,9 +193,6 @@ export class MyScene extends CGFscene {
 
     // Helicopter
     this.pushMatrix();
-    //this.scale(0.01, 0.01, 0.01);
-    this.scale(0.005, 0.02, 0.005);
-    this.translate(this.heliPosition[0], this.heliPosition[2], this.heliPosition[1]);
     this.helicopter.display();
     this.popMatrix();
 
