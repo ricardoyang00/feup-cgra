@@ -22,9 +22,7 @@ export class MyScene extends CGFscene {
     this.deceleration = 2;
     this.turnSpeed = 1;
 
-    this.heliportPosition = [0, 0, 0];
-    this.heliportRadius = 1;
-    this.lakePosition = [18, 1, 18];
+    this.lakePosition = [17, 0, -17];
     this.lakeRadius = 10;
 
     this.prevP = false;
@@ -131,19 +129,19 @@ export class MyScene extends CGFscene {
                         && this.helicopter.state !== "reorienting_to_land";
 
     if (this.gui.isKeyPressed("KeyW")) {
-      this.helicopter.accelerate(this.acceleration * dt);
+      this.helicopter.accelerate(-this.acceleration * dt);
     }
     if (this.gui.isKeyPressed("KeyS")) {
-      this.helicopter.accelerate(-this.acceleration * dt * 0.8);
+      this.helicopter.accelerate(this.acceleration * dt * 0.8);
     }
     if (this.gui.isKeyPressed("KeyA") && rotateAllowed) {
-      this.helicopter.turn(-this.turnSpeed * dt);
-    }
-    if (this.gui.isKeyPressed("KeyD") && rotateAllowed) {
       this.helicopter.turn(this.turnSpeed * dt);
     }
+    if (this.gui.isKeyPressed("KeyD") && rotateAllowed) {
+      this.helicopter.turn(-this.turnSpeed * dt);
+    }
     if (this.gui.isKeyPressed("KeyR")) {
-      this.helicopter.position = [0, 1, 0];
+      this.helicopter.position = [0, 0, 0];
       this.helicopter.orientation = 0;
       this.helicopter.speed = 0;
       this.helicopter.state = "ground";
@@ -236,8 +234,9 @@ export class MyScene extends CGFscene {
     this.popMatrix();
 
     this.pushMatrix();
-    this.scale(0.1, 0.1, 0.1);
-    this.translate(1, 1, 0);
+    this.scale(100, 100, 100);
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.translate(1, 1, 0.01)
     this.lakeModel.display();
     this.popMatrix();
 

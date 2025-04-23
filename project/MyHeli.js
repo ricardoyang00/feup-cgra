@@ -7,7 +7,7 @@ import { MyCylinder } from './MyCylinder.js';
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [0, 1, 0], initOrientation = 0, initSpeed = 0  ) {
+    constructor(scene, initPos = [0, 0, 0], initOrientation = 0, initSpeed = 0  ) {
         super(scene);
         
         this.position = initPos;
@@ -16,7 +16,7 @@ export class MyHeli extends CGFobject {
 
         this.state = "ground";
         this.cruisingAltitude = 5;
-        this.groundLevel = 1;
+        this.groundLevel = 0;
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
         this.bucketIsEmpty = true;
@@ -46,7 +46,7 @@ export class MyHeli extends CGFobject {
             bucketHeight: 0.3
         });
 
-        this.model = new MyCylinder(scene, 16, 4, [1, 1, 1, 1], null);
+        this.model = new MyCylinder(scene, 4, 4, [1, 1, 1, 1], null);
     }
 
     setRopeLength(length) {
@@ -122,7 +122,7 @@ export class MyHeli extends CGFobject {
                 const dx = this.targetPosition[0] - this.position[0];
                 const dz = this.targetPosition[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
-                const targetAngle = Math.atan2(dx, dz);
+                const targetAngle = Math.atan2(dz, dx);
     
                 let angleDiff = targetAngle - this.orientation;
                 angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
@@ -137,8 +137,8 @@ export class MyHeli extends CGFobject {
                 } else {
                     this.orientation = targetAngle;
                     this.speed = 4;
-                    const vx = this.speed * Math.sin(this.orientation);
-                    const vz = this.speed * Math.cos(this.orientation);
+                    const vx = this.speed * Math.cos(this.orientation);
+                    const vz = this.speed * Math.sin(this.orientation);
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
     
@@ -190,26 +190,28 @@ export class MyHeli extends CGFobject {
 
     display() {
         /*this.scene.pushMatrix();
-        this.scene.rotate(Math.PI / 2, 1, 0, 0);
-        this.scene.translate(0, 0.5, 0);
+        this.scene.scale(10, 10, 10);
+        this.scene.translate(1, 2, 1);
         this.upperProp.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
+        this.scene.scale(10, 10, 10);
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
-        this.scene.translate(2, 0, 0);
+        this.scene.translate(1, -1, -2);
         this.rearProp.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
-        this.scene.translate(0, -0.5, 0);
+        this.scene.scale(6, 6, 6);
+        this.scene.translate(-1, 3, 1);
         this.bucket.display();
         this.scene.popMatrix();*/
 
         this.scene.pushMatrix();
-        this.scene.scale(0.005, 0.005, 0.005);
-        this.scene.translate(this.position[0], this.position[2], this.position[1]);
-        this.scene.rotate(this.orientation, 0, 0, -1);
+        this.scene.scale(6, 6, 6);
+        this.scene.translate(this.position[0], this.position[1], this.position[2]);
+        this.scene.rotate(this.orientation, 0, 1, 0);
         this.model.display();
         this.scene.popMatrix();
     }
