@@ -1,6 +1,7 @@
 import { CGFobject } from '../lib/CGF.js';
 import { HeliPropeller } from './HeliPropeller.js';
 import { HeliBucket } from './HeliBucket.js';
+import { MyCylinder } from './MyCylinder.js';
 
 /**
  * MyHeli
@@ -33,6 +34,8 @@ export class MyHeli extends CGFobject {
             bucketRadius: 0.2,
             bucketHeight: 0.3
         });
+
+        this.model = new MyCylinder(scene, 16, 4, [1, 1, 1, 1], null);
     }
 
     setRopeLength(length) {
@@ -40,7 +43,7 @@ export class MyHeli extends CGFobject {
     }
     
     display() {
-        this.scene.pushMatrix();
+        /*this.scene.pushMatrix();
         this.scene.rotate(Math.PI / 2, 1, 0, 0);
         this.scene.translate(0, 0.5, 0);
         this.upperProp.display();
@@ -52,10 +55,13 @@ export class MyHeli extends CGFobject {
         this.rearProp.display();
         this.scene.popMatrix();
 
-        // Display the bucket and rope
         this.scene.pushMatrix();
-        this.scene.translate(0, -0.5, 0); // Position the bucket below the helicopter
+        this.scene.translate(0, -0.5, 0);
         this.bucket.display();
+        this.scene.popMatrix();*/
+
+        this.scene.pushMatrix();
+        this.model.display();
         this.scene.popMatrix();
     }
 }

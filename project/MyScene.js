@@ -7,6 +7,7 @@ import { MyPyramid } from "./MyPyramid.js";
 import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
+import { MyCylinder } from "./MyCylinder.js";
 
 /**
  * MyScene
@@ -18,9 +19,9 @@ export class MyScene extends CGFscene {
     this.lastT = null;
     this.deltaT = null;
     this.velocity = 0;
-    this.acceleration = 0.1;
+    this.acceleration = 0.05;
     this.maxSpeed = 20;
-    this.deceleration = 0.05;
+    this.deceleration = 0.025;
   }
   init(application) {
     super.init(application);
@@ -66,13 +67,14 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 10, 10, 10, 10);
     this.helicopter = new MyHeli(this);
 
+    this.heliPosition = [0, 1, 0];
+
     this.displayAxis = true;
     this.displayNormals = false;
 
     this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
-
 
     this.grassTexture = new CGFtexture(this, "textures/grass3.jpg");
     this.planeMaterial = new CGFappearance(this);
@@ -92,7 +94,7 @@ export class MyScene extends CGFscene {
       1.2,
       0.1,
       500,
-      vec3.fromValues(50, 1, 50),
+      vec3.fromValues(50, 30, 50),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -102,10 +104,10 @@ export class MyScene extends CGFscene {
 
     // Check for key codes e.g. in https://keycode.info/
     const directions = {
-        KeyW: { axis: 2, sign: -1 }, // Move forward (negative Z)
-        KeyS: { axis: 2, sign: 1 },  // Move back (positive Z)
-        KeyA: { axis: 0, sign: -1 }, // Move left (negative X)
-        KeyD: { axis: 0, sign: 1 }   // Move right (positive X)
+        KeyW: { axis: 2, sign: 1 },
+        KeyS: { axis: 2, sign: -1 },
+        KeyA: { axis: 0, sign: -1 },
+        KeyD: { axis: 0, sign: 1 }
     };
 
     if (!this.lastDirection) {
@@ -132,7 +134,7 @@ export class MyScene extends CGFscene {
               this.lastDirection = { axis, sign }; // Update last direction
           }
 
-          this.camera.position[axis] += sign * this.velocity;
+          this.heliPosition[axis] += sign * this.velocity;
           keysPressed = true;
       }
   }
@@ -143,7 +145,7 @@ export class MyScene extends CGFscene {
 
       // Continue moving in the last direction
       if (this.lastDirection.axis !== null) {
-          this.camera.position[this.lastDirection.axis] += this.lastDirection.sign * this.velocity;
+          this.heliPosition[this.lastDirection.axis] += this.lastDirection.sign * this.velocity;
       }
     }
 
@@ -171,6 +173,10 @@ export class MyScene extends CGFscene {
   display() {
     if (this.camera.position[1] < 0) {
       this.camera.position[1] = 0.1;
+    }
+
+    if (this.heliPosition[1] < 1) {
+      this.heliPosition[1] = 1;
     }
 
     // ---- BEGIN Background, camera and axis setup
@@ -219,8 +225,9 @@ export class MyScene extends CGFscene {
 
     // Helicopter
     this.pushMatrix();
-    this.scale(0.01, 0.01, 0.01);
-    this.translate(1, 1 , 1);
+    //this.scale(0.01, 0.01, 0.01);
+    this.scale(0.005, 0.02, 0.005);
+    this.translate(this.heliPosition[0], this.heliPosition[2], this.heliPosition[1]);
     this.helicopter.display();
     this.popMatrix();
 
