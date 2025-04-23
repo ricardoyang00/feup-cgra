@@ -204,17 +204,18 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
-    /*this.pushMatrix();
-    this.translate(0, 0, 0);
-    this.scale(0.01, 0.01, 0.01);
+    this.pushMatrix();
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.translate(0, 10, 0);
+    this.scale(5, 5, 5);
     this.building.display();
     this.popMatrix();
-    */
+    
 
     //// FOREST
     this.pushMatrix();
-    this.scale(10, 10, 10);
-    this.rotate(0, 1, 0, 0); 
+    this.scale(5, 5, 5);
+    //this.rotate(0, 1, 0, 0); 
     this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
     this.forest.display();
     this.popMatrix();
