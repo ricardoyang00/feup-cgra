@@ -7,9 +7,9 @@ import { MyCylinder } from './MyCylinder.js';
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [0, 0, 0], initOrientation = 0, initSpeed = 0  ) {
+    constructor(scene, initPos = [0, 0, 0], initOrientation = 0, initSpeed = 0) {
         super(scene);
-        
+
         this.position = initPos;
         this.orientation = initOrientation;
         this.speed = initSpeed;
@@ -60,7 +60,7 @@ export class MyHeli extends CGFobject {
     accelerate(v) {
         this.speed += v;
     }
-    
+
     initiateTakeoff() {
         if (this.state === "ground") {
             this.state = "taking_off";
@@ -78,7 +78,7 @@ export class MyHeli extends CGFobject {
                 const dx = heliport[0] - this.position[0];
                 const dz = heliport[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
-                
+
                 if (distance < 0.1) {
                     // Already at heliport — just reorient and land
                     this.state = "reorienting_to_land";
@@ -87,7 +87,7 @@ export class MyHeli extends CGFobject {
                     this.state = "moving_to_heliport";
                     this.targetPosition = heliport.slice();
                     this.targetPosition[1] = this.cruisingAltitude;
-                }                
+                }
             }
         }
     }
@@ -101,7 +101,7 @@ export class MyHeli extends CGFobject {
                     this.state = "flying";
                 }
                 break;
-        
+
             case "flying":
                 const vx = this.speed * Math.sin(this.orientation);
                 const vz = this.speed * Math.cos(this.orientation);
@@ -122,13 +122,13 @@ export class MyHeli extends CGFobject {
                 const dx = this.targetPosition[0] - this.position[0];
                 const dz = this.targetPosition[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
-                const targetAngle = Math.atan2(dz, dx);
-    
+                const targetAngle = Math.atan2(-dx, -dz);
+
                 let angleDiff = targetAngle - this.orientation;
                 angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
-                
+
                 const turnStep = this.scene.turnSpeed * dt;
-    
+
                 if (Math.abs(angleDiff) > 0.05) {
                     // Rotate in place toward heliport, shortest path
                     const turnAmount = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnStep);
@@ -136,12 +136,12 @@ export class MyHeli extends CGFobject {
                     this.speed = 0;
                 } else {
                     this.orientation = targetAngle;
-                    this.speed = 4;
-                    const vx = this.speed * Math.cos(this.orientation);
-                    const vz = this.speed * Math.sin(this.orientation);
+                    this.speed = 5;
+                    const vx = -this.speed * Math.sin(this.orientation);
+                    const vz = -this.speed * Math.cos(this.orientation);
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
-    
+
                     if (distance < 0.1) {
                         this.position[0] = this.targetPosition[0];
                         this.position[2] = this.targetPosition[2];
@@ -156,8 +156,9 @@ export class MyHeli extends CGFobject {
                 const maxTurn = this.scene.turnSpeed * dt;
                 const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
                 this.turn(turnAmount);
-    
-                if (Math.abs(reorientAngleDiff) < 0.01) {
+
+                const newDiff = Math.atan2(Math.sin(0 - this.orientation), Math.cos(0 - this.orientation));
+                if (Math.abs(newDiff) < 0.01) {
                     this.orientation = 0;
                     this.state = "landing";
                 }
@@ -174,7 +175,7 @@ export class MyHeli extends CGFobject {
             case "filling_bucket":
                 // TODO: Bucket filling logic
                 break;
-    
+
             case "ascending_from_lake":
                 this.position[1] += this.verticalSpeed * dt;
                 if (this.position[1] >= this.cruisingAltitude) {
@@ -189,13 +190,21 @@ export class MyHeli extends CGFobject {
     }
 
     display() {
+        this.scene.pushMatrix();
+        this.scene.scale(6, 6, 6);
+        this.scene.translate(this.position[0], this.position[1], this.position[2]);
+        this.scene.rotate(this.orientation, 0, 1, 0);
+        
         /*this.scene.pushMatrix();
-        this.scene.scale(10, 10, 10);
-        this.scene.translate(1, 2, 1);
+        this.scene.scale(3, 3, 3);
+        this.scene.translate(0, 0.4, 0);
         this.upperProp.display();
+        this.scene.popMatrix();*/
+
+        this.model.display();
         this.scene.popMatrix();
 
-        this.scene.pushMatrix();
+        /*this.scene.pushMatrix();
         this.scene.scale(10, 10, 10);
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
         this.scene.translate(1, -1, -2);
@@ -207,12 +216,5 @@ export class MyHeli extends CGFobject {
         this.scene.translate(-1, 3, 1);
         this.bucket.display();
         this.scene.popMatrix();*/
-
-        this.scene.pushMatrix();
-        this.scene.scale(6, 6, 6);
-        this.scene.translate(this.position[0], this.position[1], this.position[2]);
-        this.scene.rotate(this.orientation, 0, 1, 0);
-        this.model.display();
-        this.scene.popMatrix();
     }
 }

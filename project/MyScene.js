@@ -129,7 +129,8 @@ export class MyScene extends CGFscene {
 
     const rotateAllowed = this.helicopter.state !== "ground" 
                         && this.helicopter.state !== "moving_to_heliport" 
-                        && this.helicopter.state !== "reorienting_to_land";
+                        && this.helicopter.state !== "reorienting_to_land"
+                        && this.helicopter.state !== "landing";
 
     if (this.gui.isKeyPressed("KeyW")) {
       this.helicopter.accelerate(-this.acceleration * dt);
