@@ -151,14 +151,15 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "reorienting_to_land":
-                let reorientAngleDiff = 0 - this.orientation;
+                let reorientAngleDiff = - this.orientation;
                 reorientAngleDiff = Math.atan2(Math.sin(reorientAngleDiff), Math.cos(reorientAngleDiff));
+                
                 const maxTurn = this.scene.turnSpeed * dt;
                 const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
+                
                 this.turn(turnAmount);
 
-                const newDiff = Math.atan2(Math.sin(0 - this.orientation), Math.cos(0 - this.orientation));
-                if (Math.abs(newDiff) < 0.01) {
+                if (Math.abs(reorientAngleDiff) < 0.01) {
                     this.orientation = 0;
                     this.state = "landing";
                 }
@@ -195,11 +196,11 @@ export class MyHeli extends CGFobject {
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
         
-        /*this.scene.pushMatrix();
+        this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
         this.scene.translate(0, 0.4, 0);
         this.upperProp.display();
-        this.scene.popMatrix();*/
+        this.scene.popMatrix();
 
         this.model.display();
         this.scene.popMatrix();
