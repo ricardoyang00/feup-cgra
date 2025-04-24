@@ -1,6 +1,8 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFtexture, CGFappearance } from '../lib/CGF.js';
 import { MyCone } from './MyCone.js';
 import { MyCylinder } from './MyCylinder.js';
+import { MyQuad } from './MyQuad.js';
+import { MyCircle } from './MyCircle.js';
 
 /**
  * MyTree
@@ -26,6 +28,9 @@ export class MyTree extends CGFobject {
         this.numPyramids = Math.ceil(this.foliageHeight / 0.5);
         this.pyramidBaseRadius = this.trunkRadius * 3;
 
+        this.shadowTexture = new CGFtexture(scene, 'textures/shadow2.png');
+        this.shadowQuad = new MyCircle(scene, 32);
+
         const trunkTexture = new CGFtexture(scene, 'textures/trunk.png');
         const leavesTextures = [
             new CGFtexture(scene, 'textures/leaves5.png'),
@@ -44,6 +49,27 @@ export class MyTree extends CGFobject {
     }
 
     display() {
+        // shadow
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0.06, 0); 
+
+        var factorX = 3;
+        var factorZ = 3.2;
+
+        this.scene.scale(this.trunkRadius * factorX, 1, this.trunkRadius * factorZ);
+
+        this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+
+        //this.scene.gl.enable(this.scene.gl.BLEND);
+        //this.scene.gl.blendFunc(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA);
+
+        this.shadowTexture.bind();
+
+        //this.shadowQuad.display();
+
+        this.scene.popMatrix();
+
+
         this.scene.pushMatrix();
 
         if (this.axis === 'X') {
