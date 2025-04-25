@@ -127,44 +127,52 @@ export class MyScene extends CGFscene {
     this.lastT = t;
     const dt = this.deltaT / 1000;
 
-    const rotateAllowed = this.helicopter.state == "flying";
+    const movementAllowed = this.helicopter.state == "flying";
 
-    if (this.gui.isKeyPressed("KeyW")) {
-      this.helicopter.accelerate(-this.acceleration * dt);
-    }
-    if (this.gui.isKeyPressed("KeyS")) {
-      this.helicopter.accelerate(this.acceleration * dt * 0.8);
-    }
-    if (this.gui.isKeyPressed("KeyA") && rotateAllowed) {
-      this.helicopter.turn(this.turnSpeed * dt);
-    }
-    if (this.gui.isKeyPressed("KeyD") && rotateAllowed) {
-      this.helicopter.turn(-this.turnSpeed * dt);
-    }
-    if (this.gui.isKeyPressed("KeyR")) {
-      this.helicopter.resetHelicopter();
-    }
+    switch (true) {
+      case this.gui.isKeyPressed("KeyW") && movementAllowed:
+          this.helicopter.accelerate(-this.acceleration * dt);
+          break;
 
-    const currentP = this.gui.isKeyPressed("KeyP");
-    const currentL = this.gui.isKeyPressed("KeyL");
+      case this.gui.isKeyPressed("KeyS") && movementAllowed:
+          this.helicopter.accelerate(this.acceleration * dt * 0.8);
+          break;
 
-    if (currentP && !this.prevP) {
-        this.helicopter.initiateTakeoff();
-    }
-    if (currentL && !this.prevL) {
-        this.helicopter.initiateLanding();
-    }
+      case this.gui.isKeyPressed("KeyA") && movementAllowed:
+          this.helicopter.turn(this.turnSpeed * dt);
+          break;
 
-    this.prevP = currentP;
-    this.prevL = currentL;
+      case this.gui.isKeyPressed("KeyD") && movementAllowed:
+          this.helicopter.turn(-this.turnSpeed * dt);
+          break;
 
-    if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
-      const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * dt;
-      this.helicopter.accelerate(speedChange);
-      // Prevent small oscillations around zero
-      if (Math.abs(this.helicopter.speed) < 0.01) {
-          this.helicopter.speed = 0;
-      }
+      case this.gui.isKeyPressed("KeyR"):
+          this.helicopter.resetHelicopter();
+          break;
+
+      default:
+          const currentP = this.gui.isKeyPressed("KeyP");
+          const currentL = this.gui.isKeyPressed("KeyL");
+
+          if (currentP && !this.prevP) {
+              this.helicopter.initiateTakeoff();
+          }
+          if (currentL && !this.prevL) {
+              this.helicopter.initiateLanding();
+          }
+
+          this.prevP = currentP;
+          this.prevL = currentL;
+
+          if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
+              const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * dt;
+              this.helicopter.accelerate(speedChange);
+              // Prevent small oscillations around zero
+              if (Math.abs(this.helicopter.speed) < 0.01) {
+                  this.helicopter.speed = 0;
+              }
+          }
+          break;
     }
 
     this.helicopter.update(dt);

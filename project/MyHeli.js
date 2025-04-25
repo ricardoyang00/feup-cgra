@@ -26,6 +26,9 @@ export class MyHeli extends CGFobject {
         this.maxPropSpeed = 20;
         this.takeOffPropSpeed = this.maxPropSpeed * 0.7;
 
+        this.leanAngle = 0;
+        this.maxLeanAngle = Math.PI / 12; // max 15 degrees
+
         this.upperProp = new HeliPropeller(scene, {
             bladeCount: 4,
             hubRadius: 0.1,
@@ -79,6 +82,10 @@ export class MyHeli extends CGFobject {
         this.verticalSpeed = 2;
     }
 
+    resetLeanAngle() {
+        this.leanAngle = 0;
+    }
+
     initiateTakeoff() {
         if (this.state === "ground") {
             this.resetVerticalSpeed();
@@ -99,7 +106,7 @@ export class MyHeli extends CGFobject {
                 const dz = heliport[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
 
-                if (distance < 0.1) {
+                if (distance < 0.2) {
                     // Already at heliport — just reorient and land
                     this.state = "reorienting_to_land";
                 } else {
@@ -123,6 +130,7 @@ export class MyHeli extends CGFobject {
                         this.state = "flying";
                     }
                 }
+                this.resetLeanAngle();
                 break;
 
             case "flying":
@@ -130,11 +138,16 @@ export class MyHeli extends CGFobject {
                 const vz = this.speed * Math.cos(this.orientation);
                 this.position[0] += vx * dt;
                 this.position[2] += vz * dt;
+
+                // Update the lean angle based on speed
+                this.leanAngle = this.speed * this.maxLeanAngle / 10;
+
                 break;
 
             case "landing":
                 this.verticalSpeed = Math.max(this.verticalSpeed - dt * 0.5, 0.5);
                 this.position[1] -= this.verticalSpeed * dt;
+                this.resetLeanAngle();
                 if (this.position[1] <= this.groundLevel) {
                     this.position[1] = this.groundLevel;
                     this.state = "ground";
@@ -159,17 +172,38 @@ export class MyHeli extends CGFobject {
                     const turnAmount = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnStep);
                     this.orientation += turnAmount;
                     this.speed = 0;
+                    this.resetLeanAngle();
                 } else {
                     this.orientation = targetAngle;
-                    this.speed = 5;
+                    const targetSpeed = 5;
+                    const acceleration = this.scene.acceleration * dt;
+                    const deceleration = this.scene.deceleration * dt;
+
+                    if (distance > 2) {
+                        this.speed = Math.min(this.speed + acceleration, targetSpeed);
+                    } else {
+                        const speedFactor = distance / 2;
+                        const desiredSpeed = targetSpeed * speedFactor;
+                        this.speed = Math.max(this.speed - deceleration, desiredSpeed);
+                    }
+                    
                     const vx = -this.speed * Math.sin(this.orientation);
                     const vz = -this.speed * Math.cos(this.orientation);
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
 
-                    if (distance < 0.1) {
+                    if (distance > 2) {
+                        this.leanAngle = -this.speed * this.maxLeanAngle / targetSpeed;
+                    } else {
+                        const leanFactor = distance / 2;
+                        this.leanAngle = -this.maxLeanAngle * leanFactor * (this.speed / targetSpeed);
+                    }
+
+                    if (distance < 0.2) {
                         this.position[0] = this.targetPosition[0];
                         this.position[2] = this.targetPosition[2];
+                        this.speed = 0;
+                        this.resetLeanAngle();
                         this.state = "reorienting_to_land";
                     }
                 }
@@ -191,6 +225,7 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "descending_to_lake":
+                this.resetLeanAngle();
                 this.position[1] -= this.verticalSpeed * dt * 0.4;
                 if (this.position[1] <= 3) { // TODO: change 3 to rope length later
                     this.position[1] = 3;
@@ -239,6 +274,7 @@ export class MyHeli extends CGFobject {
                 break;
         }
 
+        // Update the upper propeller rotation
         this.upperPropRotation += this.upperPropSpeed * dt;
         this.upperPropRotation %= 2 * Math.PI;
     }
@@ -249,6 +285,8 @@ export class MyHeli extends CGFobject {
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
         
+        this.scene.rotate(this.leanAngle, 1, 0, 0);
+
         this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
         this.scene.translate(0, 0.4, 0);
