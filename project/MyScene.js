@@ -127,10 +127,7 @@ export class MyScene extends CGFscene {
     this.lastT = t;
     const dt = this.deltaT / 1000;
 
-    const rotateAllowed = this.helicopter.state !== "ground" 
-                        && this.helicopter.state !== "moving_to_heliport" 
-                        && this.helicopter.state !== "reorienting_to_land"
-                        && this.helicopter.state !== "landing";
+    const rotateAllowed = this.helicopter.state == "flying";
 
     if (this.gui.isKeyPressed("KeyW")) {
       this.helicopter.accelerate(-this.acceleration * dt);
@@ -145,10 +142,7 @@ export class MyScene extends CGFscene {
       this.helicopter.turn(-this.turnSpeed * dt);
     }
     if (this.gui.isKeyPressed("KeyR")) {
-      this.helicopter.position = [0, 0, 0];
-      this.helicopter.orientation = 0;
-      this.helicopter.speed = 0;
-      this.helicopter.state = "ground";
+      this.helicopter.resetHelicopter();
     }
 
     const currentP = this.gui.isKeyPressed("KeyP");

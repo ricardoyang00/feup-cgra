@@ -21,6 +21,11 @@ export class MyHeli extends CGFobject {
         this.targetPosition = null; // position to automatically fly to
         this.bucketIsEmpty = true;
 
+        this.upperPropRotation = 0;
+        this.upperPropSpeed = 0;
+        this.maxPropSpeed = 20;
+        this.takeOffPropSpeed = this.maxPropSpeed * 0.7;
+
         this.upperProp = new HeliPropeller(scene, {
             bladeCount: 4,
             hubRadius: 0.1,
@@ -49,6 +54,15 @@ export class MyHeli extends CGFobject {
         this.model = new MyCylinder(scene, 4, 4, [1, 1, 1, 1], null);
     }
 
+    resetHelicopter() {
+        this.position = [0, 0, 0];
+        this.orientation = 0;
+        this.speed = 0;
+        this.state = "ground";
+        this.upperPropSpeed = 0;
+        this.upperPropRotation = 0;
+    }
+    
     setRopeLength(length) {
         this.bucket.setRopeLength(length);
     }
@@ -61,10 +75,16 @@ export class MyHeli extends CGFobject {
         this.speed += v;
     }
 
+    resetVerticalSpeed() {
+        this.verticalSpeed = 2;
+    }
+
     initiateTakeoff() {
         if (this.state === "ground") {
+            this.resetVerticalSpeed();
             this.state = "taking_off";
         } else if (this.state === "filling_bucket") {
+            this.resetVerticalSpeed();
             this.state = "ascending_from_lake";
         }
     }
@@ -95,10 +115,13 @@ export class MyHeli extends CGFobject {
     update(dt) {
         switch (this.state) {
             case "taking_off":
-                this.position[1] += this.verticalSpeed * dt;
-                if (this.position[1] >= this.cruisingAltitude) {
-                    this.position[1] = this.cruisingAltitude;
-                    this.state = "flying";
+            case "ascending_from_lake":
+                if (this.upperPropSpeed >= this.takeOffPropSpeed) {
+                    this.position[1] += this.verticalSpeed * dt;
+                    if (this.position[1] >= this.cruisingAltitude) {
+                        this.position[1] = this.cruisingAltitude;
+                        this.state = "flying";
+                    }
                 }
                 break;
 
@@ -110,11 +133,13 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "landing":
+                this.verticalSpeed = Math.max(this.verticalSpeed - dt * 0.5, 0.5);
                 this.position[1] -= this.verticalSpeed * dt;
                 if (this.position[1] <= this.groundLevel) {
                     this.position[1] = this.groundLevel;
                     this.state = "ground";
                     this.speed = 0;
+                    this.resetVerticalSpeed();
                 }
                 break;
 
@@ -159,14 +184,14 @@ export class MyHeli extends CGFobject {
                 
                 this.turn(turnAmount);
 
-                if (Math.abs(reorientAngleDiff) < 0.01) {
+                if (Math.abs(reorientAngleDiff) < 0.005) {
                     this.orientation = 0;
                     this.state = "landing";
                 }
                 break;
 
             case "descending_to_lake":
-                this.position[1] -= this.verticalSpeed * dt;
+                this.position[1] -= this.verticalSpeed * dt * 0.4;
                 if (this.position[1] <= 3) { // TODO: change 3 to rope length later
                     this.position[1] = 3;
                     this.state = "filling_bucket";
@@ -177,17 +202,45 @@ export class MyHeli extends CGFobject {
                 // TODO: Bucket filling logic
                 break;
 
-            case "ascending_from_lake":
-                this.position[1] += this.verticalSpeed * dt;
-                if (this.position[1] >= this.cruisingAltitude) {
-                    this.position[1] = this.cruisingAltitude;
-                    this.state = "flying";
-                }
-                break;
-
             default:
                 break;
         }
+
+        switch (this.state) {
+            case "taking_off":
+            case "ascending_from_lake":
+                this.upperPropSpeed = Math.min(this.upperPropSpeed + dt * 2, this.maxPropSpeed);
+                break;
+    
+            case "flying":
+            case "moving_to_heliport":
+            case "reorienting_to_land":
+                this.upperPropSpeed = this.maxPropSpeed;
+                break;
+    
+            case "landing":
+                this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, this.maxPropSpeed * 0.3);
+                break;
+
+            case "ground":
+                this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, 0);
+                break;
+
+            case "descending_to_lake":
+                this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, this.maxPropSpeed * 0.3);    
+                break;
+
+            case "filling_bucket":
+                this.upperPropSpeed = this.maxPropSpeed * 0.3;
+                break;
+    
+            default:
+                this.upperPropSpeed = 0;
+                break;
+        }
+
+        this.upperPropRotation += this.upperPropSpeed * dt;
+        this.upperPropRotation %= 2 * Math.PI;
     }
 
     display() {
@@ -199,6 +252,7 @@ export class MyHeli extends CGFobject {
         this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
         this.scene.translate(0, 0.4, 0);
+        this.scene.rotate(this.upperPropRotation, 0, 1, 0);
         this.upperProp.display();
         this.scene.popMatrix();
 
