@@ -222,7 +222,7 @@ export class MyScene extends CGFscene {
     // Display the building
     /*this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.translate(0, 10, 0);
+    this.translate(-40, 10, 0);
     this.scale(5, 5, 5);
     this.building.display();
     this.popMatrix();*/

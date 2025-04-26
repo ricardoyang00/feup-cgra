@@ -1,13 +1,15 @@
 import { CGFobject } from '../lib/CGF.js';
 import { HeliPropeller } from './HeliPropeller.js';
 import { HeliBucket } from './HeliBucket.js';
-import { MyCylinder } from './MyCylinder.js';
+import { HeliMainRectangularPrism } from './HeliMainRectangularPrism.js';
+import { HeliTriangularPrism } from './HeliTriangularPrism.js';
+import { HeliSecondaryRectangularPrism } from './HeliSecondaryRectangularPrism.js';
 
 /**
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [0, 0, 0], initOrientation = 0, initSpeed = 0) {
+    constructor(scene, initPos = [0, 0.5, 0], initOrientation = 0, initSpeed = 0) {
         super(scene);
 
         this.position = initPos;
@@ -16,7 +18,7 @@ export class MyHeli extends CGFobject {
 
         this.state = "ground";
         this.cruisingAltitude = 5;
-        this.groundLevel = 0;
+        this.groundLevel = 0.5;
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
         this.bucketIsEmpty = true;
@@ -55,11 +57,19 @@ export class MyHeli extends CGFobject {
             bucketHeight: 0.3
         });
 
-        this.model = new MyCylinder(scene, 4, 4, [1, 1, 1, 1], null);
+        this.mainBody = new HeliMainRectangularPrism(scene, 2, 3, 1.5);
+        this.triangularPrism = new HeliTriangularPrism(scene, 2, 1, 1);
+        this.rectangularPrism = new HeliSecondaryRectangularPrism(scene, 2, 3.25, 1);
+
+        this.triangularPrism2 = new HeliTriangularPrism(scene, 2, 0.75, 0.2);
+        this.rectangularPrism2 = new HeliSecondaryRectangularPrism(scene, 2, 0.75, 0.55);
+        this.triangularPrism3 = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
+        
+        this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.25);
     }
 
     resetHelicopter() {
-        this.position = [0, 0, 0];
+        this.position = [0, 0.5, 0];
         this.orientation = 0;
         this.speed = 0;
         this.state = "ground";
@@ -329,17 +339,55 @@ export class MyHeli extends CGFobject {
         this.scene.scale(6, 6, 6);
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
-
         this.scene.rotate(this.leanAngle, 1, 0, 0);
 
         this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
-        this.scene.translate(0, 0.4, 0);
+        this.scene.translate(0, 1, 0);
         this.scene.rotate(this.upperPropRotation, 0, 1, 0);
         this.upperProp.display();
         this.scene.popMatrix();
 
-        this.model.display();
+        // cockpit
+        this.scene.pushMatrix();
+        this.scene.translate(-1, 0.75, -0.5);
+        this.triangularPrism.display();
+        this.scene.popMatrix();
+        
+        // prism behind cockpit
+        this.scene.pushMatrix();
+        this.scene.translate(-1, 0.75, -0.5);
+        this.rectangularPrism.display();
+        this.scene.popMatrix();
+
+        // prism behind the main body
+        this.scene.pushMatrix();
+        this.scene.translate(0, -0.5, 0);
+        this.scene.rotate(Math.PI, 1, 0, 0);
+        this.scene.translate(-1, -1.25, -1.5);
+        this.triangularPrism4.display();
+        this.scene.popMatrix();
+        
+        // front of the helicopter
+        this.scene.pushMatrix();
+        this.scene.translate(-1, 0.55, -1.5);
+        this.triangularPrism2.display();
+        this.scene.popMatrix();
+        
+        this.scene.pushMatrix();
+        this.scene.translate(-1, 0, -2.25);
+        this.rectangularPrism2.display();
+        this.scene.popMatrix();
+        
+        this.scene.pushMatrix();
+        this.scene.translate(0, -0.5, 0);
+        this.scene.rotate(Math.PI, 1, 0, 0);
+        this.scene.rotate(Math.PI, 0, 1, 0);
+        this.scene.translate(-1, -0.5, -1.5);
+        this.triangularPrism3.display();
+        this.scene.popMatrix();
+
+        this.mainBody.display();
         this.scene.popMatrix();
 
         /*this.scene.pushMatrix();
