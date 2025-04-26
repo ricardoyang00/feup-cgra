@@ -28,6 +28,7 @@ export class MyHeli extends CGFobject {
 
         this.leanAngle = 0;
         this.maxLeanAngle = Math.PI / 12; // max 15 degrees
+        this.previousSpeed = 0;
 
         this.upperProp = new HeliPropeller(scene, {
             bladeCount: 4,
@@ -64,8 +65,11 @@ export class MyHeli extends CGFobject {
         this.state = "ground";
         this.upperPropSpeed = 0;
         this.upperPropRotation = 0;
+        this.verticalSpeed = 2;
+        this.leanAngle = 0;
+        this.previousSpeed = 0;
     }
-    
+
     setRopeLength(length) {
         this.bucket.setRopeLength(length);
     }
@@ -99,7 +103,11 @@ export class MyHeli extends CGFobject {
     initiateLanding() {
         if (this.state === "flying") {
             if (this.scene.isOverLake(this.position) && this.bucketIsEmpty) {
-                this.state = "descending_to_lake";
+                if (Math.abs(this.speed) > 0.01) {
+                    this.state = "automatic_braking";
+                } else {
+                    this.state = "descending_to_lake";
+                }
             } else {
                 const heliport = this.scene.heliportPosition;
                 const dx = heliport[0] - this.position[0];
@@ -110,10 +118,12 @@ export class MyHeli extends CGFobject {
                     // Already at heliport — just reorient and land
                     this.state = "reorienting_to_land";
                 } else {
-                    // Need to fly to heliport
-                    this.state = "moving_to_heliport";
-                    this.targetPosition = heliport.slice();
-                    this.targetPosition[1] = this.cruisingAltitude;
+                    // If moving, brake first; otherwise, go directly to moving_to_heliport
+                    if (Math.abs(this.speed) > 0.01) {
+                        this.state = "automatic_braking";
+                    } else {
+                        this.state = "moving_to_heliport";
+                    }
                 }
             }
         }
@@ -144,6 +154,30 @@ export class MyHeli extends CGFobject {
 
                 break;
 
+            case "automatic_braking":
+                const deceleration = this.scene.deceleration * dt;
+                if (this.speed > 0) {
+                    this.speed = Math.max(this.speed - deceleration, 0);
+                } else if (this.speed < 0) {
+                    this.speed = Math.min(this.speed + deceleration, 0);
+                }
+                const vxBrake = this.speed * Math.sin(this.orientation);
+                const vzBrake = this.speed * Math.cos(this.orientation);
+                this.position[0] += vxBrake * dt;
+                this.position[2] += vzBrake * dt;
+
+                this.leanAngle = this.speed * this.maxLeanAngle / 10;
+
+                if (Math.abs(this.speed) < 0.01) {
+                    this.speed = 0;
+                    if (this.scene.isOverLake(this.position) && this.bucketIsEmpty) {
+                        this.state = "descending_to_lake";
+                    } else {
+                        this.state = "moving_to_heliport";
+                    }
+                }
+                break;
+
             case "landing":
                 this.verticalSpeed = Math.max(this.verticalSpeed - dt * 0.5, 0.5);
                 this.position[1] -= this.verticalSpeed * dt;
@@ -157,6 +191,9 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "moving_to_heliport":
+                this.targetPosition = this.scene.heliportPosition.slice();
+                this.targetPosition[1] = this.cruisingAltitude;
+
                 const dx = this.targetPosition[0] - this.position[0];
                 const dz = this.targetPosition[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
@@ -188,13 +225,13 @@ export class MyHeli extends CGFobject {
                         const desiredSpeed = targetSpeed * speedFactor;
                         this.speed = Math.max(this.speed - deceleration, desiredSpeed);
                     }
-                    
+
                     const currentAcceleration = (this.speed - oldSpeed) / dt;
-                    
+
                     const leanConstant = this.maxLeanAngle / this.scene.acceleration;
                     const targetLeanAngle = -leanConstant * currentAcceleration;
 
-                    const smoothingFactor = 5;
+                    const smoothingFactor = 3;
                     this.leanAngle += (targetLeanAngle - this.leanAngle) * smoothingFactor * dt;
 
                     this.leanAngle = Math.max(-this.maxLeanAngle, Math.min(this.maxLeanAngle, this.leanAngle));
@@ -217,14 +254,14 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "reorienting_to_land":
-                let reorientAngleDiff = - this.orientation;
+                let reorientAngleDiff = 0 - this.orientation;
                 reorientAngleDiff = Math.atan2(Math.sin(reorientAngleDiff), Math.cos(reorientAngleDiff));
-                
+        
                 const maxTurn = this.scene.turnSpeed * dt;
                 const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
-                
+        
                 this.turn(turnAmount);
-
+        
                 if (Math.abs(reorientAngleDiff) < 0.005) {
                     this.orientation = 0;
                     this.state = "landing";
@@ -253,13 +290,13 @@ export class MyHeli extends CGFobject {
             case "ascending_from_lake":
                 this.upperPropSpeed = Math.min(this.upperPropSpeed + dt * 2, this.maxPropSpeed);
                 break;
-    
+
             case "flying":
             case "moving_to_heliport":
             case "reorienting_to_land":
                 this.upperPropSpeed = this.maxPropSpeed;
                 break;
-    
+
             case "landing":
                 this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, this.maxPropSpeed * 0.3);
                 break;
@@ -268,14 +305,15 @@ export class MyHeli extends CGFobject {
                 this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, 0);
                 break;
 
+            case "automatic_braking":
             case "descending_to_lake":
-                this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, this.maxPropSpeed * 0.3);    
+                this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2, this.maxPropSpeed * 0.3);
                 break;
 
             case "filling_bucket":
-                this.upperPropSpeed = this.maxPropSpeed * 0.3;
+                this.upperPropSpeed = this.maxPropSpeed * 0.5;
                 break;
-    
+
             default:
                 this.upperPropSpeed = 0;
                 break;
@@ -291,7 +329,7 @@ export class MyHeli extends CGFobject {
         this.scene.scale(6, 6, 6);
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
-        
+
         this.scene.rotate(this.leanAngle, 1, 0, 0);
 
         this.scene.pushMatrix();
