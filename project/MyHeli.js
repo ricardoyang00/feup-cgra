@@ -4,6 +4,7 @@ import { HeliBucket } from './HeliBucket.js';
 import { HeliMainRectangularPrism } from './HeliMainRectangularPrism.js';
 import { HeliTriangularPrism } from './HeliTriangularPrism.js';
 import { HeliSecondaryRectangularPrism } from './HeliSecondaryRectangularPrism.js';
+import { HeliPyramid } from './HeliPyramid.js';
 
 /**
  * MyHeli
@@ -66,6 +67,7 @@ export class MyHeli extends CGFobject {
         this.triangularPrismBottom = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
         
         this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.20);
+        this.mainTail = new HeliPyramid(scene, 2, 1, 4);
     }
 
     resetHelicopter() {
@@ -385,6 +387,15 @@ export class MyHeli extends CGFobject {
         this.scene.rotate(Math.PI, 0, 1, 0);
         this.scene.translate(-1, -0.4, -1.5);
         this.triangularPrismBottom.display();
+        this.scene.popMatrix();
+
+        // tail
+        this.scene.pushMatrix();
+        this.scene.translate(0, -1, 0);
+        this.scene.rotate(Math.PI, 1, 0, 0);
+        this.scene.rotate(Math.PI, 0, 1, 0);
+        this.scene.translate(-1, -2.60, 2.75);
+        this.mainTail.display();
         this.scene.popMatrix();
 
         this.mainBody.display();
