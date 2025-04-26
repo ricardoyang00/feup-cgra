@@ -22,6 +22,8 @@ export class MyScene extends CGFscene {
     this.deceleration = 2;
     this.turnSpeed = 1;
 
+    this.speedFactor = 1;
+
     this.heliportPosition = [0, 0, 0];
     this.heliportRadius = 1;
 
@@ -131,19 +133,19 @@ export class MyScene extends CGFscene {
 
     switch (true) {
       case this.gui.isKeyPressed("KeyW") && movementAllowed:
-          this.helicopter.accelerate(-this.acceleration * dt);
+          this.helicopter.accelerate(-this.acceleration * this.speedFactor * dt);
           break;
 
       case this.gui.isKeyPressed("KeyS") && movementAllowed:
-          this.helicopter.accelerate(this.acceleration * dt * 0.8);
+          this.helicopter.accelerate(this.acceleration * this.speedFactor * dt * 0.8);
           break;
 
       case this.gui.isKeyPressed("KeyA") && movementAllowed:
-          this.helicopter.turn(this.turnSpeed * dt);
+          this.helicopter.turn(this.turnSpeed * this.speedFactor * dt);
           break;
 
       case this.gui.isKeyPressed("KeyD") && movementAllowed:
-          this.helicopter.turn(-this.turnSpeed * dt);
+          this.helicopter.turn(-this.turnSpeed * this.speedFactor * dt);
           break;
 
       case this.gui.isKeyPressed("KeyR"):
@@ -165,7 +167,7 @@ export class MyScene extends CGFscene {
           this.prevL = currentL;
 
           if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
-              const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * dt;
+              const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * this.speedFactor * dt;
               this.helicopter.accelerate(speedChange);
               // Prevent small oscillations around zero
               if (Math.abs(this.helicopter.speed) < 0.01) {

@@ -21,6 +21,8 @@ export class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
         //this.gui.add(this.scene, 'displayBuilding').name('Display Building');
+        this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
+        
         return true;
     }
 
