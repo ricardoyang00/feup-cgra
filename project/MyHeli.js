@@ -179,6 +179,8 @@ export class MyHeli extends CGFobject {
                     const acceleration = this.scene.acceleration * dt;
                     const deceleration = this.scene.deceleration * dt;
 
+                    const oldSpeed = this.speed;
+
                     if (distance > 2) {
                         this.speed = Math.min(this.speed + acceleration, targetSpeed);
                     } else {
@@ -187,23 +189,28 @@ export class MyHeli extends CGFobject {
                         this.speed = Math.max(this.speed - deceleration, desiredSpeed);
                     }
                     
+                    const currentAcceleration = (this.speed - oldSpeed) / dt;
+                    
+                    const leanConstant = this.maxLeanAngle / this.scene.acceleration;
+                    const targetLeanAngle = -leanConstant * currentAcceleration;
+
+                    const smoothingFactor = 5;
+                    this.leanAngle += (targetLeanAngle - this.leanAngle) * smoothingFactor * dt;
+
+                    this.leanAngle = Math.max(-this.maxLeanAngle, Math.min(this.maxLeanAngle, this.leanAngle));
+
                     const vx = -this.speed * Math.sin(this.orientation);
                     const vz = -this.speed * Math.cos(this.orientation);
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
 
-                    if (distance > 2) {
-                        this.leanAngle = -this.speed * this.maxLeanAngle / targetSpeed;
-                    } else {
-                        const leanFactor = distance / 2;
-                        this.leanAngle = -this.maxLeanAngle * leanFactor * (this.speed / targetSpeed);
-                    }
-
                     if (distance < 0.2) {
                         this.position[0] = this.targetPosition[0];
                         this.position[2] = this.targetPosition[2];
                         this.speed = 0;
-                        this.resetLeanAngle();
+                    }
+
+                    if (distance < 0.2 && Math.abs(this.leanAngle) < 0.01) {
                         this.state = "reorienting_to_land";
                     }
                 }
