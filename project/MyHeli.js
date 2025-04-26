@@ -9,7 +9,7 @@ import { HeliSecondaryRectangularPrism } from './HeliSecondaryRectangularPrism.j
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [0, 0.5, 0], initOrientation = 0, initSpeed = 0) {
+    constructor(scene, initPos = [0, 1, 0], initOrientation = 0, initSpeed = 0) {
         super(scene);
 
         this.position = initPos;
@@ -57,15 +57,15 @@ export class MyHeli extends CGFobject {
             bucketHeight: 0.3
         });
 
-        this.mainBody = new HeliMainRectangularPrism(scene, 2, 3, 1.5);
+        this.mainBody = new HeliMainRectangularPrism(scene, 2, 3, 1.2);
         this.triangularPrism = new HeliTriangularPrism(scene, 2, 1, 1);
         this.rectangularPrism = new HeliSecondaryRectangularPrism(scene, 2, 3.25, 1);
 
-        this.triangularPrism2 = new HeliTriangularPrism(scene, 2, 0.75, 0.2);
-        this.rectangularPrism2 = new HeliSecondaryRectangularPrism(scene, 2, 0.75, 0.55);
-        this.triangularPrism3 = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
+        this.triangularPrismTop = new HeliTriangularPrism(scene, 2, 0.75, 0.2);
+        this.rectangularPrismMiddle = new HeliSecondaryRectangularPrism(scene, 2, 0.75, 0.5);
+        this.triangularPrismBottom = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
         
-        this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.25);
+        this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.20);
     }
 
     resetHelicopter() {
@@ -343,20 +343,20 @@ export class MyHeli extends CGFobject {
 
         this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
-        this.scene.translate(0, 1, 0);
+        this.scene.translate(0, 0.6, 0);
         this.scene.rotate(this.upperPropRotation, 0, 1, 0);
         this.upperProp.display();
         this.scene.popMatrix();
 
         // cockpit
         this.scene.pushMatrix();
-        this.scene.translate(-1, 0.75, -0.5);
+        this.scene.translate(-1, 0.6, -0.5);
         this.triangularPrism.display();
         this.scene.popMatrix();
         
         // prism behind cockpit
         this.scene.pushMatrix();
-        this.scene.translate(-1, 0.75, -0.5);
+        this.scene.translate(-1, 0.6, -0.5);
         this.rectangularPrism.display();
         this.scene.popMatrix();
 
@@ -364,27 +364,27 @@ export class MyHeli extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(0, -0.5, 0);
         this.scene.rotate(Math.PI, 1, 0, 0);
-        this.scene.translate(-1, -1.25, -1.5);
+        this.scene.translate(-1, -1.10, -1.5);
         this.triangularPrism4.display();
         this.scene.popMatrix();
         
         // front of the helicopter
         this.scene.pushMatrix();
-        this.scene.translate(-1, 0.55, -1.5);
-        this.triangularPrism2.display();
+        this.scene.translate(-1, 0.40, -1.5);
+        this.triangularPrismTop.display();
         this.scene.popMatrix();
         
         this.scene.pushMatrix();
-        this.scene.translate(-1, 0, -2.25);
-        this.rectangularPrism2.display();
+        this.scene.translate(-1, -0.1, -2.25);
+        this.rectangularPrismMiddle.display();
         this.scene.popMatrix();
         
         this.scene.pushMatrix();
         this.scene.translate(0, -0.5, 0);
         this.scene.rotate(Math.PI, 1, 0, 0);
         this.scene.rotate(Math.PI, 0, 1, 0);
-        this.scene.translate(-1, -0.5, -1.5);
-        this.triangularPrism3.display();
+        this.scene.translate(-1, -0.4, -1.5);
+        this.triangularPrismBottom.display();
         this.scene.popMatrix();
 
         this.mainBody.display();
