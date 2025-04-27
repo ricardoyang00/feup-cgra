@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliTailCuttablePyramid } from './HeliTailCuttablePyramid.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 import { MyCylinder } from './MyCylinder.js';
@@ -7,8 +7,10 @@ export class HeliTail extends CGFobject {
     constructor(scene) {
         super(scene);
 
+        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+
         // Main tail
-        this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5);
+        this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5, [1, 1, 1, 1], this.redMetalTexture);
 
         // Calculate dimensions for the secondary tail
         const u = (4 - 2.5) / 4; // u = 0.375
@@ -16,12 +18,12 @@ export class HeliTail extends CGFobject {
         const depth = 1 * u;  // mainTail TopDepth = 0.375
 
         // Secondary tail
-        this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2);
+        this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2, [1, 1, 1, 1], this.redMetalTexture);
 
-        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1);
-        this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
-        this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
-        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
+        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
+        this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
+        this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
+        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
     }
 
     display() {

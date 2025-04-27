@@ -1,11 +1,22 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 
 export class HeliBodyTriangularPrism extends CGFobject {
-    constructor(scene, width, depth, height) {
+    constructor(scene, width, depth, height, color = [1, 1, 1, 1], texture = null) {
         super(scene);
         this.width = width;  // Length of the prism (horizontal growth along x-axis)
         this.depth = depth;  // Depth of the triangular base (along negative Z-axis)
         this.height = height; // Height of the triangular base (along Y-axis)
+
+        this.appearance = new CGFappearance(this.scene);
+        this.appearance.setAmbient(...color);
+        this.appearance.setDiffuse(...color);
+        this.appearance.setSpecular(0.2, 0.2, 0.2, 1);
+        this.appearance.setShininess(10);
+
+        if (texture) {
+            this.appearance.setTexture(texture);
+            this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+        }
 
         this.initBuffers();
     }
@@ -89,11 +100,46 @@ export class HeliBodyTriangularPrism extends CGFobject {
             0, 1, -1,
         ];
 
+        this.texCoords = [
+            // Left triangle (map whole texture onto triangle)
+            0, 0,
+            0, 1,
+            1, 0,
+    
+            // Right triangle (same mapping)
+            0, 0,
+            0, 1,
+            1, 0,
+    
+            // Bottom face (rectangle width x depth)
+            0, 0,
+            this.width, 0,
+            this.width, this.depth,
+            0, this.depth,
+    
+            // Back face (rectangle width x height)
+            0, 0,
+            0, this.height,
+            this.width, this.height,
+            this.width, 0,
+    
+            // Front face (rectangle "diagonal" face)
+            0, 0,
+            0, Math.sqrt(this.depth * this.depth + this.height * this.height),
+            this.width, Math.sqrt(this.depth * this.depth + this.height * this.height),
+            this.width, 0,
+        ];
+        
         this.primitiveType = this.scene.gl.TRIANGLES;
         this.initGLBuffers();
     }
 
     display() {
+        if (this.texture) {
+            this.texture.bind();
+        }
+
+        this.appearance.apply();
         super.display();
     }
 }

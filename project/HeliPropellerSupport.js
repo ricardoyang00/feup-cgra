@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { MyCylinder } from './MyCylinder.js';
 import { HeliBodyTriangularPrism } from './HeliBodyTriangularPrism.js';
 
@@ -6,13 +6,15 @@ export class HeliPropellerSupport extends CGFobject {
     constructor(scene) { 
         super(scene);
         
-        this.supportBottom = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
-        this.supportTop = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
-        this.base1 = new HeliBodyTriangularPrism(scene, 1, 0.3, 0.7);
-        this.base2 = new HeliBodyTriangularPrism(scene, 1, 1.6, 0.3);
-        this.base3 = new HeliBodyTriangularPrism(scene, 1, 0.6, 2);
-        this.base4 = new HeliBodyTriangularPrism(scene, 1, 0.6, 1);
-        this.base5 = new HeliBodyTriangularPrism(scene, 1, 0.4, 0.6);
+        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+
+        this.supportBottom = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
+        this.supportTop = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
+        this.base1 = new HeliBodyTriangularPrism(scene, 1, 0.3, 0.7, [1, 1, 1, 1], this.redMetalTexture);
+        this.base2 = new HeliBodyTriangularPrism(scene, 1, 1.6, 0.3, [1, 1, 1, 1], this.redMetalTexture);
+        this.base3 = new HeliBodyTriangularPrism(scene, 1, 0.6, 2, [1, 1, 1, 1], this.redMetalTexture);
+        this.base4 = new HeliBodyTriangularPrism(scene, 1, 0.6, 1, [1, 1, 1, 1], this.redMetalTexture);
+        this.base5 = new HeliBodyTriangularPrism(scene, 1, 0.4, 0.6, [1, 1, 1, 1], this.redMetalTexture);
     }
 
     display() {

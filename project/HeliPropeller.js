@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { MyCylinder } from './MyCylinder.js';
 
 /**
@@ -17,8 +17,11 @@ export class HeliPropeller extends CGFobject {
         this.bladeThickness = options.bladeThickness
         this.bladeOffset = options.bladeOffset
 
-        this.hub = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
-        this.blade = new MyCylinder(scene, 4, 1, [1, 1, 1, 1], null, true, false);
+        this.hubTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
+        this.bladeTexture = new CGFtexture(scene, 'textures/black_metal.jpg');
+
+        this.hub = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.hubTexture, true, false);
+        this.blade = new MyCylinder(scene, 4, 1, [1, 1, 1, 1], this.bladeTexture, true, false);
     }
 
     display() {

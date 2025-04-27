@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliPropeller } from './HeliPropeller.js';
 import { HeliBucket } from './HeliBucket.js';
 import { HeliBodyCore } from './HeliBodyCore.js';
@@ -58,7 +58,8 @@ export class MyHeli extends CGFobject {
             bucketHeight: 0.3
         });
 
-        this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2);
+        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+        this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [1, 1, 1, 1], this.redMetalTexture);
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);
         this.landingSkids = new HeliLandingSkids(scene);

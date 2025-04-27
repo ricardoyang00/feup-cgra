@@ -1,16 +1,18 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 
 export class HeliLandingSkids extends CGFobject {
     constructor(scene) {
         super(scene);
         
-        this.mainSkidSupport = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 2.5);
-        this.skidSupportMiddle = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.15);
-        this.skidSupportBottom = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.3);
+        this.blackMetalTexture = new CGFtexture(scene, 'textures/black_metal.jpg');
 
-        this.landingSkid = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 3.5);
-        this.landingSkidDetail = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.35);
+        this.mainSkidSupport = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 2.5, [1, 1, 1, 1], this.blackMetalTexture);
+        this.skidSupportMiddle = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.15, [1, 1, 1, 1], this.blackMetalTexture);
+        this.skidSupportBottom = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.3, [1, 1, 1, 1], this.blackMetalTexture);
+
+        this.landingSkid = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 3.5, [1, 1, 1, 1], this.blackMetalTexture);
+        this.landingSkidDetail = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.35, [1, 1, 1, 1], this.blackMetalTexture);
     }
 
     display() {

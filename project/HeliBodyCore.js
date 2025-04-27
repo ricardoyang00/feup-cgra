@@ -1,14 +1,31 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 
 export class HeliBodyCore extends CGFobject {
-    constructor(scene, width, depth, height) {
+    constructor(scene, width, depth, height, color = [1, 1, 1, 1], texture = null) {
         super(scene);
         this.width = width;
         this.depth = depth;
         this.height = height;
+
+        this.appearance = new CGFappearance(this.scene);
+        this.appearance.setAmbient(...color);
+        this.appearance.setDiffuse(...color);
+        this.appearance.setSpecular(0.2, 0.2, 0.2, 1);
+        this.appearance.setShininess(10);
+
+        if (texture) {
+            this.appearance.setTexture(texture);
+            this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+        }
     }
 
     display() {
+        if (this.texture) {
+            this.texture.bind();
+        }
+        
+        this.appearance.apply();
+
         // Front face
         this.scene.pushMatrix();
         this.scene.translate(0, 0, this.depth / 2);

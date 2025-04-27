@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../lib/CGF.js';
 
 /**
  * A right pyramid with its apex at the midpoint of the front edge of the base (Y = 0).
@@ -13,12 +13,24 @@ export class HeliTailCuttablePyramid extends CGFobject {
      * @param {number} height    Full height along Z
      * @param {number} cutHeight Height from base (Z=0) where to slice off the apex
      */
-    constructor(scene, width, depth, height, cutHeight = 0) {
+    constructor(scene, width, depth, height, cutHeight = 0, color = [1, 1, 1, 1], texture = null) {
         super(scene);
         this.width = width;
         this.depth = depth;
         this.height = height;
         this.cutHeight = Math.max(0, Math.min(cutHeight, height - 1e-6));
+
+        this.appearance = new CGFappearance(this.scene);
+        this.appearance.setAmbient(...color);
+        this.appearance.setDiffuse(...color);
+        this.appearance.setSpecular(0.2, 0.2, 0.2, 1);
+        this.appearance.setShininess(10);
+
+        if (texture) {
+            this.appearance.setTexture(texture);
+            this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+        }
+
         this.initBuffers();
     }
 
@@ -49,9 +61,10 @@ export class HeliTailCuttablePyramid extends CGFobject {
         this.vertices = [];
         this.indices = [];
         this.normals = [];
+        this.texCoords = [];
 
         // Push a quad (v0, v1, v2, v3) as two tris, computing face normal
-        const pushQuad = (v0, v1, v2, v3) => {
+        const pushQuad = (v0, v1, v2, v3, tex) => {
             const idx = this.vertices.length / 3;
             [v0, v1, v2, v3].forEach(v => this.vertices.push(...v));
             this.indices.push(idx, idx+1, idx+2, idx, idx+2, idx+3);
@@ -67,16 +80,33 @@ export class HeliTailCuttablePyramid extends CGFobject {
             const len = Math.hypot(...N);
             N = N.map(c => c / len);
             for (let i = 0; i < 4; i++) this.normals.push(...N);
+
+            this.texCoords.push(...tex);
         };
 
+        const sideTexCoords = (bottomLen, topLen, heightDelta) => [
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1
+        ];
+        
         // Base face (points downward along -Z)
-        pushQuad(BR, BL, TL, TR);
+        pushQuad(
+            BR, BL, TL, TR,
+            [
+                1, 0,
+                0, 0,
+                0, 1,
+                1, 1
+            ]
+        );
 
         // Side faces (trapezoids) connecting base to cut-plane
-        pushQuad(BL, BR, CBR, CBL); // front
-        pushQuad(BR, TR, CTR, CBR); // right
-        pushQuad(TR, TL, CTL, CTR); // back
-        pushQuad(TL, BL, CBL, CTL); // left
+        pushQuad(BL, BR, CBR, CBL, sideTexCoords(width, width * u, height - cutHeight)); // front
+        pushQuad(BR, TR, CTR, CBR, sideTexCoords(depth, depth * u, height - cutHeight)); // right
+        pushQuad(TR, TL, CTL, CTR, sideTexCoords(width, width * u, height - cutHeight)); // back
+        pushQuad(TL, BL, CBL, CTL, sideTexCoords(depth, depth * u, height - cutHeight)); // left
 
         // Top face at cut (points upward along +Z) — reverse winding
         const topIdx = this.vertices.length / 3;
@@ -84,6 +114,14 @@ export class HeliTailCuttablePyramid extends CGFobject {
         // tri1: CBR, CTL, CBL; tri2: CBR, CTR, CTL
         this.indices.push(topIdx, topIdx+2, topIdx+1,
                           topIdx, topIdx+3, topIdx+2);
+
+        this.texCoords.push(
+            1, 0,
+            0, 0,
+            0, 1,
+            1, 1
+        );
+        
         for (let i = 0; i < 4; i++) this.normals.push(0, 0, 1);
 
         this.primitiveType = this.scene.gl.TRIANGLES;
@@ -91,6 +129,10 @@ export class HeliTailCuttablePyramid extends CGFobject {
     }
 
     display() {
+        if (this.texture) {
+            this.texture.bind();
+        }
+        this.appearance.apply();
         super.display();
     }
 }
