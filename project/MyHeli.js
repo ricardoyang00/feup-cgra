@@ -344,7 +344,7 @@ export class MyHeli extends CGFobject {
         this.bodyOuter.display();
         this.tail.display();
 
-        this.bodyCore.display();
+        //this.bodyCore.display();
         this.scene.popMatrix();
 
         /*this.scene.pushMatrix();

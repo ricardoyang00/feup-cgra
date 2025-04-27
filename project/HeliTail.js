@@ -1,6 +1,7 @@
 import { CGFobject } from '../lib/CGF.js';
 import { HeliTailCuttablePyramid } from './HeliTailCuttablePyramid.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
+import { MyCylinder } from './MyCylinder.js';
 
 export class HeliTail extends CGFobject {
     constructor(scene) {
@@ -20,6 +21,7 @@ export class HeliTail extends CGFobject {
         this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1);
         this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
         this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
+        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], null, true, false);
     }
 
     display() {
@@ -59,6 +61,15 @@ export class HeliTail extends CGFobject {
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
         this.scene.translate(2.20, -1, 5.25);
         this.tailDetailRight.display();
+        this.scene.popMatrix();
+
+        // Display the tail propeller support
+        this.scene.pushMatrix();
+        this.scene.translate(0, -1, 0);
+        this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+        this.scene.scale(0.06, 0.25, 0.06);
+        this.scene.translate(-42, 0, 118);
+        this.tailProppellerSupport.display();
         this.scene.popMatrix();
     }
 }
