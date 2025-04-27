@@ -67,7 +67,7 @@ export class MyHeli extends CGFobject {
         this.triangularPrismBottom = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
         
         this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.20);
-        this.mainTail = new HeliPyramid(scene, 2, 1, 4);
+        this.mainTail = new HeliPyramid(scene, 2, 1, 4, 3);
     }
 
     resetHelicopter() {
