@@ -238,6 +238,7 @@ export class MyScene extends CGFscene {
 
     // Helicopter
     this.pushMatrix();
+    this.scale(0.7, 0.7, 0.7);
     this.helicopter.display();
     this.popMatrix();
 

@@ -4,6 +4,8 @@ import { HeliBucket } from './HeliBucket.js';
 import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
+import { HeliLandingSkids } from './HeliLandingSkids.js';
+
 /**
  * MyHeli
  */
@@ -17,7 +19,7 @@ export class MyHeli extends CGFobject {
 
         this.state = "ground";
         this.cruisingAltitude = 5;
-        this.groundLevel = 0.5;
+        this.groundLevel = 1;
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
         this.bucketIsEmpty = true;
@@ -44,7 +46,7 @@ export class MyHeli extends CGFobject {
             bladeCount: 3,
             hubRadius: 0.06,
             hubThickness: 0.02,
-            bladeLength: 0.3,
+            bladeLength: 0.4,
             bladeWidth: 0.03,
             bladeThickness: 0.01,
             bladeOffset: 0.05
@@ -59,6 +61,7 @@ export class MyHeli extends CGFobject {
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2);
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);
+        this.landingSkids = new HeliLandingSkids(scene);
     }
 
     resetHelicopter() {
@@ -351,7 +354,7 @@ export class MyHeli extends CGFobject {
 
         this.bodyOuter.display();
         this.tail.display();
-
+        this.landingSkids.display();
         this.bodyCore.display();
         this.scene.popMatrix();
 
