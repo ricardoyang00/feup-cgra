@@ -5,7 +5,7 @@ import { CGFobject } from '../lib/CGF.js';
  * Base lies in the X–Y plane at Z = 0, extending positively along X (width) and Y (depth).
  * Height extends along +Z. Supports slicing off the tip parallel to the base.
  */
-export class HeliPyramid extends CGFobject {
+export class HeliTailCuttablePyramid extends CGFobject {
     /**
      * @param {CGFscene} scene
      * @param {number} width     Full width of the base along X

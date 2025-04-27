@@ -1,6 +1,6 @@
 import { CGFobject } from '../lib/CGF.js';
 
-export class HeliTriangularPrism extends CGFobject {
+export class HeliBodyTriangularPrism extends CGFobject {
     constructor(scene, width, depth, height) {
         super(scene);
         this.width = width;  // Length of the prism (horizontal growth along x-axis)
