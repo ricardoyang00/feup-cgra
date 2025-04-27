@@ -1,6 +1,7 @@
 import { CGFobject } from '../lib/CGF.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 import { HeliBodyTriangularPrism } from './HeliBodyTriangularPrism.js';
+import { HeliPropellerSupport } from './HeliPropellerSupport.js';
 
 export class HeliBodyOuter extends CGFobject {
     constructor(scene) {
@@ -13,6 +14,8 @@ export class HeliBodyOuter extends CGFobject {
         this.headTop = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.2);
         this.headMiddle = new HeliBodyRectangularPrism(scene, 2, 0.75, 0.5);
         this.headBottom = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.5);
+
+        this.support = new HeliPropellerSupport(scene);
     }
 
     display() {
@@ -26,6 +29,11 @@ export class HeliBodyOuter extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(-1, 0.6, -0.5);
         this.backOfCockpit.display();
+        this.scene.popMatrix();
+
+        // Display the upper propeller support
+        this.scene.pushMatrix();
+        this.support.display();
         this.scene.popMatrix();
 
         // Display back of main body

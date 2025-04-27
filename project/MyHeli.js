@@ -4,7 +4,6 @@ import { HeliBucket } from './HeliBucket.js';
 import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
-
 /**
  * MyHeli
  */
@@ -35,9 +34,9 @@ export class MyHeli extends CGFobject {
         this.upperProp = new HeliPropeller(scene, {
             bladeCount: 4,
             hubRadius: 0.1,
-            hubThickness: 0.08,
-            bladeLength: 0.8,
-            bladeWidth: 0.04,
+            hubThickness: 0.06,
+            bladeLength: 1,
+            bladeWidth: 0.06,
             bladeThickness: 0.01,
             bladeOffset: 0.1
         });
@@ -337,7 +336,7 @@ export class MyHeli extends CGFobject {
 
         this.scene.pushMatrix();
         this.scene.scale(3, 3, 3);
-        this.scene.translate(0, 0.6, 0);
+        this.scene.translate(0, 0.8, 0.17);
         this.scene.rotate(this.upperPropRotation, 0, 1, 0);
         this.upperProp.display();
         this.scene.popMatrix();
