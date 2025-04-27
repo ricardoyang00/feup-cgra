@@ -67,7 +67,11 @@ export class MyHeli extends CGFobject {
         this.triangularPrismBottom = new HeliTriangularPrism(scene, 2, 0.75, 0.5);
         
         this.triangularPrism4 = new HeliTriangularPrism(scene, 2, 1.25, 1.20);
-        this.mainTail = new HeliPyramid(scene, 2, 1, 4, 3);
+        this.mainTail = new HeliPyramid(scene, 2, 1, 4, 2.5);
+        const u = (4 - 2.5) / 4; // u = 0.375
+        const width = 2 * u;  // mainTail TopWidth = 0.75
+        const depth = 1 * u;  // mainTail TopDepth = 0.375
+        this.secondaryTail = new HeliPyramid(scene, width, depth, 3, 2);
     }
 
     resetHelicopter() {
@@ -396,6 +400,14 @@ export class MyHeli extends CGFobject {
         this.scene.rotate(Math.PI, 0, 1, 0);
         this.scene.translate(-1, -2.60, 2.75);
         this.mainTail.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, -1, 0);
+        this.scene.rotate(Math.PI, 1, 0, 0);
+        this.scene.rotate(Math.PI, 0, 1, 0);
+        this.scene.translate(-0.375, -2.60, 5.25);
+        this.secondaryTail.display();
         this.scene.popMatrix();
 
         this.mainBody.display();

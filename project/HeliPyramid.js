@@ -47,8 +47,8 @@ export class HeliPyramid extends CGFobject {
         const CTL = lerp(TL);
 
         this.vertices = [];
-        this.indices  = [];
-        this.normals   = [];
+        this.indices = [];
+        this.normals = [];
 
         // Push a quad (v0, v1, v2, v3) as two tris, computing face normal
         const pushQuad = (v0, v1, v2, v3) => {
