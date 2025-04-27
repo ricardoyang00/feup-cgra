@@ -42,10 +42,10 @@ export class MyHeli extends CGFobject {
         });
         this.rearProp = new HeliPropeller(scene, {
             bladeCount: 3,
-            hubRadius: 0.05,
-            hubThickness: 0.05,
-            bladeLength: 0.2,
-            bladeWidth: 0.02,
+            hubRadius: 0.06,
+            hubThickness: 0.02,
+            bladeLength: 0.3,
+            bladeWidth: 0.03,
             bladeThickness: 0.01,
             bladeOffset: 0.05
         });
@@ -62,7 +62,7 @@ export class MyHeli extends CGFobject {
     }
 
     resetHelicopter() {
-        this.position = [0, 0.5, 0];
+        this.position = [0, 1, 0];
         this.orientation = 0;
         this.speed = 0;
         this.state = "ground";
@@ -341,20 +341,21 @@ export class MyHeli extends CGFobject {
         this.upperProp.display();
         this.scene.popMatrix();
 
-        this.bodyOuter.display();
-        this.tail.display();
-
-        //this.bodyCore.display();
-        this.scene.popMatrix();
-
-        /*this.scene.pushMatrix();
-        this.scene.scale(10, 10, 10);
+        this.scene.pushMatrix();
+        this.scene.scale(1.5, 1.5, 1.5);
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
-        this.scene.translate(1, -1, -2);
+        this.scene.translate(1.01, -0.17, 4.72);
+        this.scene.rotate(this.upperPropRotation, 0, 1, 0);
         this.rearProp.display();
         this.scene.popMatrix();
 
-        this.scene.pushMatrix();
+        this.bodyOuter.display();
+        this.tail.display();
+
+        this.bodyCore.display();
+        this.scene.popMatrix();
+
+        /*this.scene.pushMatrix();
         this.scene.scale(6, 6, 6);
         this.scene.translate(-1, 3, 1);
         this.bucket.display();
