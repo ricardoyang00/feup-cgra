@@ -1,5 +1,6 @@
 import { CGFobject } from '../lib/CGF.js';
 import { HeliTailCuttablePyramid } from './HeliTailCuttablePyramid.js';
+import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 
 export class HeliTail extends CGFobject {
     constructor(scene) {
@@ -15,6 +16,10 @@ export class HeliTail extends CGFobject {
 
         // Secondary tail
         this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2);
+
+        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1);
+        this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
+        this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1);
     }
 
     display() {
@@ -34,6 +39,26 @@ export class HeliTail extends CGFobject {
         this.scene.rotate(Math.PI, 0, 1, 0);
         this.scene.translate(-0.375, -2.60, 5.25);
         this.secondaryTail.display();
+        this.scene.popMatrix();
+
+        // Display the tail detail
+        this.scene.pushMatrix();
+        this.scene.translate(-1, 1.4, 5.25);
+        this.tailDetailMain.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, -1, 0);
+        this.scene.rotate(Math.PI / 2, 0, 0, 1);
+        this.scene.translate(2.20, 1, 5.25);
+        this.tailDetailLeft.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, -1, 0);
+        this.scene.rotate(Math.PI / 2, 0, 0, 1);
+        this.scene.translate(2.20, -1, 5.25);
+        this.tailDetailRight.display();
         this.scene.popMatrix();
     }
 }
