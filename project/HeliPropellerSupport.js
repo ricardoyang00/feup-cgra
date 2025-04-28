@@ -7,9 +7,10 @@ export class HeliPropellerSupport extends CGFobject {
         super(scene);
         
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+        this.greyMetalTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
 
         this.supportBottom = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
-        this.supportTop = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
+        this.supportTop = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.greyMetalTexture, true, false);
         this.base1 = new HeliBodyTriangularPrism(scene, 1, 0.3, 0.7, [1, 1, 1, 1], this.redMetalTexture);
         this.base2 = new HeliBodyTriangularPrism(scene, 1, 1.6, 0.3, [1, 1, 1, 1], this.redMetalTexture);
         this.base3 = new HeliBodyTriangularPrism(scene, 1, 0.6, 2, [1, 1, 1, 1], this.redMetalTexture);

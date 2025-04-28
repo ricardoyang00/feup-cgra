@@ -8,6 +8,7 @@ export class HeliTail extends CGFobject {
         super(scene);
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+        this.greyMetalTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
 
         // Main tail
         this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5, [1, 1, 1, 1], this.redMetalTexture);
@@ -23,7 +24,7 @@ export class HeliTail extends CGFobject {
         this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
         this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
         this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
-        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.redMetalTexture, true, false);
+        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.greyMetalTexture, true, false);
     }
 
     display() {
