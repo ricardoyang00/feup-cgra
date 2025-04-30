@@ -137,6 +137,7 @@ export class MyHeli extends CGFobject {
     }
 
     update(dt) {
+        //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":
             case "ascending_from_lake":
@@ -211,7 +212,7 @@ export class MyHeli extends CGFobject {
 
                 const turnStep = this.scene.turnSpeed * this.scene.speedFactor * dt;
 
-                if (Math.abs(angleDiff) > 0.05) {
+                if (Math.abs(angleDiff) > 0.05 && distance > 0.5) {
                     // Rotate in place toward heliport, shortest path
                     const turnAmount = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnStep);
                     this.orientation += turnAmount;
@@ -248,13 +249,13 @@ export class MyHeli extends CGFobject {
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
 
-                    if (distance < 0.2) {
+                    if (distance <= 0.5) {
                         this.position[0] = this.targetPosition[0];
                         this.position[2] = this.targetPosition[2];
                         this.speed = 0;
                     }
 
-                    if (distance < 0.2 && Math.abs(this.leanAngle) < 0.01) {
+                    if (this.speed === 0) {
                         this.state = "reorienting_to_land";
                     }
                 }
@@ -265,11 +266,11 @@ export class MyHeli extends CGFobject {
                 reorientAngleDiff = Math.atan2(Math.sin(reorientAngleDiff), Math.cos(reorientAngleDiff));
         
                 const maxTurn = this.scene.turnSpeed * this.scene.speedFactor * dt;
-                const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
-        
-                this.turn(turnAmount);
-        
-                if (Math.abs(reorientAngleDiff) < 0.005) {
+                
+                if (Math.abs(reorientAngleDiff) > 0.01) {
+                    const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
+                    this.turn(turnAmount);
+                } else {
                     this.orientation = 0;
                     this.state = "landing";
                 }

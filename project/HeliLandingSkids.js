@@ -165,7 +165,7 @@ export class HeliLandingSkids extends CGFobject {
         this.scene.gl.cullFace(this.scene.gl.BACK);
         this.scene.popMatrix();
 
-        // Rear right skid detail
+        // Rear left skid detail
         this.scene.pushMatrix();
         this.scene.translate(0, -1, 0);
         this.scene.scale(1, 1, -1);
@@ -178,17 +178,15 @@ export class HeliLandingSkids extends CGFobject {
         this.scene.gl.cullFace(this.scene.gl.BACK);
         this.scene.popMatrix();
 
-        // Rear left skid detail
+        // Rear right skid detail
         this.scene.pushMatrix();
         this.scene.translate(0, -1, 0);
         this.scene.scale(-1, 1, -1);
-        this.scene.gl.cullFace(this.scene.gl.FRONT);
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);
         this.scene.translate(-1.6, 1.747, -0.009);
         this.scene.rotate(Math.PI / 6, 1, 0, 0);
         this.scene.translate(0, 0.002, -0.002);
         this.landingSkidDetail.display();
-        this.scene.gl.cullFace(this.scene.gl.BACK);
         this.scene.popMatrix();
     }
 }
