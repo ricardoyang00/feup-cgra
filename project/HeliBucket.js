@@ -9,12 +9,16 @@ import { MyCylinder } from './MyCylinder.js';
 export class HeliBucket extends CGFobject {
     constructor(scene, options = {}) {
         super(scene);
+        this.visible = false;
 
         this.ropeLength = options.ropeLength || 2.0;
         this.bucketRadius = options.bucketRadius || 0.2;
         this.bucketHeight = options.bucketHeight || 0.3;
         this.bucketThickness = options.bucketThickness || 0.01;
         this.numSecondaryRopes = options.numSecondaryRopes || 4;
+
+        this.maxRopeLength = 2.0;
+        this.position = null;
 
         this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
         this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
@@ -23,7 +27,21 @@ export class HeliBucket extends CGFobject {
         this.bucketRing = new HeliBucketRing(scene, 16, this.bucketRadius - this.bucketThickness, this.bucketRadius);
     }
 
+    setPosition(x, y, z) {
+        this.position = [x, y, z];
+    }
+    
+    setRopeLength(length) {
+        this.ropeLength = Math.min(Math.max(length, 0.1), this.maxRopeLength);
+    }
+
+    setVisible(visible) {
+        this.visible = visible;
+    }
+
     display() {
+        if (!this.visible) return;
+        console.log("BUCKET POSITION: ", this.position);
         // Display the rope
         this.scene.pushMatrix();
         this.scene.scale(0.01, this.ropeLength, 0.01);

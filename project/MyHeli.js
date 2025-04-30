@@ -18,7 +18,7 @@ export class MyHeli extends CGFobject {
         this.speed = initSpeed;
 
         this.state = "ground";
-        this.cruisingAltitude = 5;
+        this.cruisingAltitude = 12;
         this.groundLevel = 1;
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
@@ -53,10 +53,16 @@ export class MyHeli extends CGFobject {
         });
 
         this.bucket = new HeliBucket(scene, {
-            ropeLength: 2.0,
+            ropeLength: 0.1,
             bucketRadius: 0.3,
             bucketHeight: 0.5
         });
+
+        this.maxBucketRopeLength = 2;
+        this.bucketReleaseSpeed = 1;
+        this.bucketOffset = this.bucket.bucketHeight * 2;
+        this.bucketInitialY = this.cruisingAltitude - 0.2 - this.bucketOffset;
+        this.bucketMaxExtendedY = this.cruisingAltitude - 1.3 - this.bucketOffset;
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [1, 1, 1, 1], this.redMetalTexture);
@@ -75,10 +81,6 @@ export class MyHeli extends CGFobject {
         this.verticalSpeed = 2;
         this.leanAngle = 0;
         this.previousSpeed = 0;
-    }
-
-    setRopeLength(length) {
-        this.bucket.setRopeLength(length);
     }
 
     turn(v) {
@@ -140,6 +142,41 @@ export class MyHeli extends CGFobject {
         //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":
+                if (this.upperPropSpeed >= this.takeOffPropSpeed) {
+                    this.position[1] += this.verticalSpeed * this.scene.speedFactor * dt;
+                    if (this.position[1] >= this.cruisingAltitude) {
+                        this.position[1] = this.cruisingAltitude;
+                        this.bucket.setVisible(true);
+                        this.bucket.setRopeLength(0.1);
+                        this.bucket.setPosition(
+                            this.position[0],
+                            this.cruisingAltitude - 0.3 - this.bucketOffset - this.bucket.ropeLength,
+                            this.position[2]
+                        );
+                        console.log("SET BUCKET POSITION: ", this.bucket.position);
+                        this.state = "releasing_bucket"; // Transition to new state
+                    }
+                }
+                break;
+
+            case "releasing_bucket":
+                const currentLength = this.bucket.ropeLength;
+                const newLength = currentLength + this.bucketReleaseSpeed * dt;
+                const newBucketY = this.bucket.position[1] - newLength;
+            
+                if (newBucketY > this.bucketMaxExtendedY) {
+                    this.bucket.setRopeLength(Math.min(newLength, this.maxBucketRopeLength));
+                    this.bucket.setPosition(
+                        this.bucket.position[0],
+                        newBucketY,
+                        this.bucket.position[2]
+                    );
+                    console.log("CURRENT BUCKET POSITION: ", this.bucket.position);
+                } else {
+                    this.state = "flying"; // Return to flying when done
+                }
+                break;
+
             case "ascending_from_lake":
                 if (this.upperPropSpeed >= this.takeOffPropSpeed) {
                     this.position[1] += this.verticalSpeed * this.scene.speedFactor * dt;
@@ -156,10 +193,15 @@ export class MyHeli extends CGFobject {
                 const vz = this.speed * Math.cos(this.orientation);
                 this.position[0] += vx * dt;
                 this.position[2] += vz * dt;
-
+                
                 // Update the lean angle based on speed
                 this.leanAngle = this.speed * this.maxLeanAngle / 10;
 
+                this.bucket.setPosition(
+                    this.position[0],
+                    this.bucket.position[1],
+                    this.position[2]
+                );
                 break;
 
             case "automatic_braking":
@@ -175,6 +217,12 @@ export class MyHeli extends CGFobject {
                 this.position[2] += vzBrake * dt;
 
                 this.leanAngle = this.speed * this.maxLeanAngle / 10;
+
+                this.bucket.setPosition(
+                    this.position[0],
+                    this.bucket.position[1],
+                    this.position[2]
+                );
 
                 if (Math.abs(this.speed) < 0.01) {
                     this.speed = 0;
@@ -201,6 +249,12 @@ export class MyHeli extends CGFobject {
             case "moving_to_heliport":
                 this.targetPosition = this.scene.heliportPosition.slice();
                 this.targetPosition[1] = this.cruisingAltitude;
+
+                this.bucket.setPosition(
+                    this.position[0],
+                    this.bucket.position[1],
+                    this.position[2]
+                );
 
                 const dx = this.targetPosition[0] - this.position[0];
                 const dz = this.targetPosition[2] - this.position[2];
@@ -302,10 +356,21 @@ export class MyHeli extends CGFobject {
             case "flying":
             case "moving_to_heliport":
             case "reorienting_to_land":
+            case "releasing_bucket":
                 this.upperPropSpeed = this.maxPropSpeed * this.scene.speedFactor;
                 break;
 
             case "landing":
+                if (this.bucket.visible) {
+                    const currentLength = this.bucket.ropeLength;
+                    const newLength = currentLength - this.bucketReleaseSpeed * dt;
+                    this.bucket.setRopeLength(Math.max(newLength, 0.1));
+                    
+                    if (this.position[1] <= this.groundLevel) {
+                        this.bucket.setVisible(false);
+                    }
+                }
+
                 this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2 * this.scene.speedFactor, this.maxPropSpeed * 0.3 * this.scene.speedFactor);
                 break;
 
@@ -333,7 +398,7 @@ export class MyHeli extends CGFobject {
     }
 
     display() {
-        /*this.scene.pushMatrix();
+        this.scene.pushMatrix();
         this.scene.scale(6, 6, 6);
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
@@ -358,12 +423,19 @@ export class MyHeli extends CGFobject {
         this.tail.display();
         this.landingSkids.display();
         this.bodyCore.display();
-        this.scene.popMatrix();*/
 
         this.scene.pushMatrix();
-        this.scene.scale(15, 15, 15);
-        this.scene.translate(-2, 0, 0);
-        this.bucket.display();
+        this.scene.scale(3, 3, 3);
+        if (this.bucket.visible) {
+            this.scene.translate(
+                this.bucket.position[0] - this.position[0],
+                this.bucket.position[1] - this.position[1],
+                this.bucket.position[2] - this.position[2]
+            );
+            this.bucket.display();
+        }
+        this.scene.popMatrix();
+
         this.scene.popMatrix();
     }
 }
