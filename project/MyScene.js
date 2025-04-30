@@ -67,7 +67,7 @@ export class MyScene extends CGFscene {
     this.displayAxis = true;
     this.displayNormals = false;
 
-    this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
+    this.panoramaTexture = new CGFtexture(this, "textures/panorama-2.png");
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
@@ -207,7 +207,7 @@ export class MyScene extends CGFscene {
     this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
-    this.scale(5, 5, 5);
+    this.scale(3, 3, 3);
     this.building.display();
     this.popMatrix();
     

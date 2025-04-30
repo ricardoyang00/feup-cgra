@@ -28,8 +28,11 @@ export class MyTree extends CGFobject {
         this.numPyramids = Math.ceil(this.foliageHeight / 0.5);
         this.pyramidBaseRadius = this.trunkRadius * 3;
 
-        this.shadowTexture = new CGFtexture(scene, 'textures/shadow2.png');
+        this.shadowTexture = new CGFtexture(scene, 'textures/shadow.png');
         this.shadowQuad = new MyCircle(scene, 32);
+        this.shadowMaterial = new CGFappearance(scene);
+        this.shadowMaterial.setDiffuse(0,0,0,1);
+        this.shadowMaterial.setTexture(this.shadowTexture);
 
         const trunkTexture = new CGFtexture(scene, 'textures/trunk.png');
         const leavesTextures = [
@@ -60,12 +63,14 @@ export class MyTree extends CGFobject {
 
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);
 
-        //this.scene.gl.enable(this.scene.gl.BLEND);
+        this.scene.gl.enable(this.scene.gl.BLEND);
+        this.scene.gl.blendFuncSeparate(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA, this.scene.gl.ONE, this.scene.gl.ONE);
         //this.scene.gl.blendFunc(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA);
 
-        this.shadowTexture.bind();
+        //this.shadowTexture.bind();
 
-        //this.shadowQuad.display();
+        this.shadowMaterial.apply();
+        this.shadowQuad.display();
 
         this.scene.popMatrix();
 

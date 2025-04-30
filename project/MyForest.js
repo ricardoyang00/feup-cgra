@@ -62,7 +62,7 @@ export class MyForest extends CGFobject {
         const treeHeight = 2 + Math.random() * 2;
 
         // greenish colors
-        const foliageColor = [Math.random() * 0.2, 0.6 + Math.random() * 0.4, Math.random() * 0.2];
+        const foliageColor = [Math.random() * 0.1, 0.5 + Math.random() * 0.4, Math.random() * 0.1];
 
         return new MyTree(scene, rotation, axis, trunkRadius, treeHeight, foliageColor);
     }
