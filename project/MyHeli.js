@@ -54,8 +54,8 @@ export class MyHeli extends CGFobject {
 
         this.bucket = new HeliBucket(scene, {
             ropeLength: 2.0,
-            bucketRadius: 0.2,
-            bucketHeight: 0.3
+            bucketRadius: 0.3,
+            bucketHeight: 0.5
         });
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
@@ -333,7 +333,7 @@ export class MyHeli extends CGFobject {
     }
 
     display() {
-        this.scene.pushMatrix();
+        /*this.scene.pushMatrix();
         this.scene.scale(6, 6, 6);
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
@@ -358,12 +358,12 @@ export class MyHeli extends CGFobject {
         this.tail.display();
         this.landingSkids.display();
         this.bodyCore.display();
-        this.scene.popMatrix();
-
-        /*this.scene.pushMatrix();
-        this.scene.scale(6, 6, 6);
-        this.scene.translate(-1, 3, 1);
-        this.bucket.display();
         this.scene.popMatrix();*/
+
+        this.scene.pushMatrix();
+        this.scene.scale(15, 15, 15);
+        this.scene.translate(-2, 0, 0);
+        this.bucket.display();
+        this.scene.popMatrix();
     }
 }
