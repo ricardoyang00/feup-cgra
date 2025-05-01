@@ -1,4 +1,4 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliBucketRing } from './HeliBucketRing.js';
 import { MyCylinder } from './MyCylinder.js';
 
@@ -20,10 +20,12 @@ export class HeliBucket extends CGFobject {
         this.maxRopeLength = 2.0;
         this.position = null;
 
+        this.metalTexture = new CGFtexture(scene, 'textures/bucket_metal.jpg');
+
         this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
         this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
-        this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], null, false, true);
-        this.innerBucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], null, false, true);
+        this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, true);
+        this.innerBucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, true);
         this.bucketRing = new HeliBucketRing(scene, 16, this.bucketRadius - this.bucketThickness, this.bucketRadius);
     }
 
@@ -39,7 +41,7 @@ export class HeliBucket extends CGFobject {
         this.visible = visible;
     }
 
-    display(cruisingAltitude) {
+    display() {
         if (!this.visible) return;
         
         // Display the rope

@@ -465,7 +465,7 @@ export class MyHeli extends CGFobject {
                 this.bucket.position[1] - this.position[1],
                 this.bucket.position[2] - this.position[2]
             );
-            this.bucket.display(this.cruisingAltitude);
+            this.bucket.display();
         }
         this.scene.popMatrix();
 
