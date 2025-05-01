@@ -10,7 +10,7 @@ import { HeliLandingSkids } from './HeliLandingSkids.js';
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [0, 1, 0], initOrientation = 0, initSpeed = 0) {
+    constructor(scene, initPos = [-10, 1, 0], initOrientation = 0, initSpeed = 0) {
         super(scene);
 
         this.position = initPos;
@@ -52,17 +52,20 @@ export class MyHeli extends CGFobject {
             bladeOffset: 0.05
         });
 
+        this.initialRopeLength = 0.5;
+        
         this.bucket = new HeliBucket(scene, {
-            ropeLength: 0.1,
+            ropeLength: this.initialRopeLength,
             bucketRadius: 0.3,
-            bucketHeight: 0.5
+            bucketHeight: 0.5,
+            bucketThickness: 0.01,
+            numSecondaryRopes: 4,
         });
 
-        this.maxBucketRopeLength = 2;
-        this.bucketReleaseSpeed = 1;
+        this.bucketReleaseSpeed = 0.5;
         this.bucketOffset = this.bucket.bucketHeight * 2;
-        this.bucketInitialY = this.cruisingAltitude - 0.2 - this.bucketOffset;
-        this.bucketMaxExtendedY = this.cruisingAltitude - 1.3 - this.bucketOffset;
+        this.bucketInitialY = this.cruisingAltitude - 0.5 - this.bucketOffset;
+        this.bucketMaxExtendedY = this.cruisingAltitude - 2 - this.bucketOffset;
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [1, 1, 1, 1], this.redMetalTexture);
@@ -147,38 +150,35 @@ export class MyHeli extends CGFobject {
                     if (this.position[1] >= this.cruisingAltitude) {
                         this.position[1] = this.cruisingAltitude;
                         this.bucket.setVisible(true);
-                        this.bucket.setRopeLength(0.1);
                         this.bucket.setPosition(
                             this.position[0],
-                            this.cruisingAltitude - 0.3 - this.bucketOffset - this.bucket.ropeLength,
+                            this.bucketInitialY,
                             this.position[2]
                         );
-                        console.log("SET BUCKET POSITION: ", this.bucket.position);
-                        this.state = "releasing_bucket"; // Transition to new state
+                        this.state = "releasing_bucket";
                     }
                 }
                 break;
 
             case "releasing_bucket":
-                const currentLength = this.bucket.ropeLength;
-                const newLength = currentLength + this.bucketReleaseSpeed * dt;
-                const newBucketY = this.bucket.position[1] - newLength;
+                const deltaLength = this.bucketReleaseSpeed * this.scene.speedFactor * dt;
+                const newRopeLength = this.bucket.ropeLength + deltaLength;
+                const newBucketY = this.bucketInitialY - newRopeLength;
             
                 if (newBucketY > this.bucketMaxExtendedY) {
-                    this.bucket.setRopeLength(Math.min(newLength, this.maxBucketRopeLength));
+                    this.bucket.setRopeLength(newRopeLength + 0.7);
                     this.bucket.setPosition(
                         this.bucket.position[0],
                         newBucketY,
                         this.bucket.position[2]
                     );
-                    console.log("CURRENT BUCKET POSITION: ", this.bucket.position);
                 } else {
-                    this.state = "flying"; // Return to flying when done
+                    this.state = "flying";
                 }
                 break;
 
             case "ascending_from_lake":
-                if (this.upperPropSpeed >= this.takeOffPropSpeed) {
+                if (this.upperPropSpeed  >= this.takeOffPropSpeed) {
                     this.position[1] += this.verticalSpeed * this.scene.speedFactor * dt;
                     if (this.position[1] >= this.cruisingAltitude) {
                         this.position[1] = this.cruisingAltitude;
@@ -361,16 +361,6 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "landing":
-                if (this.bucket.visible) {
-                    const currentLength = this.bucket.ropeLength;
-                    const newLength = currentLength - this.bucketReleaseSpeed * dt;
-                    this.bucket.setRopeLength(Math.max(newLength, 0.1));
-                    
-                    if (this.position[1] <= this.groundLevel) {
-                        this.bucket.setVisible(false);
-                    }
-                }
-
                 this.upperPropSpeed = Math.max(this.upperPropSpeed - dt * 2 * this.scene.speedFactor, this.maxPropSpeed * 0.3 * this.scene.speedFactor);
                 break;
 
@@ -432,7 +422,7 @@ export class MyHeli extends CGFobject {
                 this.bucket.position[1] - this.position[1],
                 this.bucket.position[2] - this.position[2]
             );
-            this.bucket.display();
+            this.bucket.display(this.cruisingAltitude);
         }
         this.scene.popMatrix();
 

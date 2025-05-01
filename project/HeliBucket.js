@@ -39,13 +39,13 @@ export class HeliBucket extends CGFobject {
         this.visible = visible;
     }
 
-    display() {
+    display(cruisingAltitude) {
         if (!this.visible) return;
-        console.log("BUCKET POSITION: ", this.position);
+        
         // Display the rope
         this.scene.pushMatrix();
+        this.scene.translate(0, 1, 0);
         this.scene.scale(0.01, this.ropeLength, 0.01);
-        this.scene.translate(0, this.bucketHeight + 0.02, 0);
         this.rope.display();
         this.scene.popMatrix();
 
