@@ -7,6 +7,7 @@ import { MyPyramid } from "./MyPyramid.js";
 import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
+import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 
 /**
  * MyScene
@@ -16,6 +17,7 @@ export class MyScene extends CGFscene {
   constructor() {
     super();
     this.firstPersonView = false;
+    this.thirdPersonView = false;
 
     this.lastT = null;
     this.deltaT = null;
@@ -182,69 +184,11 @@ export class MyScene extends CGFscene {
 
     this.helicopter.update(dt);
 
-    if (this.firstPersonView) {
-      this.updateCameraFromHelicopter();
+    if (this.thirdPersonView) {
+      updateCameraThirdPerson(this.camera, this.helicopter);
+    } else if (this.firstPersonView) {
+        updateCameraFromHelicopter(this.camera, this.helicopter);
     }
-  }
-
-  updateCameraFromHelicopter() {
-    const heliPos = this.helicopter.position;
-    const heliOrientation = this.helicopter.orientation;
-    const leanAngle = this.helicopter.leanAngle;
-    const scaleFactor = 6 * 0.7; // inner heli scale * scene scale
-
-    // Calculate the scaled position of the helicopter in world coordinates
-    const heliWorldPos = vec3.fromValues(
-      heliPos[0] * scaleFactor,
-      heliPos[1] * scaleFactor,
-      heliPos[2] * scaleFactor
-    );
-
-    // Offset in helicopter local space (eye relative to origin)
-    // TODO: change later when moving helicopter
-    const localOffset = vec3.fromValues(0, 1.5, -1.5);
-    vec3.scale(localOffset, localOffset, scaleFactor);
-
-    // Forward offset for target
-    const forwardOffset = vec3.fromValues(0, 0.8, -4);
-    vec3.scale(forwardOffset, forwardOffset, scaleFactor);
-    
-    // Compute rotation components
-    const leanCos = Math.cos(leanAngle);
-    const leanSin = Math.sin(leanAngle);
-    const oriCos = Math.cos(heliOrientation);
-    const oriSin = Math.sin(heliOrientation);
-
-    // Apply RotateX(leanAngle) to localOffset
-    const Wx_offset = localOffset[0];
-    const Wy_offset = localOffset[1] * leanCos - localOffset[2] * leanSin;
-    const Wz_offset = localOffset[1] * leanSin + localOffset[2] * leanCos;
-
-    // Then apply RotateY(orientation)
-    const rotatedOffsetX = Wx_offset * oriCos + Wz_offset * oriSin;
-    const rotatedOffsetY = Wy_offset;
-    const rotatedOffsetZ = -Wx_offset * oriSin + Wz_offset * oriCos;
-    const rotatedOffset = vec3.fromValues(rotatedOffsetX, rotatedOffsetY, rotatedOffsetZ);
-
-    // Similarly for forwardOffset
-    const Wx_forward = forwardOffset[0];
-    const Wy_forward = forwardOffset[1] * leanCos - forwardOffset[2] * leanSin;
-    const Wz_forward = forwardOffset[1] * leanSin + forwardOffset[2] * leanCos;
-
-    const rotatedTargetOffsetX = Wx_forward * oriCos + Wz_forward * oriSin;
-    const rotatedTargetOffsetY = Wy_forward;
-    const rotatedTargetOffsetZ = -Wx_forward * oriSin + Wz_forward * oriCos;
-    const rotatedTargetOffset = vec3.fromValues(rotatedTargetOffsetX, rotatedTargetOffsetY, rotatedTargetOffsetZ);
-
-    // Final camera position and target
-    const cameraPos = vec3.create();
-    vec3.add(cameraPos, heliWorldPos, rotatedOffset);
-
-    const target = vec3.create();
-    vec3.add(target, heliWorldPos, rotatedTargetOffset);
-
-    this.camera.setPosition(cameraPos);
-    this.camera.setTarget(target);
   }
 
   setDefaultAppearance() {
@@ -253,6 +197,7 @@ export class MyScene extends CGFscene {
     this.setSpecular(0.5, 0.5, 0.5, 1.0);
     this.setShininess(10.0);
   }
+
   display() {
     if (this.camera.position[1] < 0.2) {
       this.camera.position[1] = 0.2;
