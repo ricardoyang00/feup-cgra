@@ -66,6 +66,7 @@ export class MyHeli extends CGFobject {
         this.bucketOffset = this.bucket.bucketHeight * 2;
         this.bucketInitialY = this.cruisingAltitude - 0.5 - this.bucketOffset;
         this.bucketMaxExtendedY = this.cruisingAltitude - 2 - this.bucketOffset;
+        this.bucketTouchWaterY = this.bucketMaxExtendedY - 3.2 - this.bucket.bucketHeight * 3; // 3 because of the bucker scale
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [1, 1, 1, 1], this.redMetalTexture);
@@ -84,6 +85,14 @@ export class MyHeli extends CGFobject {
         this.verticalSpeed = 2;
         this.leanAngle = 0;
         this.previousSpeed = 0;
+
+        this.bucket.setVisible(false);
+        this.bucket.setRopeLength(this.initialRopeLength);
+        this.bucket.setPosition(
+            this.position[0],
+            this.bucketInitialY,
+            this.position[2]
+        );
     }
 
     turn(v) {
@@ -91,7 +100,13 @@ export class MyHeli extends CGFobject {
     }
 
     accelerate(v) {
+        const maxSpeed = 12;
         this.speed += v;
+        if (this.speed > maxSpeed) {
+            this.speed = maxSpeed;
+        } else if (this.speed < -maxSpeed) {
+            this.speed = -maxSpeed;
+        }
     }
 
     resetVerticalSpeed() {
@@ -158,6 +173,7 @@ export class MyHeli extends CGFobject {
                     if (this.position[1] >= this.cruisingAltitude) {
                         this.position[1] = this.cruisingAltitude;
                         this.bucket.setVisible(true);
+                        this.bucket.setRopeLength(this.initialRopeLength);
                         this.bucket.setPosition(
                             this.position[0],
                             this.bucketInitialY,
@@ -194,6 +210,7 @@ export class MyHeli extends CGFobject {
                     }
                 }
                 this.resetLeanAngle();
+                this.bucketFollowMovement();
                 break;
 
             case "flying":
@@ -328,9 +345,16 @@ export class MyHeli extends CGFobject {
 
             case "descending_to_lake":
                 this.resetLeanAngle();
-                this.position[1] -= this.verticalSpeed * this.scene.speedFactor * dt * 0.4;
-                if (this.position[1] <= 3) { // TODO: change 3 to rope length later
-                    this.position[1] = 3;
+                if (this.bucket.position[1] > this.bucketTouchWaterY) {
+                    const yChange = this.verticalSpeed * this.scene.speedFactor * dt * 0.4;
+                    this.position[1] -= yChange;
+                    this.bucket.setPosition(
+                        this.bucket.position[0],
+                        this.bucket.position[1] - yChange,
+                        this.bucket.position[2]
+                    );
+                    console.log("BUCKET Y: " + this.bucket.position[1]);
+                } else {
                     this.state = "filling_bucket";
                 }
                 break;
