@@ -16,6 +16,7 @@ import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUti
 export class MyScene extends CGFscene {
   constructor() {
     super();
+    this.cameraView = 'Default';
     this.firstPersonView = false;
     this.thirdPersonView = false;
 
@@ -184,10 +185,17 @@ export class MyScene extends CGFscene {
 
     this.helicopter.update(dt);
 
-    if (this.thirdPersonView) {
-      updateCameraThirdPerson(this.camera, this.helicopter);
-    } else if (this.firstPersonView) {
-        updateCameraFromHelicopter(this.camera, this.helicopter);
+    if (this.cameraView === 'First Person') {
+      this.firstPersonView = true;
+      this.thirdPersonView = false;
+      updateCameraFromHelicopter(this.camera, this.helicopter);
+    } else if (this.cameraView === 'Third Person') {
+        this.firstPersonView = false;
+        this.thirdPersonView = true;
+        updateCameraThirdPerson(this.camera, this.helicopter);
+    } else {
+        this.firstPersonView = false;
+        this.thirdPersonView = false;
     }
   }
 
