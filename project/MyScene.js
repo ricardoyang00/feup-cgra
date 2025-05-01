@@ -8,6 +8,7 @@ import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
+import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
 
 /**
  * MyScene
@@ -106,6 +107,16 @@ export class MyScene extends CGFscene {
     this.planeMaterial.setDiffuse(0.8, 0.8, 0.8, 1.0); 
     this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
     this.planeMaterial.setShininess(10.0);
+
+    this.fullscreenQuad = new MyFullscreenQuad(this);
+    this.glassTexture = new CGFtexture(this, "textures/transparent_glass.png");
+    this.glassAppearance = new CGFappearance(this);
+    this.glassAppearance.setTexture(this.glassTexture);
+    this.glassAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+    this.glassAppearance.setAmbient(0.5, 0.5, 0.5, 1);
+    this.glassAppearance.setDiffuse(0, 0, 0, 1);
+    this.glassAppearance.setSpecular(1, 1, 1, 1);
+    this.glassAppearance.setShininess(10.0);
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -268,6 +279,20 @@ export class MyScene extends CGFscene {
     this.translate(1, 1, 0.01)
     this.lakeModel.display();
     this.popMatrix();
+
+    // Render glass texture in FPV mode
+    if (this.firstPersonView) {
+      this.gl.enable(this.gl.BLEND);
+      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+      
+      this.pushMatrix();
+      this.loadIdentity();
+      this.glassAppearance.apply();
+      this.fullscreenQuad.display();
+      this.popMatrix();
+      
+      this.gl.disable(this.gl.BLEND);
+    }
 
     this.setDefaultAppearance();
   }
