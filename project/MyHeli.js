@@ -339,6 +339,30 @@ export class MyHeli extends CGFobject {
                     this.bucketFollowMovement();
                 } else {
                     this.orientation = 0;
+                    this.state = "retracting_bucket";
+                }
+                break;
+
+            case "retracting_bucket":
+                const retractDeltaLength = this.bucketReleaseSpeed * this.scene.speedFactor * dt;
+                const retractNewRopeLength = this.bucket.ropeLength - retractDeltaLength;
+                const retractNewBucketY = this.bucket.position[1] + retractDeltaLength;
+            
+                if (retractNewBucketY < this.bucketInitialY) {
+                    this.bucket.setRopeLength(retractNewRopeLength + 0.7);
+                    this.bucket.setPosition(
+                        this.bucket.position[0],
+                        retractNewBucketY,
+                        this.bucket.position[2]
+                    );
+                } else {
+                    this.bucket.setRopeLength(this.initialRopeLength);
+                    this.bucket.setPosition(
+                        this.position[0],
+                        this.bucketInitialY,
+                        this.position[2]
+                    );
+                    this.bucket.setVisible(false);
                     this.state = "landing";
                 }
                 break;
@@ -353,7 +377,6 @@ export class MyHeli extends CGFobject {
                         this.bucket.position[1] - yChange,
                         this.bucket.position[2]
                     );
-                    console.log("BUCKET Y: " + this.bucket.position[1]);
                 } else {
                     this.state = "filling_bucket";
                 }
