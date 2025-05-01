@@ -189,7 +189,8 @@ export class MyScene extends CGFscene {
 
   updateCameraFromHelicopter() {
     const heliPos = this.helicopter.position;
-    const heliAngle = this.helicopter.orientation;
+    const heliOrientation = this.helicopter.orientation;
+    const leanAngle = this.helicopter.leanAngle;
     const scaleFactor = 6 * 0.7; // inner heli scale * scene scale
 
     // Calculate the scaled position of the helicopter in world coordinates
@@ -204,27 +205,40 @@ export class MyScene extends CGFscene {
     const localOffset = vec3.fromValues(0, 1.5, -1.5);
     vec3.scale(localOffset, localOffset, scaleFactor);
 
-    // Rotate offset by orientation
-    const cos = Math.cos(heliAngle);
-    const sin = Math.sin(heliAngle);
-    const rotatedOffset = vec3.fromValues(
-        localOffset[0] * cos + localOffset[2] * sin,
-        localOffset[1],
-        -localOffset[0] * sin + localOffset[2] * cos
-    );
+    // Forward offset for target
+    const forwardOffset = vec3.fromValues(0, 0.8, -4);
+    vec3.scale(forwardOffset, forwardOffset, scaleFactor);
+    
+    // Compute rotation components
+    const leanCos = Math.cos(leanAngle);
+    const leanSin = Math.sin(leanAngle);
+    const oriCos = Math.cos(heliOrientation);
+    const oriSin = Math.sin(heliOrientation);
 
-    // Final camera position = scaled heli position + rotated offset
+    // Apply RotateX(leanAngle) to localOffset
+    const Wx_offset = localOffset[0];
+    const Wy_offset = localOffset[1] * leanCos - localOffset[2] * leanSin;
+    const Wz_offset = localOffset[1] * leanSin + localOffset[2] * leanCos;
+
+    // Then apply RotateY(orientation)
+    const rotatedOffsetX = Wx_offset * oriCos + Wz_offset * oriSin;
+    const rotatedOffsetY = Wy_offset;
+    const rotatedOffsetZ = -Wx_offset * oriSin + Wz_offset * oriCos;
+    const rotatedOffset = vec3.fromValues(rotatedOffsetX, rotatedOffsetY, rotatedOffsetZ);
+
+    // Similarly for forwardOffset
+    const Wx_forward = forwardOffset[0];
+    const Wy_forward = forwardOffset[1] * leanCos - forwardOffset[2] * leanSin;
+    const Wz_forward = forwardOffset[1] * leanSin + forwardOffset[2] * leanCos;
+
+    const rotatedTargetOffsetX = Wx_forward * oriCos + Wz_forward * oriSin;
+    const rotatedTargetOffsetY = Wy_forward;
+    const rotatedTargetOffsetZ = -Wx_forward * oriSin + Wz_forward * oriCos;
+    const rotatedTargetOffset = vec3.fromValues(rotatedTargetOffsetX, rotatedTargetOffsetY, rotatedTargetOffsetZ);
+
+    // Final camera position and target
     const cameraPos = vec3.create();
     vec3.add(cameraPos, heliWorldPos, rotatedOffset);
-
-    // Look direction: straight ahead from cockpit
-    const forwardOffset = vec3.fromValues(0, 0.8, -4); // Looking further forward
-    vec3.scale(forwardOffset, forwardOffset, scaleFactor);
-    const rotatedTargetOffset = vec3.fromValues(
-        forwardOffset[0] * cos + forwardOffset[2] * sin,
-        forwardOffset[1],
-        -forwardOffset[0] * sin + forwardOffset[2] * cos
-    );
 
     const target = vec3.create();
     vec3.add(target, heliWorldPos, rotatedTargetOffset);
