@@ -170,8 +170,9 @@ export class MyScene extends CGFscene {
               const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * this.speedFactor * dt;
               this.helicopter.accelerate(speedChange);
               // Prevent small oscillations around zero
-              if (Math.abs(this.helicopter.speed) < 0.01) {
+              if (Math.abs(this.helicopter.speed) < this.speedFactor * 0.1) {
                   this.helicopter.speed = 0;
+                  this.helicopter.resetLeanAngle();
               }
           }
           break;
