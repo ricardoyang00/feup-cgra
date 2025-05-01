@@ -15,6 +15,8 @@ import { MyHeli } from "./MyHeli.js";
 export class MyScene extends CGFscene {
   constructor() {
     super();
+    this.firstPersonView = false;
+
     this.lastT = null;
     this.deltaT = null;
 
@@ -179,6 +181,56 @@ export class MyScene extends CGFscene {
     }
 
     this.helicopter.update(dt);
+
+    if (this.firstPersonView) {
+      this.updateCameraFromHelicopter();
+    }
+  }
+
+  updateCameraFromHelicopter() {
+    const heliPos = this.helicopter.position;
+    const heliAngle = this.helicopter.orientation;
+    const scaleFactor = 6 * 0.7; // inner heli scale * scene scale
+
+    // Calculate the scaled position of the helicopter in world coordinates
+    const heliWorldPos = vec3.fromValues(
+      heliPos[0] * scaleFactor,
+      heliPos[1] * scaleFactor,
+      heliPos[2] * scaleFactor
+    );
+
+    // Offset in helicopter local space (eye relative to origin)
+    // TODO: change later when moving helicopter
+    const localOffset = vec3.fromValues(0, 1.5, -1.5);
+    vec3.scale(localOffset, localOffset, scaleFactor);
+
+    // Rotate offset by orientation
+    const cos = Math.cos(heliAngle);
+    const sin = Math.sin(heliAngle);
+    const rotatedOffset = vec3.fromValues(
+        localOffset[0] * cos + localOffset[2] * sin,
+        localOffset[1],
+        -localOffset[0] * sin + localOffset[2] * cos
+    );
+
+    // Final camera position = scaled heli position + rotated offset
+    const cameraPos = vec3.create();
+    vec3.add(cameraPos, heliWorldPos, rotatedOffset);
+
+    // Look direction: straight ahead from cockpit
+    const forwardOffset = vec3.fromValues(0, 0.8, -4); // Looking further forward
+    vec3.scale(forwardOffset, forwardOffset, scaleFactor);
+    const rotatedTargetOffset = vec3.fromValues(
+        forwardOffset[0] * cos + forwardOffset[2] * sin,
+        forwardOffset[1],
+        -forwardOffset[0] * sin + forwardOffset[2] * cos
+    );
+
+    const target = vec3.create();
+    vec3.add(target, heliWorldPos, rotatedTargetOffset);
+
+    this.camera.setPosition(cameraPos);
+    this.camera.setTarget(target);
   }
 
   setDefaultAppearance() {
@@ -188,8 +240,8 @@ export class MyScene extends CGFscene {
     this.setShininess(10.0);
   }
   display() {
-    if (this.camera.position[1] < 0) {
-      this.camera.position[1] = 0.1;
+    if (this.camera.position[1] < 0.2) {
+      this.camera.position[1] = 0.2;
     }
 
     // ---- BEGIN Background, camera and axis setup

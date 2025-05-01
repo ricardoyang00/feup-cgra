@@ -10,7 +10,7 @@ import { HeliLandingSkids } from './HeliLandingSkids.js';
  * MyHeli
  */
 export class MyHeli extends CGFobject {
-    constructor(scene, initPos = [-10, 1, 0], initOrientation = 0, initSpeed = 0) {
+    constructor(scene, initPos = [0, 1, 0], initOrientation = 0, initSpeed = 0) {
         super(scene);
 
         this.position = initPos;
