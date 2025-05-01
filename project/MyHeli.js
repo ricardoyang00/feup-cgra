@@ -102,6 +102,14 @@ export class MyHeli extends CGFobject {
         this.leanAngle = 0;
     }
 
+    bucketFollowMovement() {
+        this.bucket.setPosition(
+            this.position[0],
+            this.bucket.position[1],
+            this.position[2]
+        );
+    }
+
     initiateTakeoff() {
         if (this.state === "ground") {
             this.resetVerticalSpeed();
@@ -197,11 +205,7 @@ export class MyHeli extends CGFobject {
                 // Update the lean angle based on speed
                 this.leanAngle = this.speed * this.maxLeanAngle / 10;
 
-                this.bucket.setPosition(
-                    this.position[0],
-                    this.bucket.position[1],
-                    this.position[2]
-                );
+                this.bucketFollowMovement();
                 break;
 
             case "automatic_braking":
@@ -215,14 +219,9 @@ export class MyHeli extends CGFobject {
                 const vzBrake = this.speed * Math.cos(this.orientation);
                 this.position[0] += vxBrake * dt;
                 this.position[2] += vzBrake * dt;
+                this.bucketFollowMovement();
 
                 this.leanAngle = this.speed * this.maxLeanAngle / 10;
-
-                this.bucket.setPosition(
-                    this.position[0],
-                    this.bucket.position[1],
-                    this.position[2]
-                );
 
                 if (Math.abs(this.speed) < 0.01) {
                     this.speed = 0;
@@ -250,12 +249,6 @@ export class MyHeli extends CGFobject {
                 this.targetPosition = this.scene.heliportPosition.slice();
                 this.targetPosition[1] = this.cruisingAltitude;
 
-                this.bucket.setPosition(
-                    this.position[0],
-                    this.bucket.position[1],
-                    this.position[2]
-                );
-
                 const dx = this.targetPosition[0] - this.position[0];
                 const dz = this.targetPosition[2] - this.position[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
@@ -270,6 +263,7 @@ export class MyHeli extends CGFobject {
                     // Rotate in place toward heliport, shortest path
                     const turnAmount = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnStep);
                     this.orientation += turnAmount;
+                    this.bucketFollowMovement();
                     this.speed = 0;
                     this.resetLeanAngle();
                 } else {
@@ -302,6 +296,7 @@ export class MyHeli extends CGFobject {
                     const vz = -this.speed * Math.cos(this.orientation);
                     this.position[0] += vx * dt;
                     this.position[2] += vz * dt;
+                    this.bucketFollowMovement();
 
                     if (distance <= 0.5) {
                         this.position[0] = this.targetPosition[0];
@@ -324,6 +319,7 @@ export class MyHeli extends CGFobject {
                 if (Math.abs(reorientAngleDiff) > 0.01) {
                     const turnAmount = Math.sign(reorientAngleDiff) * Math.min(Math.abs(reorientAngleDiff), maxTurn);
                     this.turn(turnAmount);
+                    this.bucketFollowMovement();
                 } else {
                     this.orientation = 0;
                     this.state = "landing";
