@@ -320,8 +320,8 @@ export class MyScene extends CGFscene {
     // Helicopter
     const baseHeight = 15.1;
     this.pushMatrix();
-    this.translate(0, baseHeight, 0);
-    this.scale(0.22, 0.22, 0.22);
+    this.translate(0, baseHeight, 0);   // changed by ricardo to put the heli on top of the building, need to fix the camera views
+    this.scale(0.22, 0.22, 0.22);       // changed
     this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
     this.popMatrix();
