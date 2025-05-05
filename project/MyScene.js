@@ -69,9 +69,9 @@ export class MyScene extends CGFscene {
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
     
-    this.buildingWidth = 10;
+    this.buildingWidth = 15;
     this.buildingDepth = 12;
-    this.numFloorsSide = 4;
+    this.numFloorsSide = 2;
     this.numWindowsPerFloor = 3;
     this.windowTexture = new CGFtexture(this, "textures/window.jpg");
     this.buildingColor = [0.5, 0.5, 0.5, 1];
@@ -88,7 +88,8 @@ export class MyScene extends CGFscene {
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
-    this.forest = new MyForest(this, 10, 10, 10, 10);
+    this.forest = new MyForest(this, 7, 7, 10, 10);
+    this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
@@ -99,12 +100,12 @@ export class MyScene extends CGFscene {
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
-    this.grassTexture = new CGFtexture(this, "textures/grass3.jpg");
+    this.grassTexture = new CGFtexture(this, "textures/grass/grass3.jpg");
     this.planeMaterial = new CGFappearance(this);
     this.planeMaterial.setTexture(this.grassTexture);
     this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
     this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
-    this.planeMaterial.setDiffuse(0.8, 0.8, 0.8, 1.0); 
+    this.planeMaterial.setDiffuse(0.63, 0.55, 0.26, 1.0); 
     this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
     this.planeMaterial.setShininess(10.0);
 
@@ -120,18 +121,33 @@ export class MyScene extends CGFscene {
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
-    this.lights[0].setDiffuse(1.5, 1.5, 1.5, 1.0);
+    this.lights[0].setDiffuse(1.2, 1.2, 1.2, 1.0);
     this.lights[0].setSpecular(1.5, 1.5, 1.5, 1.0);
     this.lights[0].setAmbient(0.5, 0.5, 0.5, 1.0);
     this.lights[0].enable();
     this.lights[0].update();
+
+    this.lights[1].setPosition(150, 300, 50, 1); // Position directly above the scene
+    this.lights[1].setDiffuse(1.0, 1.0, 0.8, 1.0); // Slightly warm light
+    this.lights[1].setSpecular(1.0, 1.0, 0.8, 1.0);
+    this.lights[1].setAmbient(0.3, 0.3, 0.3, 1.0);
+    this.lights[1].enable();
+    this.lights[1].update();
+
+    // Light 2: Moonlight or secondary light
+    this.lights[2].setPosition(-50, 100, 250, 1); // Position diagonally in the sky
+    this.lights[2].setDiffuse(0.5, 0.6, 0.5, 1.0); // Cool blue light
+    this.lights[2].setSpecular(0.5, 1.0, 0.5, 1.0);
+    this.lights[2].setAmbient(0.2, 0.2, 0.4, 1.0);
+    this.lights[2].enable();
+    this.lights[2].update();
   }
   initCameras() {
     this.camera = new CGFcamera(
-      1.2,
+      1.1,
       0.1,
       500,
-      vec3.fromValues(50, 30, 50),
+      vec3.fromValues(30, 30, 30),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -251,27 +267,65 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
-    /*this.pushMatrix();
+    this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
-    this.scale(3, 3, 3);
+    this.scale(5, 5, 5);
     this.building.display();
-    this.popMatrix();*/
+    this.popMatrix();
     
 
     //// FOREST
     this.pushMatrix();
-    this.scale(5, 5, 5);
-    //this.rotate(0, 1, 0, 0); 
-    this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
+    this.scale(6, 6, 6);
+    this.translate(0, -0.05, 0);    /// !! this y-offset is important to make sure the trunk is "inside" the plane
+    
+    this.translate(0, 0, -12.5); 
+    this.forest.display();
+
+    this.translate(-11, 0, 0);
+    this.forest.display();
+
+    this.translate(-11, 0, 0);
+    this.forest.display();
+
+    this.translate(5.5, 0, 12);
+    this.forest.display();
+
+    this.translate(22.5, 0, 0);
     this.forest.display();
     this.popMatrix();
 
-    // Helicopter
+    // Trees, smaller area for details
     this.pushMatrix();
-    this.scale(0.7, 0.7, 0.7);
+    this.scale(6,6,6);
+    this.translate(0,-0.05,0);
+    this.translate(-5.5,0,3);
+    this.forestSmall.display();
+
+    this.translate(0,0,5);
+    this.forestSmall.display();
+
+    this.translate(7,0,0);
+    this.forestSmall.display();
+
+    this.translate(0,0,-5);
+    this.forestSmall.display();
+    this.popMatrix();
+
+
+
+    
+
+    // Helicopter
+    const baseHeight = 15.1;
+    this.pushMatrix();
+    this.translate(0, baseHeight, 0);
+    this.scale(0.22, 0.22, 0.22);
+    this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
     this.popMatrix();
+
 
     this.pushMatrix();
     this.scale(100, 100, 100);
