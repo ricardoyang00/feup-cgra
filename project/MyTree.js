@@ -12,42 +12,54 @@ import { MyCircle } from './MyCircle.js';
  * @param axis - Axis of rotation ('X' or 'Z')
  * @param trunkRadius - Radius of the trunk base
  * @param treeHeight - Total height of the tree
- * @param foliageColor - RGB color of the foliage (e.g., [0, 1, 0] for green)
+ * @param treeType - 0 for green, 1 for yellow, 2 for orange
  */
 export class MyTree extends CGFobject {
-    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.1, treeHeight = 2, foliageColor = [0, 0.8, 0]) {
+    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.1, treeHeight = 2, treeType = 0) {
         super(scene);
 
         this.rotation = rotation;
         this.axis = axis;
         this.trunkRadius = trunkRadius;
         this.treeHeight = treeHeight;
-        this.foliageColor = foliageColor;
 
         this.foliageHeight = 0.8 * this.treeHeight;
         this.numPyramids = Math.ceil(this.foliageHeight / 0.5);
         this.pyramidBaseRadius = this.trunkRadius * 3;
 
-        this.shadowTexture = new CGFtexture(scene, 'textures/shadow.png');
+        this.shadowTexture = new CGFtexture(scene, 'textures/tree/shadow.png');
         this.shadowQuad = new MyCircle(scene, 32);
         this.shadowMaterial = new CGFappearance(scene);
-        this.shadowMaterial.setDiffuse(0,0,0,1);
+        this.shadowMaterial.setDiffuse(0, 0, 0, 1);
         this.shadowMaterial.setTexture(this.shadowTexture);
 
-        const trunkTexture = new CGFtexture(scene, 'textures/trunk.png');
-        const leavesTextures = [
-            new CGFtexture(scene, 'textures/leaves5.png'),
-            new CGFtexture(scene, 'textures/leaves6.png'),
-            new CGFtexture(scene, 'textures/leaves7.png'),
-            new CGFtexture(scene, 'textures/leaves8.png')
-        ];
+        const trunkTexture = new CGFtexture(scene, 'textures/tree/trunk.png');
+        const darkerTone = 0.7;
 
-        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture, 2); 
+        // type
+        let textureFolder, foliageColor;
+        if (treeType === 0) {           // green / original
+            textureFolder = 'textures/tree/leaves/original/';
+            foliageColor = [0, 0.8*darkerTone, 0]; 
+        } else if (treeType === 1) {    // yellow
+            textureFolder = 'textures/tree/leaves/yellow/';
+            foliageColor = [1*darkerTone, 1*darkerTone, 0]; 
+        } else if (treeType === 2) {    // orange
+            textureFolder = 'textures/tree/leaves/orange/';
+            foliageColor = [1*darkerTone, 0.5*darkerTone, 0]; 
+        } else {
+            throw new Error('Invalid treeType. Must be 0 (green), 1 (yellow), or 2 (orange).');
+        }
+
+        const baseTexture = new CGFtexture(scene, `${textureFolder}leaves-base.png`);
+        const sideTextureShadow = new CGFtexture(scene, `${textureFolder}leaves-shadow.png`);
+        const sideTextureTop = new CGFtexture(scene, `${textureFolder}leaves.png`);
+
+        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture, 2);
         this.foliage = [];
         for (let i = 0; i < this.numPyramids; i++) {
-            const scaleFactor = 1 - (i / this.numPyramids);
-            const randomTexture = leavesTextures[Math.floor(Math.random() * leavesTextures.length)];
-            this.foliage.push(new MyCone(scene, 16, 4, [...this.foliageColor, 1], randomTexture, 2));
+            const sideTexture = i === this.numPyramids - 1 ? sideTextureTop : sideTextureShadow;
+            this.foliage.push(new MyCone(scene, 16, 4, [...foliageColor, 1], sideTexture, baseTexture, 2));
         }
     }
 
@@ -90,23 +102,39 @@ export class MyTree extends CGFobject {
         this.trunk.display();
         this.scene.popMatrix();
 
+
         // foliage
+        let lastTiltAngle, lastTiltAxis, lastYRotation;
+
         for (let i = 0; i < this.numPyramids; i++) {
             const scaleFactor = 1 - (i / this.numPyramids) * 0.6;
-            const yOffset = (this.treeHeight - this.foliageHeight) + (i * (this.foliageHeight / this.numPyramids))/3;
+            const yOffset = (this.treeHeight - this.foliageHeight) + (i * (this.foliageHeight / this.numPyramids)) / 3;
 
-            const tiltAngle = (this.pseudoRandom(i) * 6) - 3;       // -3° to +3°
-            const tiltAxis = [
-                this.pseudoRandom(i + 1) * 2 - 1,
-                0,
-                this.pseudoRandom(i + 2) * 2 - 1
-            ];
-            const yRotation = this.pseudoRandom(i + 1) * 360;
-            
             this.scene.pushMatrix();
             this.scene.translate(0, yOffset, 0);
-            this.scene.rotate(tiltAngle * Math.PI / 180, ...tiltAxis);
-            this.scene.rotate(yRotation * Math.PI / 180, 0, 1, 0);
+
+            if (i !== this.numPyramids - 1) {
+                const tiltAngle = (this.pseudoRandom(i) * 6) - 3; // -3° to +3°
+                const tiltAxis = [
+                    this.pseudoRandom(i + 1) * 2 - 1,
+                    0,
+                    this.pseudoRandom(i + 2) * 2 - 1
+                ];
+                const yRotation = this.pseudoRandom(i + 1) * 360;
+
+                this.scene.rotate(tiltAngle * Math.PI / 180, ...tiltAxis);
+                this.scene.rotate(yRotation * Math.PI / 180, 0, 1, 0);
+
+                if (i === this.numPyramids - 2) {
+                    lastTiltAngle = tiltAngle;
+                    lastTiltAxis = tiltAxis;
+                    lastYRotation = yRotation;
+                }
+            } else { 
+                this.scene.rotate(lastTiltAngle * Math.PI / 180, ...lastTiltAxis);
+                this.scene.rotate(lastYRotation * Math.PI / 180, 0, 1, 0);
+            }
+
             this.scene.scale(this.pyramidBaseRadius * scaleFactor, this.foliageHeight / this.numPyramids, this.pyramidBaseRadius * scaleFactor);
             this.foliage[i].display();
             this.scene.popMatrix();

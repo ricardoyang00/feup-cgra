@@ -7,26 +7,38 @@ import { CGFobject, CGFappearance } from '../lib/CGF.js';
  * @param slices - Number of slices around the cone
  * @param stacks - Number of stacks along the height
  * @param color - Color to tint the texture
- * @param texture - Texture to apply to the cone
+ * @param sideTexture - Texture to apply to the side of the cone
+ * @param baseTexture - Texture to apply to the base of the cone
  */
 export class MyCone extends CGFobject {
-    constructor(scene, slices = 8, stacks = 4, color = [1, 1, 1, 1], texture = null, textureScale = 1) {
+    constructor(scene, slices = 8, stacks = 4, color = [1, 1, 1, 1], sideTexture = null, baseTexture = null, textureScale = 1) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
         
         this.coneAppearance = new CGFappearance(this.scene);
+        this.baseAppearance = new CGFappearance(this.scene);
         this.textureScale = textureScale;
 
-        if (texture) {
-            this.coneAppearance.setTexture(texture);
+        if (sideTexture) {
+            this.coneAppearance.setTexture(sideTexture);
             this.coneAppearance.setTextureWrap('REPEAT', 'REPEAT');
+        }
+
+        if (baseTexture) {
+            this.baseAppearance.setTexture(baseTexture);
+            this.baseAppearance.setTextureWrap('REPEAT', 'REPEAT');
         }
         
         this.coneAppearance.setAmbient(...color);
         this.coneAppearance.setDiffuse(...color);
         this.coneAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
         this.coneAppearance.setShininess(10.0);
+
+        this.baseAppearance.setAmbient(...color);
+        this.baseAppearance.setDiffuse(...color);
+        this.baseAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
+        this.baseAppearance.setShininess(10.0);
         
         this.initBuffers();
     }
@@ -108,11 +120,20 @@ export class MyCone extends CGFobject {
     }
     
     display() {
-        if (this.texture) {
-            this.texture.bind();
-        }
-        
+        // Display the side of the cone
+        this.scene.pushMatrix();
         this.coneAppearance.apply();
-        super.display();
+        this.scene.scale(1, 1, 1); // Ensure proper scaling for the side
+        super.display(); // Render only the side
+        this.scene.popMatrix();
+
+        // Display the base of the cone
+        this.scene.pushMatrix();
+        this.baseAppearance.apply();
+        this.scene.rotate(Math.PI, 1, 0, 0); // Flip to render the base
+        this.scene.translate(0, 0, -1); // Position the base correctly
+        this.scene.scale(1, 1, 1); // Ensure proper scaling for the base
+        this.scene.gl.drawArrays(this.scene.gl.TRIANGLE_FAN, this.vertices.length / 3 - this.slices - 2, this.slices + 2); // Render only the base
+        this.scene.popMatrix();
     }
 }
