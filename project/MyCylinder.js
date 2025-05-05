@@ -8,12 +8,28 @@ import { CGFobject, CGFappearance } from '../lib/CGF.js';
  * @param stacks - Number of stacks along the height
  * @param color - Color to tint the texture
  * @param texture - Texture to apply to the cylinder
+ * @param includeTopCap - Whether to include the top cap
+ * @param doubleSided - Whether to make both sides of the cylinder visible
  */
 export class MyCylinder extends CGFobject {
-    constructor(scene, slices = 8, stacks = 4, color = [1, 1, 1, 1], texture = null) {
+    constructor(
+        scene, 
+        slices = 8, 
+        stacks = 4, 
+        color = [1, 1, 1, 1], 
+        texture = nul, 
+        includeTopCap = true, 
+        doubleSided = false,
+        topRadius = 1.0,
+        bottomRadius = 1.0
+    ) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
+        this.includeTopCap = includeTopCap;
+        this.doubleSided = doubleSided;
+        this.topRadius = topRadius;
+        this.bottomRadius = bottomRadius;
 
         this.cylinderAppearance = new CGFappearance(this.scene);
 
@@ -85,23 +101,48 @@ export class MyCylinder extends CGFobject {
             }
         }
 
-        // Top cap
-        const topCenterIndex = this.vertices.length / 3;
-        this.vertices.push(0, 1, 0);
-        this.normals.push(0, 1, 0);
-        this.texCoords.push(0.5, 0.5);
-
-        for (let slice = 0; slice <= this.slices; slice++) {
-            const angle = slice * angleIncrement;
-            const x = Math.cos(angle);
-            const z = Math.sin(angle);
-
-            this.vertices.push(x, 1, z);
+        // Top cap (only if includeTopCap is true)
+        if (this.includeTopCap) {
+            const topCenterIndex = this.vertices.length / 3;
+            this.vertices.push(0, 1, 0);
             this.normals.push(0, 1, 0);
-            this.texCoords.push(0.5 + 0.5 * x, 0.5 + 0.5 * z);
+            this.texCoords.push(0.5, 0.5);
+        
+            for (let slice = 0; slice <= this.slices; slice++) {
+                const angle = slice * angleIncrement;
+                const x = Math.cos(angle);
+                const z = Math.sin(angle);
+            
+                this.vertices.push(x, 1, z);
+                this.normals.push(0, 1, 0);
+                this.texCoords.push(0.5 + 0.5 * x, 0.5 + 0.5 * z);
+            
+                if (slice > 0) {
+                    this.indices.push(topCenterIndex, topCenterIndex + slice + 1, topCenterIndex + slice);
+                }
+            }
+        }
 
-            if (slice > 0) {
-                this.indices.push(topCenterIndex, topCenterIndex + slice + 1, topCenterIndex + slice);
+        // If double-sided is enabled, duplicate vertices and normals for inside faces
+        if (this.doubleSided) {
+            const vertexCount = this.vertices.length / 3;
+            const originalVertices = [...this.vertices];
+            const originalNormals = [...this.normals];
+            const originalIndices = [...this.indices];
+
+            // Duplicate vertices and reverse normals for the inside faces
+            for (let i = 0; i < vertexCount; i++) {
+                this.vertices.push(originalVertices[i * 3], originalVertices[i * 3 + 1], originalVertices[i * 3 + 2]);
+                this.normals.push(-originalNormals[i * 3], -originalNormals[i * 3 + 1], -originalNormals[i * 3 + 2]);
+            }
+
+            // Duplicate indices for the inside faces (reversed order)
+            for (let i = 0; i < originalIndices.length; i += 3) {
+                this.indices.push(
+                    originalIndices[i + 2] + vertexCount,
+                    originalIndices[i + 1] + vertexCount,
+                    originalIndices[i] + vertexCount
+                );
             }
         }
 

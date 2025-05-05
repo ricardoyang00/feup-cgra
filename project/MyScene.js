@@ -6,6 +6,9 @@ import { MyCone } from "./MyCone.js";
 import { MyPyramid } from "./MyPyramid.js"; 
 import { MyTree } from "./MyTree.js";
 import { MyForest } from "./MyForest.js";
+import { MyHeli } from "./MyHeli.js";
+import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
+import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
 
 /**
  * MyScene
@@ -14,13 +17,36 @@ import { MyForest } from "./MyForest.js";
 export class MyScene extends CGFscene {
   constructor() {
     super();
+    this.cameraView = 'Default';
+    this.firstPersonView = false;
+    this.thirdPersonView = false;
+
     this.lastT = null;
     this.deltaT = null;
-    this.velocity = 0;
-    this.acceleration = 0.1;
-    this.maxSpeed = 20;
-    this.deceleration = 0.05;
+
+    this.acceleration = 4;
+    this.deceleration = 2;
+    this.turnSpeed = 1;
+
+    this.speedFactor = 1;
+
+    this.heliportPosition = [0, 0, 0];
+    this.heliportRadius = 1;
+
+    this.lakePosition = [17, 0, -17];
+    this.lakeRadius = 10;
+
+    this.prevP = false;
+    this.prevL = false;
   }
+
+  isOverLake(position) {
+    const dx = position[0] - this.lakePosition[0];
+    const dz = position[2] - this.lakePosition[2];
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    return distance < this.lakeRadius;
+  }
+
   init(application) {
     super.init(application);
 
@@ -42,7 +68,7 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
-
+    
     this.buildingWidth = 10;
     this.buildingDepth = 12;
     this.numFloorsSide = 4;
@@ -50,19 +76,21 @@ export class MyScene extends CGFscene {
     this.windowTexture = new CGFtexture(this, "textures/window.jpg");
     this.buildingColor = [0.5, 0.5, 0.5, 1];
     this.building = new MyBuilding(
-                      this, 
-                      this.buildingWidth, 
-                      this.buildingDepth, 
-                      this.numFloorsSide, 
-                      this.numWindowsPerFloor, 
-                      this.windowTexture, 
-                      this.buildingColor
-                    );
-
+      this, 
+      this.buildingWidth, 
+      this.buildingDepth, 
+      this.numFloorsSide, 
+      this.numWindowsPerFloor, 
+      this.windowTexture, 
+      this.buildingColor
+    );
+                    
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
     this.forest = new MyForest(this, 10, 10, 10, 10);
+    this.helicopter = new MyHeli(this);
+    this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -70,7 +98,6 @@ export class MyScene extends CGFscene {
     this.panoramaTexture = new CGFtexture(this, "textures/panorama-2.png");
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
-
 
     this.grassTexture = new CGFtexture(this, "textures/grass3.jpg");
     this.planeMaterial = new CGFappearance(this);
@@ -80,6 +107,16 @@ export class MyScene extends CGFscene {
     this.planeMaterial.setDiffuse(0.8, 0.8, 0.8, 1.0); 
     this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
     this.planeMaterial.setShininess(10.0);
+
+    this.fullscreenQuad = new MyFullscreenQuad(this);
+    this.glassTexture = new CGFtexture(this, "textures/transparent_glass.png");
+    this.glassAppearance = new CGFappearance(this);
+    this.glassAppearance.setTexture(this.glassTexture);
+    this.glassAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+    this.glassAppearance.setAmbient(0.5, 0.5, 0.5, 1);
+    this.glassAppearance.setDiffuse(0, 0, 0, 1);
+    this.glassAppearance.setSpecular(1, 1, 1, 1);
+    this.glassAppearance.setShininess(10.0);
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -94,74 +131,83 @@ export class MyScene extends CGFscene {
       1.2,
       0.1,
       500,
-      vec3.fromValues(50, 1, 50),
+      vec3.fromValues(50, 30, 50),
       vec3.fromValues(0, 0, 0)
     );
-  }
-  checkKeys() {
-    var text = "Keys pressed: ";
-    var keysPressed = false;
-
-    // Check for key codes e.g. in https://keycode.info/
-    const directions = {
-        KeyW: { axis: 2, sign: -1 }, // Move forward (negative Z)
-        KeyS: { axis: 2, sign: 1 },  // Move back (positive Z)
-        KeyA: { axis: 0, sign: -1 }, // Move left (negative X)
-        KeyD: { axis: 0, sign: 1 }   // Move right (positive X)
-    };
-
-    if (!this.lastDirection) {
-      this.lastDirection = { axis: null, sign: 0 };
-    }
-
-    for (const key in directions) {
-      if (this.gui.isKeyPressed(key)) {
-          const { axis, sign } = directions[key];
-          text += ` ${key.replace("Key", "")} `;
-
-          // Check if the new direction is opposite to the last direction
-          if (this.lastDirection.axis === axis && this.lastDirection.sign !== sign) {
-            // Brake when moving in the opposite direction
-            this.velocity = Math.max(this.velocity - this.acceleration * 2, 0);
-        
-            // If velocity reaches 0, switch direction
-            if (this.velocity === 0) {
-                this.lastDirection = { axis, sign };
-            }
-          } else {
-              // Accelerate when moving in the same direction or switching to a new direction
-              this.velocity = Math.min(this.velocity + this.acceleration, this.maxSpeed);
-              this.lastDirection = { axis, sign }; // Update last direction
-          }
-
-          this.camera.position[axis] += sign * this.velocity;
-          keysPressed = true;
-      }
-  }
-
-    if (!keysPressed && this.velocity > 0) {
-      // Decelerate when no keys are pressed
-      this.velocity = Math.max(this.velocity - this.deceleration, 0);
-
-      // Continue moving in the last direction
-      if (this.lastDirection.axis !== null) {
-          this.camera.position[this.lastDirection.axis] += this.lastDirection.sign * this.velocity;
-      }
-    }
-
-    //console.log(`Current speed: ${this.velocity.toFixed(2)}`);
-
-    if (keysPressed)
-      console.log(text);
   }
 
   update(t) {
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
+    } else {
+      this.deltaT = 0;
     }
     this.lastT = t;
+    const dt = this.deltaT / 1000;
 
-    this.checkKeys();
+    const movementAllowed = this.helicopter.state == "flying";
+
+    switch (true) {
+      case this.gui.isKeyPressed("KeyW") && movementAllowed:
+          this.helicopter.accelerate(-this.acceleration * this.speedFactor * dt);
+          break;
+
+      case this.gui.isKeyPressed("KeyS") && movementAllowed:
+          this.helicopter.accelerate(this.acceleration * this.speedFactor * dt * 0.8);
+          break;
+
+      case this.gui.isKeyPressed("KeyA") && movementAllowed:
+          this.helicopter.turn(this.turnSpeed * this.speedFactor * dt);
+          break;
+
+      case this.gui.isKeyPressed("KeyD") && movementAllowed:
+          this.helicopter.turn(-this.turnSpeed * this.speedFactor * dt);
+          break;
+
+      case this.gui.isKeyPressed("KeyR"):
+          this.helicopter.resetHelicopter();
+          break;
+
+      default:
+          const currentP = this.gui.isKeyPressed("KeyP");
+          const currentL = this.gui.isKeyPressed("KeyL");
+
+          if (currentP && !this.prevP) {
+              this.helicopter.initiateTakeoff();
+          }
+          if (currentL && !this.prevL) {
+              this.helicopter.initiateLanding();
+          }
+
+          this.prevP = currentP;
+          this.prevL = currentL;
+
+          if (!this.gui.isKeyPressed("KeyW") && !this.gui.isKeyPressed("KeyS")) {
+              const speedChange = -Math.sign(this.helicopter.speed) * this.deceleration * this.speedFactor * dt;
+              this.helicopter.accelerate(speedChange);
+              // Prevent small oscillations around zero
+              if (Math.abs(this.helicopter.speed) < this.speedFactor * 0.1) {
+                  this.helicopter.speed = 0;
+                  this.helicopter.resetLeanAngle();
+              }
+          }
+          break;
+    }
+
+    this.helicopter.update(dt);
+
+    if (this.cameraView === 'First Person') {
+      this.firstPersonView = true;
+      this.thirdPersonView = false;
+      updateCameraFromHelicopter(this.camera, this.helicopter);
+    } else if (this.cameraView === 'Third Person') {
+        this.firstPersonView = false;
+        this.thirdPersonView = true;
+        updateCameraThirdPerson(this.camera, this.helicopter);
+    } else {
+        this.firstPersonView = false;
+        this.thirdPersonView = false;
+    }
   }
 
   setDefaultAppearance() {
@@ -170,9 +216,10 @@ export class MyScene extends CGFscene {
     this.setSpecular(0.5, 0.5, 0.5, 1.0);
     this.setShininess(10.0);
   }
+
   display() {
-    if (this.camera.position[1] < 0) {
-      this.camera.position[1] = 0.1;
+    if (this.camera.position[1] < 0.2) {
+      this.camera.position[1] = 0.2;
     }
 
     // ---- BEGIN Background, camera and axis setup
@@ -204,12 +251,12 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
-    this.pushMatrix();
+    /*this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
     this.scale(3, 3, 3);
     this.building.display();
-    this.popMatrix();
+    this.popMatrix();*/
     
 
     //// FOREST
@@ -219,6 +266,33 @@ export class MyScene extends CGFscene {
     this.translate(0, -0.05, 0);    /// !! this offset is important to make sure the trunk is "inside" the plane
     this.forest.display();
     this.popMatrix();
+
+    // Helicopter
+    this.pushMatrix();
+    this.scale(0.7, 0.7, 0.7);
+    this.helicopter.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.scale(100, 100, 100);
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.translate(1, 1, 0.01)
+    this.lakeModel.display();
+    this.popMatrix();
+
+    // Render glass texture in FPV mode
+    if (this.firstPersonView) {
+      this.gl.enable(this.gl.BLEND);
+      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+      
+      this.pushMatrix();
+      this.loadIdentity();
+      this.glassAppearance.apply();
+      this.fullscreenQuad.display();
+      this.popMatrix();
+      
+      this.gl.disable(this.gl.BLEND);
+    }
 
     this.setDefaultAppearance();
   }
