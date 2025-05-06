@@ -1,21 +1,22 @@
-export function updateCameraFromHelicopter(camera, helicopter, scaleFactor = 6 * 0.7) {
+export function updateCameraFromHelicopter(camera, helicopter, scaleFactor = 6 * 0.22) {
     const heliPos = helicopter.position;
     const heliOrientation = helicopter.orientation;
     const leanAngle = helicopter.leanAngle;
+    const baseHeight = 15.1;
 
     // Calculate the scaled position of the helicopter in world coordinates
     const heliWorldPos = vec3.fromValues(
-        heliPos[0] * scaleFactor,
-        heliPos[1] * scaleFactor,
-        heliPos[2] * scaleFactor
+        heliPos[2] * scaleFactor,
+        heliPos[1] * scaleFactor + baseHeight,
+        -heliPos[0] * scaleFactor
     );
 
     // Offset in helicopter local space (eye relative to origin)
-    const localOffset = vec3.fromValues(0, 1.5, -1.5);
+    const localOffset = vec3.fromValues(-1.5, 1.5, 0);
     vec3.scale(localOffset, localOffset, scaleFactor);
 
     // Forward offset for target
-    const forwardOffset = vec3.fromValues(0, 0.8, -4);
+    const forwardOffset = vec3.fromValues(-4, 0.8, 0);
     vec3.scale(forwardOffset, forwardOffset, scaleFactor);
 
     // Compute rotation components
@@ -56,17 +57,19 @@ export function updateCameraFromHelicopter(camera, helicopter, scaleFactor = 6 *
     camera.setTarget(target);
 }
 
-export function updateCameraThirdPerson(camera, helicopter, scaleFactor = 6 * 0.7) {
+export function updateCameraThirdPerson(camera, helicopter, scaleFactor = 6 * 0.22) {
     const heliPos = helicopter.position;
     const heliOrientation = helicopter.orientation;
 
+    const baseHeight = 15.1;
+
     const heliWorldPos = vec3.fromValues(
-        heliPos[0] * scaleFactor,
-        heliPos[1] * scaleFactor,
-        heliPos[2] * scaleFactor
+        heliPos[2] * scaleFactor,
+        heliPos[1] * scaleFactor + baseHeight,
+        -heliPos[0] * scaleFactor
     );
 
-    const localOffset = vec3.fromValues(0, 5, 12);
+    const localOffset = vec3.fromValues(12, 5, 0);
     vec3.scale(localOffset, localOffset, scaleFactor);
 
     const oriCos = Math.cos(heliOrientation);
