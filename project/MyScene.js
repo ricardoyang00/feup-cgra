@@ -130,7 +130,7 @@ export class MyScene extends CGFscene {
     this.lights[1].setPosition(150, 300, 50, 1); // Position directly above the scene
     this.lights[1].setDiffuse(1.0, 1.0, 0.8, 1.0); // Slightly warm light
     this.lights[1].setSpecular(1.0, 1.0, 0.8, 1.0);
-    this.lights[1].setAmbient(0.3, 0.3, 0.3, 1.0);
+    this.lights[1].setAmbient(0, 0, 0, 1.0);
     this.lights[1].enable();
     this.lights[1].update();
 
@@ -138,7 +138,7 @@ export class MyScene extends CGFscene {
     this.lights[2].setPosition(-50, 100, 250, 1); // Position diagonally in the sky
     this.lights[2].setDiffuse(0.5, 0.6, 0.5, 1.0); // Cool blue light
     this.lights[2].setSpecular(0.5, 1.0, 0.5, 1.0);
-    this.lights[2].setAmbient(0.2, 0.2, 0.4, 1.0);
+    this.lights[2].setAmbient(0, 0, 0, 1.0);
     this.lights[2].enable();
     this.lights[2].update();
   }
@@ -313,15 +313,11 @@ export class MyScene extends CGFscene {
     this.forestSmall.display();
     this.popMatrix();
 
-
-
-    
-
     // Helicopter
     const baseHeight = 15.1;
     this.pushMatrix();
-    this.translate(0, baseHeight, 0);   // changed by ricardo to put the heli on top of the building, need to fix the camera views
-    this.scale(0.22, 0.22, 0.22);       // changed
+    this.translate(0, baseHeight, 0);
+    this.scale(0.22, 0.22, 0.22);
     this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
     this.popMatrix();
