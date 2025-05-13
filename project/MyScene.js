@@ -157,7 +157,9 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
+    // just for test the fire
     if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
+    //
 
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
@@ -273,13 +275,13 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
-    /*
+    
     this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
     this.scale(5, 5, 5);
     this.building.display();
-    this.popMatrix();*/
+    this.popMatrix();
     
 
     //// FOREST
@@ -355,7 +357,7 @@ export class MyScene extends CGFscene {
     // Fire
     this.pushMatrix();
     this.scale(5,5,5);
-    this.translate(2, 0, 2);
+    this.translate(2, 0, 4);
     //his.fire.display();
     this.fire2.display();
     this.popMatrix();
