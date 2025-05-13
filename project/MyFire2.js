@@ -79,4 +79,18 @@ export class MyFire2 extends CGFobject {
             this.scene.popMatrix();
         }
     }
+
+    graduallyRemoveTriangles() {
+        const totalDuration = 6000;
+        const interval = totalDuration / this.fireTriangles.length;
+
+        const removalInterval = setInterval(() => {
+            if (this.fireTriangles.length > 0) {
+                const randomIndex = Math.floor(Math.random() * this.fireTriangles.length);
+                this.fireTriangles.splice(randomIndex, 1); 
+            } else {
+                clearInterval(removalInterval);
+            }
+        }, interval);
+    }
 }
