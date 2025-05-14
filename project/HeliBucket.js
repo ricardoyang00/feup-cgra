@@ -24,7 +24,7 @@ export class HeliBucket extends CGFobject {
 
         this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
         this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
-        this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, true);
+        this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, false);
         this.innerBucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, true);
         this.bucketRing = new HeliBucketRing(scene, 16, this.bucketRadius - this.bucketThickness, this.bucketRadius);
     }

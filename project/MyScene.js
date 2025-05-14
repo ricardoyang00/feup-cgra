@@ -9,6 +9,8 @@ import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
+import { MyFire } from "./MyFire.js";
+import { MyFire2 } from "./MyFire2.js";
 
 /**
  * MyScene
@@ -92,6 +94,8 @@ export class MyScene extends CGFscene {
     this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
+    this.fire = new MyFire(this);
+    this.fire2 = new MyFire2(this);
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -153,6 +157,10 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
+    // just for test the fire
+    if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
+    //
+
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
     } else {
@@ -267,6 +275,7 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
+    
     this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
@@ -343,6 +352,15 @@ export class MyScene extends CGFscene {
       
       this.gl.disable(this.gl.BLEND);
     }
+
+
+    // Fire
+    this.pushMatrix();
+    this.scale(5,5,5);
+    this.translate(2, 0, 4);
+    //his.fire.display();
+    this.fire2.display();
+    this.popMatrix();
 
     this.setDefaultAppearance();
   }

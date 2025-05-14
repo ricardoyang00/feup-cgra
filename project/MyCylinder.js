@@ -9,7 +9,7 @@ import { CGFobject, CGFappearance } from '../lib/CGF.js';
  * @param color - Color to tint the texture
  * @param texture - Texture to apply to the cylinder
  * @param includeTopCap - Whether to include the top cap
- * @param doubleSided - Whether to make both sides of the cylinder visible
+ * @param showInside - Whether to show the inside of the cylinder
  */
 export class MyCylinder extends CGFobject {
     constructor(
@@ -17,9 +17,9 @@ export class MyCylinder extends CGFobject {
         slices = 8, 
         stacks = 4, 
         color = [1, 1, 1, 1], 
-        texture = nul, 
+        texture = null, 
         includeTopCap = true, 
-        doubleSided = false,
+        showInside = false, 
         topRadius = 1.0,
         bottomRadius = 1.0
     ) {
@@ -27,7 +27,7 @@ export class MyCylinder extends CGFobject {
         this.slices = slices;
         this.stacks = stacks;
         this.includeTopCap = includeTopCap;
-        this.doubleSided = doubleSided;
+        this.showInside = showInside; 
         this.topRadius = topRadius;
         this.bottomRadius = bottomRadius;
 
@@ -65,7 +65,7 @@ export class MyCylinder extends CGFobject {
                 const z = Math.sin(angle);
 
                 this.vertices.push(x, y, z);
-                this.normals.push(x, 0, z);
+                this.normals.push(this.showInside ? -x : x, 0, this.showInside ? -z : z); // Flip normals if showing inside
                 this.texCoords.push(slice / this.slices, 1 - y);
             }
         }
@@ -76,33 +76,44 @@ export class MyCylinder extends CGFobject {
                 const first = stack * (this.slices + 1) + slice;
                 const second = first + this.slices + 1;
 
-                this.indices.push(first, second, first + 1);
-                this.indices.push(second, second + 1, first + 1);
+                if (this.showInside) {
+                    this.indices.push(first, first + 1, second);
+                    this.indices.push(second, first + 1, second + 1);
+                } else {
+                    this.indices.push(first, second, first + 1);
+                    this.indices.push(second, second + 1, first + 1);
+                }
             }
         }
 
         // Bottom cap
-        const baseCenterIndex = this.vertices.length / 3;
-        this.vertices.push(0, 0, 0);
-        this.normals.push(0, -1, 0);
-        this.texCoords.push(0.5, 0.5);
+        if (!this.showInside || this.showInside) { 
+            const baseCenterIndex = this.vertices.length / 3;
+            this.vertices.push(0, 0, 0);
+            this.normals.push(0, this.showInside ? 1 : -1, 0); 
+            this.texCoords.push(0.5, 0.5);
 
-        for (let slice = 0; slice <= this.slices; slice++) {
-            const angle = slice * angleIncrement;
-            const x = Math.cos(angle);
-            const z = Math.sin(angle);
+            for (let slice = 0; slice <= this.slices; slice++) {
+                const angle = slice * angleIncrement;
+                const x = Math.cos(angle);
+                const z = Math.sin(angle);
 
-            this.vertices.push(x, 0, z);
-            this.normals.push(0, -1, 0);
-            this.texCoords.push(0.5 + 0.5 * x, 0.5 + 0.5 * z);
+                this.vertices.push(x, 0, z);
+                this.normals.push(0, this.showInside ? 1 : -1, 0); 
+                this.texCoords.push(0.5 + 0.5 * x, 0.5 + 0.5 * z);
 
-            if (slice > 0) {
-                this.indices.push(baseCenterIndex, baseCenterIndex + slice, baseCenterIndex + slice + 1);
+                if (slice > 0) {
+                    if (this.showInside) {
+                        this.indices.push(baseCenterIndex, baseCenterIndex + slice + 1, baseCenterIndex + slice);
+                    } else {
+                        this.indices.push(baseCenterIndex, baseCenterIndex + slice, baseCenterIndex + slice + 1);
+                    }
+                }
             }
         }
 
         // Top cap (only if includeTopCap is true)
-        if (this.includeTopCap) {
+        if (this.includeTopCap && !this.showInside) {
             const topCenterIndex = this.vertices.length / 3;
             this.vertices.push(0, 1, 0);
             this.normals.push(0, 1, 0);
@@ -120,29 +131,6 @@ export class MyCylinder extends CGFobject {
                 if (slice > 0) {
                     this.indices.push(topCenterIndex, topCenterIndex + slice + 1, topCenterIndex + slice);
                 }
-            }
-        }
-
-        // If double-sided is enabled, duplicate vertices and normals for inside faces
-        if (this.doubleSided) {
-            const vertexCount = this.vertices.length / 3;
-            const originalVertices = [...this.vertices];
-            const originalNormals = [...this.normals];
-            const originalIndices = [...this.indices];
-
-            // Duplicate vertices and reverse normals for the inside faces
-            for (let i = 0; i < vertexCount; i++) {
-                this.vertices.push(originalVertices[i * 3], originalVertices[i * 3 + 1], originalVertices[i * 3 + 2]);
-                this.normals.push(-originalNormals[i * 3], -originalNormals[i * 3 + 1], -originalNormals[i * 3 + 2]);
-            }
-
-            // Duplicate indices for the inside faces (reversed order)
-            for (let i = 0; i < originalIndices.length; i += 3) {
-                this.indices.push(
-                    originalIndices[i + 2] + vertexCount,
-                    originalIndices[i + 1] + vertexCount,
-                    originalIndices[i] + vertexCount
-                );
             }
         }
 
