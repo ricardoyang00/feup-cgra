@@ -1,7 +1,7 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 
 export class HeliBodyTriangularPrism extends CGFobject {
-    constructor(scene, width, depth, height, color = [1, 1, 1, 1], texture = null) {
+    constructor(scene, width, depth, height, color = [0.5, 0.5, 0.5, 1], texture = null) {
         super(scene);
         this.width = width;  // Length of the prism (horizontal growth along x-axis)
         this.depth = depth;  // Depth of the triangular base (along negative Z-axis)

@@ -13,7 +13,7 @@ export class HeliTailCuttablePyramid extends CGFobject {
      * @param {number} height    Full height along Z
      * @param {number} cutHeight Height from base (Z=0) where to slice off the apex
      */
-    constructor(scene, width, depth, height, cutHeight = 0, color = [1, 1, 1, 1], texture = null) {
+    constructor(scene, width, depth, height, cutHeight = 0, color = [0.5, 0.5, 0.5, 1], texture = null) {
         super(scene);
         this.width = width;
         this.depth = depth;
