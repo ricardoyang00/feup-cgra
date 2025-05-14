@@ -5,6 +5,7 @@ import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
+import { MyQuad } from './MyQuad.js';
 
 /**
  * MyHeli
@@ -349,7 +350,7 @@ export class MyHeli extends CGFobject {
                 const retractNewBucketY = this.bucket.position[1] + retractDeltaLength;
             
                 if (retractNewBucketY < this.bucketInitialY) {
-                    this.bucket.setRopeLength(retractNewRopeLength + 0.7);
+                    this.bucket.setRopeLength(retractNewRopeLength);
                     this.bucket.setPosition(
                         this.bucket.position[0],
                         retractNewBucketY,
