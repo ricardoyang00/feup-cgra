@@ -23,6 +23,11 @@ export class MyInterface extends CGFinterface {
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
         //this.gui.add(this.scene, 'displayBuilding').name('Display Building');
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
+        this.gui.add(this.scene, 'displayForest').name('Display Forest');
+
+        this.gui.add(this.scene, 'fpsRate', [24, 30, 60, 120]).name('FPS Rate').onChange((value) => {
+            this.scene.setUpdatePeriod(1000 / value);
+        });
         
         return true;
     }

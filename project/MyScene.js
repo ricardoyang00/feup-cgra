@@ -65,8 +65,6 @@ export class MyScene extends CGFscene {
 
     this.enableTextures(true);
 
-    this.setUpdatePeriod(50);
-
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
@@ -99,6 +97,10 @@ export class MyScene extends CGFscene {
 
     this.displayAxis = true;
     this.displayNormals = false;
+    this.displayForest = false;
+    this.fpsRate = 24;
+
+    this.setUpdatePeriod(1000/this.fpsRate);
 
     this.panoramaTexture = new CGFtexture(this, "textures/panorama-2.png");
 
@@ -285,42 +287,44 @@ export class MyScene extends CGFscene {
     
 
     //// FOREST
-    this.pushMatrix();
-    this.scale(6, 6, 6);
-    this.translate(0, -0.05, 0);    /// !! this y-offset is important to make sure the trunk is "inside" the plane
-    
-    this.translate(0, 0, -12.5); 
-    this.forest.display();
+    if (this.displayForest) {
+      this.pushMatrix();
+      this.scale(6, 6, 6);
+      this.translate(0, -0.05, 0);    /// !! this y-offset is important to make sure the trunk is "inside" the plane
+      
+      this.translate(0, 0, -12.5); 
+      this.forest.display();
 
-    this.translate(-11, 0, 0);
-    this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
 
-    this.translate(-11, 0, 0);
-    this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
 
-    this.translate(5.5, 0, 12);
-    this.forest.display();
+      this.translate(5.5, 0, 12);
+      this.forest.display();
 
-    this.translate(22.5, 0, 0);
-    this.forest.display();
-    this.popMatrix();
+      this.translate(22.5, 0, 0);
+      this.forest.display();
+      this.popMatrix();
 
-    // Trees, smaller area for details
-    this.pushMatrix();
-    this.scale(6,6,6);
-    this.translate(0,-0.05,0);
-    this.translate(-5.5,0,3);
-    this.forestSmall.display();
+      // Trees, smaller area for details
+      this.pushMatrix();
+      this.scale(6,6,6);
+      this.translate(0,-0.05,0);
+      this.translate(-5.5,0,3);
+      this.forestSmall.display();
 
-    this.translate(0,0,5);
-    this.forestSmall.display();
+      this.translate(0,0,5);
+      this.forestSmall.display();
 
-    this.translate(7,0,0);
-    this.forestSmall.display();
+      this.translate(7,0,0);
+      this.forestSmall.display();
 
-    this.translate(0,0,-5);
-    this.forestSmall.display();
-    this.popMatrix();
+      this.translate(0,0,-5);
+      this.forestSmall.display();
+      this.popMatrix();
+    }
 
     // Helicopter
     const baseHeight = 15.1;
