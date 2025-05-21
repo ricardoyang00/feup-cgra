@@ -111,10 +111,15 @@ export class MyScene extends CGFscene {
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
     this.grassTexture = new CGFtexture(this, "textures/grass/grass3.jpg");
-    this.lakeMaskTexture = new CGFtexture(this, 'textures/lake/lake_mask.png');
     this.waterTexture = new CGFtexture(this, "textures/lake/water.jpg");
+    this.lakeMaskTexture = new CGFtexture(this, 'textures/lake/lake_mask.png');
     this.maskShader = new CGFshader(this.gl, "shaders/lake.vert", "shaders/lake.frag");
-    this.maskShader.setUniformsValues({ u_maskTexture: 0 });
+    this.maskShader.setUniformsValues({
+      uMaskSampler: 0,
+      uGrassSampler: 1,
+      uWaterSampler: 2,
+      textureScale: 100
+    });
     //this.planeMaterial = new CGFappearance(this);
     //this.planeMaterial.setTexture(this.grassTexture);
     //this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
@@ -283,16 +288,16 @@ export class MyScene extends CGFscene {
 
     // Apply plane material and display the plane
     this.pushMatrix();
-    this.maskShader.setUniformsValues({ u_maskTexture: 0 });
     this.setActiveShader(this.maskShader);
+    
     this.lakeMaskTexture.bind(0);
     this.grassTexture.bind(1);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
     this.waterTexture.bind(2);
-    this.maskShader.setUniformsValues({
-      uMaskSampler: 0,
-      uGrassSampler: 1,
-      uWaterSampler: 2
-    });
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
+    
     //this.planeMaterial.apply();
     this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
