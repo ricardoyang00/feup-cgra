@@ -1,26 +1,23 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 import { MyTriangleDoubleFaced } from './MyTriangleDoubleFaced.js';
 
-/**
- * MyFire
- * @constructor
- * @param scene - Reference to MyScene object
- */
 export class MyFire2 extends CGFobject {
     constructor(scene) {
         super(scene);
         this.fireTriangles = [];
+        this.textures = [
+            new CGFtexture(this.scene, "textures/fire/fire1.png"),
+            new CGFtexture(this.scene, "textures/fire/fire2.png"),
+            new CGFtexture(this.scene, "textures/fire/fire3.png")
+        ];
+        this.currentTextureIndex = 0;
         this.initFire();
     }
 
     initFire() {
         this.fireTriangles = [];
-
-        //const fireTexture = new CGFtexture(this.scene, "textures/flame-red.jpg");
-        const fireTexture = new CGFtexture(this.scene, "textures/fire/fire-transparent-2.png")
-
         const numTriangles = 20;
-        const baseRadius = 0.7; // Reduced radius to make triangles closer
+        const baseRadius = 0.7;
         const height = 3;
 
         for (let i = 0; i < numTriangles; i++) {
@@ -35,7 +32,10 @@ export class MyFire2 extends CGFobject {
             appearance.setDiffuse(1.0, 0.6, 0.2, 0.8);
             appearance.setSpecular(0.2, 0.1, 0.05, 0.8);
             appearance.setShininess(10);
-            appearance.setTexture(fireTexture);
+
+            // Assign a random texture from the array
+            const textureIndex = Math.floor(Math.random() * this.textures.length);
+            appearance.setTexture(this.textures[textureIndex]);
             appearance.setTextureWrap('REPEAT', 'REPEAT');
 
             const scaleX = 0.7 + Math.random() * 0.5;
@@ -44,7 +44,6 @@ export class MyFire2 extends CGFobject {
             const positionX = x + (Math.random() - 0.5) * 0.5;
             const positionY = y;
             const positionZ = z + (Math.random() - 0.5) * 0.5;
-
             const rotationY = Math.random() * 360;
             const tiltX = Math.random() * 0.6 - 0.3;
             const tiltZ = Math.random() * 0.6 - 0.3;
@@ -52,6 +51,7 @@ export class MyFire2 extends CGFobject {
             this.fireTriangles.push({
                 triangle,
                 appearance,
+                textureIndex, // Save the index for animation
                 scaleX,
                 scaleY,
                 scaleZ,
@@ -65,7 +65,19 @@ export class MyFire2 extends CGFobject {
         }
     }
 
+    // Call this method to animate (alternate) the textures
+    animateTextures() {
+        this.currentTextureIndex = (this.currentTextureIndex + 1) % this.textures.length;
+        for (const tri of this.fireTriangles) {
+            // Cycle each triangle's texture index
+            tri.textureIndex = (tri.textureIndex + 1) % this.textures.length;
+            tri.appearance.setTexture(this.textures[tri.textureIndex]);
+        }
+    }
+
     display() {
+        this.scene.gl.enable(this.scene.gl.BLEND);
+        this.scene.gl.blendFuncSeparate(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA, this.scene.gl.ONE, this.scene.gl.ONE);
         this.scene.gl.depthMask(false);
         for (const { triangle, appearance, scaleX, scaleY, scaleZ, positionX, positionY, positionZ, rotationY, tiltX, tiltZ } of this.fireTriangles) {
             this.scene.pushMatrix();
@@ -83,7 +95,6 @@ export class MyFire2 extends CGFobject {
     graduallyRemoveTriangles() {
         const totalDuration = 6000;
         const interval = totalDuration / this.fireTriangles.length;
-
         const removalInterval = setInterval(() => {
             if (this.fireTriangles.length > 0) {
                 const randomIndex = Math.floor(Math.random() * this.fireTriangles.length);
