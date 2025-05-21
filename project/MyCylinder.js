@@ -21,7 +21,8 @@ export class MyCylinder extends CGFobject {
         includeTopCap = true, 
         showInside = false, 
         topRadius = 1.0,
-        bottomRadius = 1.0
+        bottomRadius = 1.0,
+        vRepeat = 1,
     ) {
         super(scene);
         this.slices = slices;
@@ -30,6 +31,7 @@ export class MyCylinder extends CGFobject {
         this.showInside = showInside; 
         this.topRadius = topRadius;
         this.bottomRadius = bottomRadius;
+        this.vRepeat = vRepeat;
 
         this.cylinderAppearance = new CGFappearance(this.scene);
 
@@ -54,6 +56,7 @@ export class MyCylinder extends CGFobject {
 
         const angleIncrement = (2 * Math.PI) / this.slices;
         const heightIncrement = 1.0 / this.stacks;
+        const vRepeat = this.vRepeat || 1;
 
         // Side vertices
         for (let stack = 0; stack <= this.stacks; stack++) {
@@ -66,7 +69,7 @@ export class MyCylinder extends CGFobject {
 
                 this.vertices.push(x, y, z);
                 this.normals.push(this.showInside ? -x : x, 0, this.showInside ? -z : z); // Flip normals if showing inside
-                this.texCoords.push(slice / this.slices, 1 - y);
+                this.texCoords.push(slice / this.slices, (1 - y) * vRepeat);
             }
         }
 

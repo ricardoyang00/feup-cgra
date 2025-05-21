@@ -21,9 +21,10 @@ export class HeliBucket extends CGFobject {
         this.position = null;
 
         this.metalTexture = new CGFtexture(scene, 'textures/helicopter/bucket_metal.jpg');
+        this.ropeTexture = new CGFtexture(scene, 'textures/helicopter/rope.jpg');
 
-        this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
-        this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
+        this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], this.ropeTexture, true, false, 1.0, 1.0, 10);
+        this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], this.ropeTexture, true, false, 1.0, 1.0, 10);
         this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, false);
         this.innerBucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, true);
         this.bucketRing = new HeliBucketRing(scene, 16, this.bucketRadius - this.bucketThickness, this.bucketRadius);
@@ -75,7 +76,7 @@ export class HeliBucket extends CGFobject {
 
             // Apply transformations for secondary rope
             this.scene.pushMatrix();
-            this.scene.translate(0, this.bucketHeight * 2 + 0.06, 0);
+            this.scene.translate(0, this.bucketHeight * 2 + 0.03, 0);
             this.scene.rotate(yRot, 0, 1, 0); // Rotate to face the direction
             this.scene.rotate(xRot, 1, 0, 0); // Tilt to align with the slope
             this.scene.scale(0.01, length, 0.01); // Scale to calculated length
