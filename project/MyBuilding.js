@@ -23,25 +23,25 @@ export class MyBuilding extends CGFobject {
         this.sideDepth = this.centralDepth * 0.75;
 
         // Create building texture
-        this.brickTexture = new CGFtexture(scene, 'textures/brick.jpg');
+        this.brickTexture = new CGFtexture(scene, 'textures/building/brick.jpg');
 
         // Create modules
         this.sideModule = new MyModule(scene, buildingColor, this.brickTexture);
         this.centralModule = new MyModule(scene, buildingColor, this.brickTexture);
 
         // Create heliport
-        this.heliportTexture = new CGFtexture(scene, 'textures/heliport.png');
+        this.heliportTexture = new CGFtexture(scene, 'textures/building/heliport.png');
         this.heliport = new MyQuad(scene);
 
         // Create windows
         this.window = new MyWindow(scene, windowType);
 
         // Create door
-        this.doorTexture = new CGFtexture(scene, 'textures/door.jpg');
+        this.doorTexture = new CGFtexture(scene, 'textures/building/door.jpg');
         this.door = new MyQuad(scene);
 
         // Create sign
-        this.signTexture = new CGFtexture(scene, 'textures/firefighter.jpg');
+        this.signTexture = new CGFtexture(scene, 'textures/building/firefighter.jpg');
         this.sign = new MyQuad(scene);
     }
 

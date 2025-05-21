@@ -73,7 +73,7 @@ export class MyScene extends CGFscene {
     this.buildingDepth = 12;
     this.numFloorsSide = 2;
     this.numWindowsPerFloor = 3;
-    this.windowTexture = new CGFtexture(this, "textures/window.jpg");
+    this.windowTexture = new CGFtexture(this, "textures/building/window.jpg");
     this.buildingColor = [0.5, 0.5, 0.5, 1];
     this.building = new MyBuilding(
       this, 
@@ -120,7 +120,7 @@ export class MyScene extends CGFscene {
     this.planeMaterial.setShininess(10.0);
 
     this.fullscreenQuad = new MyFullscreenQuad(this);
-    this.glassTexture = new CGFtexture(this, "textures/transparent_glass.png");
+    this.glassTexture = new CGFtexture(this, "textures/helicopter/transparent_glass.png");
     this.glassAppearance = new CGFappearance(this);
     this.glassAppearance.setTexture(this.glassTexture);
     this.glassAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');

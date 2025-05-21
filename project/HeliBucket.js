@@ -20,7 +20,7 @@ export class HeliBucket extends CGFobject {
         this.maxRopeLength = 2.0;
         this.position = null;
 
-        this.metalTexture = new CGFtexture(scene, 'textures/bucket_metal.jpg');
+        this.metalTexture = new CGFtexture(scene, 'textures/helicopter/bucket_metal.jpg');
 
         this.rope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);
         this.secondaryRope = new MyCylinder(scene, 6, 1, [1, 1, 1, 1], null, true, false);

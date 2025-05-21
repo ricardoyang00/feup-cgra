@@ -6,9 +6,9 @@ export class HeliPropellerSupport extends CGFobject {
     constructor(scene) { 
         super(scene);
         
-        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
-        this.greyMetalTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
-        this.whiteMaterialTexture = new CGFtexture(scene, 'textures/white_material.jpg');
+        this.redMetalTexture = new CGFtexture(scene, 'textures/helicopter/red_metal.jpg');
+        this.greyMetalTexture = new CGFtexture(scene, 'textures/helicopter/grey_metal.jpg');
+        this.whiteMaterialTexture = new CGFtexture(scene, 'textures/helicopter/white_material.jpg');
 
         this.supportBottom = new MyCylinder(scene, 12, 1, [0.5, 0.5, 0.5, 1], this.redMetalTexture, true, false);
         this.supportTop = new MyCylinder(scene, 12, 1, [0.5, 0.5, 0.5, 1], this.greyMetalTexture, true, false);

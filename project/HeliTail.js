@@ -7,9 +7,9 @@ export class HeliTail extends CGFobject {
     constructor(scene) {
         super(scene);
 
-        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
-        this.greyMetalTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
-        this.whiteMaterialTexture = new CGFtexture(scene, 'textures/white_material.jpg');
+        this.redMetalTexture = new CGFtexture(scene, 'textures/helicopter/red_metal.jpg');
+        this.greyMetalTexture = new CGFtexture(scene, 'textures/helicopter/grey_metal.jpg');
+        this.whiteMaterialTexture = new CGFtexture(scene, 'textures/helicopter/white_material.jpg');
 
         // Main tail
         this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5, [0.5, 0.5, 0.5, 1], this.redMetalTexture);

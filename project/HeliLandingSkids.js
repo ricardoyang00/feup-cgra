@@ -5,7 +5,7 @@ export class HeliLandingSkids extends CGFobject {
     constructor(scene) {
         super(scene);
         
-        this.blackMetalTexture = new CGFtexture(scene, 'textures/black_metal.jpg');
+        this.blackMetalTexture = new CGFtexture(scene, 'textures/helicopter/black_metal.jpg');
 
         this.mainSkidSupport = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 2.5, [0.5, 0.5, 0.5, 1], this.blackMetalTexture);
         this.skidSupportMiddle = new HeliBodyRectangularPrism(scene, 0.3, 0.05, 0.15, [0.5, 0.5, 0.5, 1], this.blackMetalTexture);

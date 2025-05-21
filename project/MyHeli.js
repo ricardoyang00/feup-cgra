@@ -69,7 +69,7 @@ export class MyHeli extends CGFobject {
         this.bucketMaxExtendedY = this.cruisingAltitude - 2 - this.bucketOffset;
         this.bucketTouchWaterY = this.bucketMaxExtendedY - 3.2 - this.bucket.bucketHeight * 3; // 3 because of the bucker scale
 
-        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+        this.redMetalTexture = new CGFtexture(scene, 'textures/helicopter/red_metal.jpg');
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);

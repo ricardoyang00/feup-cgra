@@ -8,7 +8,7 @@ export class HeliBodyOuter extends CGFobject {
     constructor(scene) {
         super(scene);
 
-        this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
+        this.redMetalTexture = new CGFtexture(scene, 'textures/helicopter/red_metal.jpg');
 
         this.cockpit = new HeliBodyTriangularPrism(scene, 2, 1, 1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.backOfCockpit = new HeliBodyRectangularPrism(scene, 2, 3.25, 1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
@@ -20,7 +20,7 @@ export class HeliBodyOuter extends CGFobject {
 
         this.support = new HeliPropellerSupport(scene);
 
-        this.glassTexture = new CGFtexture(scene, 'textures/glass.jpg');
+        this.glassTexture = new CGFtexture(scene, 'textures/helicopter/glass.jpg');
         this.window = new MyQuad(scene);
 
         this.heliDetail = new MyQuad(scene);
