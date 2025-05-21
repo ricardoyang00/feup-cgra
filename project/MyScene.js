@@ -95,6 +95,10 @@ export class MyScene extends CGFscene {
     this.fire = new MyFire(this);
     this.fire2 = new MyFire2(this);
 
+    // fire related 
+    this.lastFireAnimTime = 0;
+    this.fireAnimInterval = 120;
+
     this.displayAxis = true;
     this.displayNormals = false;
     this.displayForest = false;
@@ -161,6 +165,12 @@ export class MyScene extends CGFscene {
   update(t) {
     // just for test the fire
     if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
+
+    //if(this.gui.isKeyPressed("KeyU")) this.fire2.animateTextures();
+    if (t - this.lastFireAnimTime > this.fireAnimInterval) {
+        this.fire2.animateTextures();
+        this.lastFireAnimTime = t;
+    }
     //
 
     if (this.lastT != null) {
