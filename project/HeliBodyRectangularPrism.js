@@ -1,7 +1,7 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 
 export class HeliBodyRectangularPrism extends CGFobject {
-    constructor(scene, width, depth, height, color = [1, 1, 1, 1], texture = null) {
+    constructor(scene, width, depth, height, color = [0.5, 0.5, 0.5, 1], texture = null) {
         super(scene);
         this.width = width;
         this.depth = depth;
@@ -15,7 +15,7 @@ export class HeliBodyRectangularPrism extends CGFobject {
 
         if (texture) {
             this.appearance.setTexture(texture);
-            this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+            this.appearance.setTextureWrap('MIRRORED_REPEAT', 'MIRRORED_REPEAT');
         }
     }
 

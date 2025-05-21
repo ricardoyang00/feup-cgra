@@ -5,6 +5,7 @@ import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
+import { MyQuad } from './MyQuad.js';
 
 /**
  * MyHeli
@@ -69,7 +70,7 @@ export class MyHeli extends CGFobject {
         this.bucketTouchWaterY = this.bucketMaxExtendedY - 3.2 - this.bucket.bucketHeight * 3; // 3 because of the bucker scale
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
-        this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [1, 1, 1, 1], this.redMetalTexture);
+        this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);
         this.landingSkids = new HeliLandingSkids(scene);
@@ -349,7 +350,7 @@ export class MyHeli extends CGFobject {
                 const retractNewBucketY = this.bucket.position[1] + retractDeltaLength;
             
                 if (retractNewBucketY < this.bucketInitialY) {
-                    this.bucket.setRopeLength(retractNewRopeLength + 0.7);
+                    this.bucket.setRopeLength(retractNewRopeLength);
                     this.bucket.setPosition(
                         this.bucket.position[0],
                         retractNewBucketY,

@@ -10,18 +10,20 @@ export class HeliBodyOuter extends CGFobject {
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
 
-        this.cockpit = new HeliBodyTriangularPrism(scene, 2, 1, 1, [1, 1, 1, 1], this.redMetalTexture);
-        this.backOfCockpit = new HeliBodyRectangularPrism(scene, 2, 3.25, 1, [1, 1, 1, 1], this.redMetalTexture);
-        this.backOfMainBody = new HeliBodyTriangularPrism(scene, 2, 1.25, 1.20, [1, 1, 1, 1], this.redMetalTexture);
+        this.cockpit = new HeliBodyTriangularPrism(scene, 2, 1, 1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.backOfCockpit = new HeliBodyRectangularPrism(scene, 2, 3.25, 1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.backOfMainBody = new HeliBodyTriangularPrism(scene, 2, 1.25, 1.20, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
 
-        this.headTop = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.2, [1, 1, 1, 1], this.redMetalTexture);
-        this.headMiddle = new HeliBodyRectangularPrism(scene, 2, 0.75, 0.5, [1, 1, 1, 1], this.redMetalTexture);
-        this.headBottom = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.5, [1, 1, 1, 1], this.redMetalTexture);
+        this.headTop = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.headMiddle = new HeliBodyRectangularPrism(scene, 2, 0.75, 0.5, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.headBottom = new HeliBodyTriangularPrism(scene, 2, 0.75, 0.5, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
 
         this.support = new HeliPropellerSupport(scene);
 
         this.glassTexture = new CGFtexture(scene, 'textures/glass.jpg');
         this.window = new MyQuad(scene);
+
+        this.heliDetail = new MyQuad(scene);
     }
 
     display() {
@@ -84,7 +86,7 @@ export class HeliBodyOuter extends CGFobject {
         this.scene.pushMatrix();
         this.scene.scale(1.5, 1.5, 1.5);
         this.scene.rotate(Math.PI / 2, 0, 1, 0);
-        this.scene.translate(-0.35, 0.65, 0.75);
+        this.scene.translate(-0.35, 0.65, 0.67);
         this.scene.scale(1, 0.5, 1);
         this.glassTexture.bind();
         this.window.display();
@@ -94,7 +96,7 @@ export class HeliBodyOuter extends CGFobject {
         this.scene.pushMatrix();
         this.scene.scale(1.5, 1.5, 1.5);
         this.scene.rotate(-Math.PI / 2, 0, 1, 0);
-        this.scene.translate(0.35, 0.65, 0.75);
+        this.scene.translate(0.35, 0.65, 0.67);
         this.scene.scale(1, 0.5, 1);
         this.glassTexture.bind();
         this.window.display();

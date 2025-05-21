@@ -9,9 +9,10 @@ export class HeliTail extends CGFobject {
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/red_metal.jpg');
         this.greyMetalTexture = new CGFtexture(scene, 'textures/grey_metal.jpg');
+        this.whiteMaterialTexture = new CGFtexture(scene, 'textures/white_material.jpg');
 
         // Main tail
-        this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5, [1, 1, 1, 1], this.redMetalTexture);
+        this.mainTail = new HeliTailCuttablePyramid(scene, 2, 1, 4, 2.5, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
 
         // Calculate dimensions for the secondary tail
         const u = (4 - 2.5) / 4; // u = 0.375
@@ -19,12 +20,12 @@ export class HeliTail extends CGFobject {
         const depth = 1 * u;  // mainTail TopDepth = 0.375
 
         // Secondary tail
-        this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2, [1, 1, 1, 1], this.redMetalTexture);
+        this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
 
-        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
-        this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
-        this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [1, 1, 1, 1], this.redMetalTexture);
-        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [1, 1, 1, 1], this.greyMetalTexture, true, false);
+        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.whiteMaterialTexture);
+        this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
+        this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [0.5, 0.5, 0.5, 1], this.greyMetalTexture, true, false);
     }
 
     display() {
