@@ -401,6 +401,7 @@ export class MyHeli extends CGFobject {
             case "moving_to_heliport":
             case "reorienting_to_land":
             case "releasing_bucket":
+            case "retracting_bucket":
                 this.upperPropSpeed = this.maxPropSpeed * this.scene.speedFactor;
                 break;
 
