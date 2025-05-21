@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance, CGFshader } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyBuilding } from "./MyBuilding.js";
@@ -35,6 +35,7 @@ export class MyScene extends CGFscene {
     this.heliportPosition = [0, 0, 0];
     this.heliportRadius = 1;
 
+    //temporary
     this.lakePosition = [17, 0, -17];
     this.lakeRadius = 10;
 
@@ -67,7 +68,7 @@ export class MyScene extends CGFscene {
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 50, 1);
-    this.plane = new MyPlane(this, 64, 0, 100, 0, 100);
+    this.plane = new MyPlane(this, 64, 0, 1, 0, 1);
     
     this.buildingWidth = 15;
     this.buildingDepth = 12;
@@ -91,7 +92,6 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 7, 7, 10, 10);
     this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
-    this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
     this.fire = new MyFire(this);
     this.fire2 = new MyFire2(this);
 
@@ -106,18 +106,22 @@ export class MyScene extends CGFscene {
 
     this.setUpdatePeriod(1000/this.fpsRate);
 
-    this.panoramaTexture = new CGFtexture(this, "textures/panorama-2.png");
+    this.panoramaTexture = new CGFtexture(this, "textures/panorama.png");
 
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
     this.grassTexture = new CGFtexture(this, "textures/grass/grass3.jpg");
-    this.planeMaterial = new CGFappearance(this);
-    this.planeMaterial.setTexture(this.grassTexture);
-    this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
-    this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
-    this.planeMaterial.setDiffuse(0.63, 0.55, 0.26, 1.0); 
-    this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
-    this.planeMaterial.setShininess(10.0);
+    this.lakeMaskTexture = new CGFtexture(this, 'textures/lake/lake_mask.png');
+    this.waterTexture = new CGFtexture(this, "textures/lake/water.jpg");
+    this.maskShader = new CGFshader(this.gl, "shaders/lake.vert", "shaders/lake.frag");
+    this.maskShader.setUniformsValues({ u_maskTexture: 0 });
+    //this.planeMaterial = new CGFappearance(this);
+    //this.planeMaterial.setTexture(this.grassTexture);
+    //this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
+    //this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
+    //this.planeMaterial.setDiffuse(0.63, 0.55, 0.26, 1.0); 
+    //this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
+    //this.planeMaterial.setShininess(10.0);
 
     this.fullscreenQuad = new MyFullscreenQuad(this);
     this.glassTexture = new CGFtexture(this, "textures/helicopter/transparent_glass.png");
@@ -279,15 +283,25 @@ export class MyScene extends CGFscene {
 
     // Apply plane material and display the plane
     this.pushMatrix();
-    this.planeMaterial.apply();
+    this.maskShader.setUniformsValues({ u_maskTexture: 0 });
+    this.setActiveShader(this.maskShader);
+    this.lakeMaskTexture.bind(0);
+    this.grassTexture.bind(1);
+    this.waterTexture.bind(2);
+    this.maskShader.setUniformsValues({
+      uMaskSampler: 0,
+      uGrassSampler: 1,
+      uWaterSampler: 2
+    });
+    //this.planeMaterial.apply();
     this.scale(1000, 1000, 1000);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
+    this.setActiveShader(this.defaultShader);
     this.popMatrix();
 
 
     // Display the building
-    
     this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
@@ -343,14 +357,6 @@ export class MyScene extends CGFscene {
     this.scale(0.22, 0.22, 0.22);
     this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
-    this.popMatrix();
-
-
-    this.pushMatrix();
-    this.scale(100, 100, 100);
-    this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.translate(1, 1, 0.01)
-    this.lakeModel.display();
     this.popMatrix();
 
     // Render glass texture in FPV mode
