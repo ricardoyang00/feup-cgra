@@ -22,7 +22,7 @@ export class HeliTail extends CGFobject {
         // Secondary tail
         this.secondaryTail = new HeliTailCuttablePyramid(scene, width, depth, 3, 2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
 
-        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.whiteMaterialTexture);
+        this.tailDetailMain = new HeliBodyRectangularPrism(scene, 2, 0.25, 0.1, [0.5, 0.5, 0.5, 1], this.whiteMaterialTexture);
         this.tailDetailLeft = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.tailDetailRight = new HeliBodyRectangularPrism(scene, 0.5, 0.35, 0.1, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.tailProppellerSupport = new MyCylinder(scene, 12, 1, [0.5, 0.5, 0.5, 1], this.greyMetalTexture, true, false);
@@ -56,14 +56,14 @@ export class HeliTail extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(0, -1, 0);
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
-        this.scene.translate(2.20, 1, 5.25);
+        this.scene.translate(2.20, 1.01, 5.20);
         this.tailDetailLeft.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
         this.scene.translate(0, -1, 0);
         this.scene.rotate(Math.PI / 2, 0, 0, 1);
-        this.scene.translate(2.20, -1, 5.25);
+        this.scene.translate(2.20, -1.01, 5.20);
         this.tailDetailRight.display();
         this.scene.popMatrix();
 

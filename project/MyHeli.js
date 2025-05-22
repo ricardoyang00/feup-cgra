@@ -386,7 +386,7 @@ export class MyHeli extends CGFobject {
             case "descending_to_lake":
                 this.resetLeanAngle();
                 if (this.bucket.position[1] > this.bucketTouchWaterY) {
-                    const yChange = this.verticalSpeed * this.scene.speedFactor * dt * 0.4;
+                    const yChange = this.verticalSpeed * this.scene.speedFactor * dt * 0.8;
                     this.position[1] -= yChange;
                     this.bucket.setPosition(
                         this.bucket.position[0],
