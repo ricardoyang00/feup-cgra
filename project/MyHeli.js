@@ -24,6 +24,7 @@ export class MyHeli extends CGFobject {
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
         this.bucketIsEmpty = true;
+        this.bucketRelativePosition;
 
         this.upperPropRotation = 0;
         this.upperPropSpeed = 0;
@@ -67,13 +68,22 @@ export class MyHeli extends CGFobject {
         this.bucketOffset = this.bucket.bucketHeight * 2;
         this.bucketInitialY = this.cruisingAltitude - 0.5 - this.bucketOffset;
         this.bucketMaxExtendedY = this.cruisingAltitude - 2 - this.bucketOffset;
-        this.bucketTouchWaterY = this.bucketMaxExtendedY - 3.2 - this.bucket.bucketHeight * 3; // 3 because of the bucker scale
+        this.bucketTouchWaterY = this.bucketMaxExtendedY - 15 - this.bucket.bucketHeight * 3; // 3 because of the bucker scale
 
         this.redMetalTexture = new CGFtexture(scene, 'textures/helicopter/red_metal.jpg');
         this.bodyCore = new HeliBodyCore(scene, 2, 3, 1.2, [0.5, 0.5, 0.5, 1], this.redMetalTexture);
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);
         this.landingSkids = new HeliLandingSkids(scene);
+    }
+
+    getWorldPosition() {
+        const scaleFactor = 0.22 * 6; // Combined scaling from MyScene and MyHeli
+        const baseHeight = 15.1;
+        const x_world = scaleFactor * this.position[2];
+        const y_world = scaleFactor * this.position[1] + baseHeight;
+        const z_world = -scaleFactor * this.position[0];
+        return [x_world, y_world, z_world];
     }
 
     resetHelicopter() {
@@ -138,7 +148,8 @@ export class MyHeli extends CGFobject {
 
     initiateLanding() {
         if (this.state === "flying") {
-            if (this.scene.isOverLake(this.position) && this.bucketIsEmpty) {
+            const worldPosition = this.getWorldPosition();
+            if (this.scene.isOverLake(worldPosition) && this.bucketIsEmpty) {
                 if (Math.abs(this.speed) > 0.01) {
                     this.state = "automatic_braking";
                 } else {
@@ -146,8 +157,8 @@ export class MyHeli extends CGFobject {
                 }
             } else {
                 const heliport = this.scene.heliportPosition;
-                const dx = heliport[0] - this.position[0];
-                const dz = heliport[2] - this.position[2];
+                const dx = heliport[0] - worldPosition[0];
+                const dz = heliport[2] - worldPosition[2];
                 const distance = Math.sqrt(dx * dx + dz * dz);
 
                 if (distance < 0.2) {
@@ -198,15 +209,19 @@ export class MyHeli extends CGFobject {
                         this.bucket.position[2]
                     );
                 } else {
+                    this.bucketRelativePosition = this.bucket.position[1];
                     this.state = "flying";
                 }
                 break;
 
             case "ascending_from_lake":
                 if (this.upperPropSpeed  >= this.takeOffPropSpeed) {
-                    this.position[1] += this.verticalSpeed * this.scene.speedFactor * dt;
+                    const yChange = this.verticalSpeed * this.scene.speedFactor * dt;
+                    this.position[1] += yChange;
+                    this.bucket.position[1] += yChange;
                     if (this.position[1] >= this.cruisingAltitude) {
                         this.position[1] = this.cruisingAltitude;
+                        this.bucket.position[1] = this.bucketRelativePosition;
                         this.state = "flying";
                     }
                 }
@@ -243,7 +258,7 @@ export class MyHeli extends CGFobject {
 
                 if (Math.abs(this.speed) < 0.01) {
                     this.speed = 0;
-                    if (this.scene.isOverLake(this.position) && this.bucketIsEmpty) {
+                    if (this.scene.isOverLake(this.getWorldPosition()) && this.bucketIsEmpty) {
                         this.state = "descending_to_lake";
                     } else {
                         this.state = "moving_to_heliport";
@@ -379,6 +394,7 @@ export class MyHeli extends CGFobject {
                         this.bucket.position[2]
                     );
                 } else {
+                    console.log("BUCKET TOUCHING WATER");
                     this.state = "filling_bucket";
                 }
                 break;

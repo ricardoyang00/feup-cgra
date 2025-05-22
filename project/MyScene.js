@@ -35,19 +35,13 @@ export class MyScene extends CGFscene {
     this.heliportPosition = [0, 0, 0];
     this.heliportRadius = 1;
 
-    //temporary
-    this.lakePosition = [17, 0, -17];
-    this.lakeRadius = 10;
-
     this.prevP = false;
     this.prevL = false;
-  }
 
-  isOverLake(position) {
-    const dx = position[0] - this.lakePosition[0];
-    const dz = position[2] - this.lakePosition[2];
-    const distance = Math.sqrt(dx * dx + dz * dz);
-    return distance < this.lakeRadius;
+    this.maskLoaded = false;
+    this.maskData = null;
+    this.maskWidth = 0;
+    this.maskHeight = 0;
   }
 
   init(application) {
@@ -120,6 +114,19 @@ export class MyScene extends CGFscene {
       uWaterSampler: 2,
       textureScale: 100
     });
+    this.maskImage = new Image();
+    this.maskImage.src = 'textures/lake/lake_mask.png';
+    this.maskImage.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.maskImage.width;
+        canvas.height = this.maskImage.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(this.maskImage, 0, 0);
+        this.maskData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        this.maskWidth = canvas.width;
+        this.maskHeight = canvas.height;
+        this.maskLoaded = true;
+    };
     //this.planeMaterial = new CGFappearance(this);
     //this.planeMaterial.setTexture(this.grassTexture);
     //this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
@@ -169,6 +176,31 @@ export class MyScene extends CGFscene {
       vec3.fromValues(30, 30, 30),
       vec3.fromValues(0, 15, 0)
     );
+  }
+
+  isOverLake(position) {
+    if (!this.maskLoaded) {
+      return false;
+    }
+
+    const x = position[0];
+    const z = position[2];
+
+    const s = (x / 1000) + 0.5;
+    let t = (-z / 1000) + 0.5;
+    t = 1 - t;
+
+    const pixelX = Math.floor(s * this.maskWidth);
+    const pixelY = Math.floor(t * this.maskHeight);
+
+    if (pixelX < 0 || pixelX >= this.maskWidth || pixelY < 0 || pixelY >= this.maskHeight) {
+      return false;
+    }
+
+    const index = (pixelY * this.maskWidth + pixelX) * 4;
+    const lakePoint = this.maskData[index];
+
+    return lakePoint === 0;
   }
 
   update(t) {
