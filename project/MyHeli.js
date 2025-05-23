@@ -131,6 +131,14 @@ export class MyHeli extends CGFobject {
         this.leanAngle = 0;
     }
 
+    getBucketIsEmpty() {
+        return this.bucketIsEmpty;
+    }
+
+    setBucketEmpty() {
+        this.bucketIsEmpty = true;
+    }
+
     bucketFollowMovement() {
         this.bucket.setPosition(
             this.position[0],
@@ -397,7 +405,6 @@ export class MyHeli extends CGFobject {
                         this.bucket.position[2]
                     );
                 } else {
-                    console.log("BUCKET TOUCHING WATER");
                     this.state = "filling_bucket";
                 }
                 break;
@@ -493,6 +500,7 @@ export class MyHeli extends CGFobject {
                 this.scene.translate(0, this.bucket.bucketHeight / 1.5, 0);
                 const waterCircleScale = 0.92;
                 this.scene.scale(this.bucket.bucketRadius * waterCircleScale, 1, this.bucket.bucketRadius * waterCircleScale);
+                this.scene.rotate(this.leanAngle * 0.5, 1, 0, 0);
                 this.scene.rotate(-Math.PI / 2, 1, 0, 0);
                 this.waterTexture.bind(0);
                 this.waterCircle.display();
