@@ -161,8 +161,9 @@ export class MyScene extends CGFscene {
       vec3.fromValues(0, 15, 0)
     );
   }
-
   update(t) {
+    // Update lastT for shader animationsp
+    
     // just for test the fire
     if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
 

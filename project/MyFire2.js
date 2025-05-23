@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFappearance, CGFtexture, CGFshader } from '../lib/CGF.js';
 import { MyTriangleDoubleFaced } from './MyTriangleDoubleFaced.js';
 
 export class MyFire2 extends CGFobject {
@@ -11,6 +11,11 @@ export class MyFire2 extends CGFobject {
             new CGFtexture(this.scene, "textures/fire/fire3.png")
         ];
         this.currentTextureIndex = 0;
+        
+        // Initialize fire wave shader
+        this.fireShader = new CGFshader(this.scene.gl, "shaders/fireWave.vert", "shaders/fireWave.frag");
+        this.fireShader.setUniformsValues({ timeFactor: 0 });
+        
         this.initFire();
     }
 
@@ -38,6 +43,10 @@ export class MyFire2 extends CGFobject {
             appearance.setTexture(this.textures[textureIndex]);
             appearance.setTextureWrap('REPEAT', 'REPEAT');
 
+            // Add random offsets to create variation in animation
+            const timeOffset = Math.random() * 100;
+            const waveFactor = 1.0 + Math.random() * 0.6;
+
             const scaleX = 0.7 + Math.random() * 0.5;
             const scaleY = 1.0 + Math.random() * 0.8;
             const scaleZ = scaleX;
@@ -52,6 +61,8 @@ export class MyFire2 extends CGFobject {
                 triangle,
                 appearance,
                 textureIndex, // Save the index for animation
+                timeOffset,   // Random time offset for more natural animation
+                waveFactor,   // Random wave intensity factor
                 scaleX,
                 scaleY,
                 scaleZ,
@@ -79,7 +90,21 @@ export class MyFire2 extends CGFobject {
         this.scene.gl.enable(this.scene.gl.BLEND);
         this.scene.gl.blendFuncSeparate(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA, this.scene.gl.ONE, this.scene.gl.ONE);
         this.scene.gl.depthMask(false);
-        for (const { triangle, appearance, scaleX, scaleY, scaleZ, positionX, positionY, positionZ, rotationY, tiltX, tiltZ } of this.fireTriangles) {
+        
+        // We'll set the shader for each triangle with its own parameters
+        for (const { triangle, appearance, timeOffset, waveFactor, scaleX, scaleY, scaleZ, positionX, positionY, positionZ, rotationY, tiltX, tiltZ } of this.fireTriangles) {
+            // Calculate individual time factor for this triangle
+            const individualTimeFactor = this.scene.lastT ? (this.scene.lastT / 100.0 + timeOffset) % 1000 : timeOffset;
+            
+            // Set the shader with individual parameters
+            this.fireShader.setUniformsValues({ 
+                timeFactor: individualTimeFactor,
+                waveFactor: waveFactor
+            });
+            
+            // Activate the shader with this triangle's parameters
+            this.scene.setActiveShader(this.fireShader);
+            
             this.scene.pushMatrix();
             this.scene.translate(positionX, positionY, positionZ);
             this.scene.rotate(rotationY * Math.PI / 180, 0, 1, 0);
@@ -90,6 +115,10 @@ export class MyFire2 extends CGFobject {
             triangle.display();
             this.scene.popMatrix();
         }
+        
+        // Reset to the default shader
+        this.scene.setActiveShader(this.scene.defaultShader);
+        this.scene.gl.depthMask(true);
     }
 
     graduallyRemoveTriangles() {
