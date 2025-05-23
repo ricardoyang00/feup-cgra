@@ -313,7 +313,6 @@ export class MyHeli extends CGFobject {
                     this.orientation += turnAmount;
                     this.bucketFollowMovement();
                     this.speed = 0;
-                    this.resetLeanAngle();
                 } else {
                     this.orientation = targetAngle;
                     const targetSpeed = 5 * this.scene.speedFactor;
