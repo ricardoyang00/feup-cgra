@@ -5,7 +5,7 @@ import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
-import { MyQuad } from './MyQuad.js';
+import { MyQuad } from './primitives/MyQuad.js';
 
 /**
  * MyHeli
