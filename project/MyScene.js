@@ -26,8 +26,8 @@ export class MyScene extends CGFscene {
     this.lastT = null;
     this.deltaT = null;
 
-    this.acceleration = 4;
-    this.deceleration = 2;
+    this.acceleration = 6;
+    this.deceleration = 4;
     this.turnSpeed = 1;
 
     this.speedFactor = 1;
@@ -144,6 +144,9 @@ export class MyScene extends CGFscene {
     this.glassAppearance.setDiffuse(0, 0, 0, 1);
     this.glassAppearance.setSpecular(1, 1, 1, 1);
     this.glassAppearance.setShininess(10.0);
+
+    this.waterShader = new CGFshader(this.gl, "shaders/water.vert", "shaders/water.frag");
+    this.waterShader.setUniformsValues({ uTime: 0 });
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -274,6 +277,12 @@ export class MyScene extends CGFscene {
     if (this.gui.isKeyPressed("KeyO") && !this.helicopter.getBucketIsEmpty()) {
       this.helicopter.setBucketEmpty();
       // TODO: release water animation
+    }
+
+    if (this.waterShader) {
+        this.waterShader.setUniformsValues({ 
+          uTime: (t / 2000.0) % 1.0 
+        });
     }
 
     this.helicopter.update(dt);

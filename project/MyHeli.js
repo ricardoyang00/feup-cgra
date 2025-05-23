@@ -114,7 +114,7 @@ export class MyHeli extends CGFobject {
     }
 
     accelerate(v) {
-        const maxSpeed = 12;
+        const maxSpeed = 12 * this.scene.speedFactor;
         this.speed += v;
         if (this.speed > maxSpeed) {
             this.speed = maxSpeed;
@@ -247,7 +247,9 @@ export class MyHeli extends CGFobject {
                 this.position[2] += vz * dt;
                 
                 // Update the lean angle based on speed
-                this.leanAngle = this.speed * this.maxLeanAngle / 10;
+                const maxSpeed1 = 12 * this.scene.speedFactor;
+                this.leanAngle = (this.speed / maxSpeed1) * this.maxLeanAngle;
+                this.leanAngle = Math.max(-this.maxLeanAngle, Math.min(this.maxLeanAngle, this.leanAngle));
 
                 this.bucketFollowMovement();
                 break;
@@ -265,7 +267,9 @@ export class MyHeli extends CGFobject {
                 this.position[2] += vzBrake * dt;
                 this.bucketFollowMovement();
 
-                this.leanAngle = this.speed * this.maxLeanAngle / 10;
+                const maxSpeed2 = 12 * this.scene.speedFactor;
+                this.leanAngle = (this.speed / maxSpeed2) * this.maxLeanAngle;
+                this.leanAngle = Math.max(-this.maxLeanAngle, Math.min(this.maxLeanAngle, this.leanAngle));
 
                 if (Math.abs(this.speed) < 0.01) {
                     this.speed = 0;
@@ -495,6 +499,7 @@ export class MyHeli extends CGFobject {
             );
             this.bucket.display();
 
+            //if (this.state === "flying") {
             if (!this.bucketIsEmpty) {
                 this.scene.pushMatrix();
                 this.scene.translate(0, this.bucket.bucketHeight / 1.5, 0);
@@ -502,8 +507,12 @@ export class MyHeli extends CGFobject {
                 this.scene.scale(this.bucket.bucketRadius * waterCircleScale, 1, this.bucket.bucketRadius * waterCircleScale);
                 this.scene.rotate(this.leanAngle * 0.5, 1, 0, 0);
                 this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+                this.scene.setActiveShader(this.scene.waterShader);
                 this.waterTexture.bind(0);
+                this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_WRAP_S, this.scene.gl.REPEAT);
+                this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_WRAP_T, this.scene.gl.REPEAT);
                 this.waterCircle.display();
+                this.scene.setActiveShader(this.scene.defaultShader);
                 this.scene.popMatrix();
             }
         }
