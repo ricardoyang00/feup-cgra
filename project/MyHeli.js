@@ -188,6 +188,7 @@ export class MyHeli extends CGFobject {
     }
 
     update(dt) {
+        this.bucket.update(dt);
         //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":

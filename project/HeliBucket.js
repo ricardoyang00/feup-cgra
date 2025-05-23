@@ -23,6 +23,7 @@ export class HeliBucket extends CGFobject {
 
         this.bottomOpenAngle = 0;
         this.bottomOpening = false;
+        this.bottomClosing = false;
         this.bottomHingeSide = 0;
 
         this.metalTexture = new CGFtexture(scene, 'textures/helicopter/bucket_metal.jpg');
@@ -50,15 +51,24 @@ export class HeliBucket extends CGFobject {
     }
 
     openBottom() {
-        this.bottomOpening = true;
+        if (!this.bottomOpening && !this.bottomClosing && this.bottomOpenAngle === 0) {
+            this.bottomOpening = true;
+        }
     }
 
     update(dt) {
-        if (this.bottomOpening && this.bottomOpenAngle < Math.PI / 2) {
+        if (this.bottomOpening) {
             this.bottomOpenAngle += dt * 2;
-            if (this.bottomOpenAngle > Math.PI / 2) {
+            if (this.bottomOpenAngle >= Math.PI / 2) {
                 this.bottomOpenAngle = Math.PI / 2;
                 this.bottomOpening = false;
+                this.bottomClosing = true;
+            }
+        } else if (this.bottomClosing) {
+            this.bottomOpenAngle -= dt * 2;
+            if (this.bottomOpenAngle <= 0) {
+                this.bottomOpenAngle = 0;
+                this.bottomClosing = false;
             }
         }
     }
@@ -129,7 +139,7 @@ export class HeliBucket extends CGFobject {
         const hingeAngle = this.bottomHingeSide;
         const r = this.bucketRadius;
         this.scene.translate(r * Math.cos(hingeAngle), 0, r * Math.sin(hingeAngle));
-        this.scene.rotate(-this.bottomOpenAngle, 0, 0, 1); // Open around Z axis
+        this.scene.rotate(this.bottomOpenAngle, 0, 0, 1); // Open around Z axis
         this.scene.translate(-r * Math.cos(hingeAngle), 0, -r * Math.sin(hingeAngle));
         this.scene.scale(this.bucketRadius, 1, this.bucketRadius);
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);
