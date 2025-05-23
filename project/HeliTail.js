@@ -1,7 +1,7 @@
 import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliTailCuttablePyramid } from './HeliTailCuttablePyramid.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
-import { MyCylinder } from './MyCylinder.js';
+import { MyCylinder } from './primitives/MyCylinder.js';
 
 export class HeliTail extends CGFobject {
     constructor(scene) {

@@ -1,16 +1,15 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance, CGFshader } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
-import { MyBuilding } from "./MyBuilding.js";
-import { MyCone } from "./MyCone.js";
+import { MyBuilding } from "./objects/building/MyBuilding.js";
+import { MyCone } from "./primitives/MyCone.js";
 import { MyPyramid } from "./MyPyramid.js"; 
-import { MyTree } from "./MyTree.js";
-import { MyForest } from "./MyForest.js";
+import { MyTree } from "./objects/forest/MyTree.js";
+import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
-import { MyFire } from "./MyFire.js";
-import { MyFire2 } from "./MyFire2.js";
+import { MyFire } from "./objects/MyFire.js";
 
 /**
  * MyScene
@@ -37,6 +36,18 @@ export class MyScene extends CGFscene {
 
     this.prevP = false;
     this.prevL = false;
+    
+    // Fire Areas
+    // areas as rectangles [x1, z1, x2, z2]
+    this.fireAreas = [
+      [-20, -20, -10, -10],  
+      [10, 10, 20, 20],
+      [10, -20, 20, -10],
+      [-20, 10, -10, 20]
+    ];
+    
+    this.fires = [];
+    this.maxFires = 3;
 
     this.maskLoaded = false;
     this.maskData = null;
@@ -86,12 +97,13 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 7, 7, 10, 10);
     this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
-    this.fire = new MyFire(this);
-    this.fire2 = new MyFire2(this);
+    this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
+    
     // fire related 
     this.lastFireAnimTime = 0;
     this.fireAnimInterval = 120;
+    
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -207,15 +219,16 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
-    // just for test the fire
-    if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
-
-    //if(this.gui.isKeyPressed("KeyU")) this.fire2.animateTextures();
-    if (t - this.lastFireAnimTime > this.fireAnimInterval) {
-        this.fire2.animateTextures();
-        this.lastFireAnimTime = t;
+    // fire related test
+    /*if(this.gui.isKeyPressed("KeyQ")) this.fire.graduallyRemoveTriangles();
+    this.fire.update(t);*/
+    
+    // Fire(s) animation
+    for (const fireInfo of this.fires) {
+      fireInfo.fire.update(t);
     }
     //
+    
 
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
@@ -310,6 +323,59 @@ export class MyScene extends CGFscene {
     this.setDiffuse(0.5, 0.5, 0.5, 1.0);
     this.setSpecular(0.5, 0.5, 0.5, 1.0);
     this.setShininess(10.0);
+  }
+
+  // Create a new fire in a random position within one of the defined fire areas
+  setFire() {
+    if (this.fires.length >= this.maxFires) {
+      console.log("Maximum number of fires reached");
+      return false;
+    }
+
+    // min distance between fires
+    const minDistanceBetweenFires = 10;
+    
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    while (attempts < maxAttempts) {
+      const areaIndex = Math.floor(Math.random() * this.fireAreas.length);
+      const area = this.fireAreas[areaIndex];
+      const x = area[0] + Math.random() * (area[2] - area[0]);
+      const z = area[1] + Math.random() * (area[3] - area[1]);
+      
+      // Check if position is too close to an existing fire
+      let tooClose = false;
+      for (const existingFire of this.fires) {
+        const dx = existingFire.position[0] - x;
+        const dz = existingFire.position[2] - z;
+        const distanceSquared = dx * dx + dz * dz;
+        
+        if (distanceSquared < minDistanceBetweenFires * minDistanceBetweenFires) {
+          tooClose = true;
+          break;
+        }
+      }
+      
+      if (!tooClose) {
+        const fire = new MyFire(this);
+        
+        this.fires.push({
+          fire: fire,
+          position: [x, 0, z],
+          scale: 4 + Math.random() * 2,         // 4 to 6
+          rotation: Math.random() * Math.PI * 2
+        });
+        
+        console.log(`Fire created at position [${x.toFixed(2)}, 0, ${z.toFixed(2)}]`);
+        return true;
+      }
+      
+      attempts++;
+    }
+    
+    console.log("Could not find a suitable position for new fire after multiple attempts");
+    return false;
   }
 
   display() {
@@ -427,15 +493,24 @@ export class MyScene extends CGFscene {
       
       this.gl.disable(this.gl.BLEND);
     }
-
-
     // Fire
+    /*
     this.pushMatrix();
     this.scale(5,5,5);
     this.translate(2, 0, 4);
     //his.fire.display();
-    this.fire2.display();
+    this.fire.display();
     this.popMatrix();
+    */
+    // Display all dynamically created fires
+    for (const fireInfo of this.fires) {
+      this.pushMatrix();
+      this.translate(fireInfo.position[0], fireInfo.position[1], fireInfo.position[2]);
+      this.rotate(fireInfo.rotation, 0, 1, 0);
+      this.scale(fireInfo.scale, fireInfo.scale, fireInfo.scale);
+      fireInfo.fire.display();
+      this.popMatrix();
+    }
 
     this.setDefaultAppearance();
   }

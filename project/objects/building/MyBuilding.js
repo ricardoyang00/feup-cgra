@@ -1,6 +1,6 @@
-import { CGFobject, CGFtexture, CGFappearance } from '../lib/CGF.js';
+import { CGFobject, CGFtexture, CGFappearance } from '../../../lib/CGF.js';
 import { MyModule } from './MyModule.js';
-import { MyQuad } from './MyQuad.js';
+import { MyQuad } from '../../primitives/MyQuad.js';
 import { MyWindow } from './MyWindow.js';
 
 export class MyBuilding extends CGFobject {
