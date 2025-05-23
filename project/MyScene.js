@@ -94,10 +94,7 @@ export class MyScene extends CGFscene {
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
     this.fire = new MyFire(this);
     this.fire2 = new MyFire2(this);
-
-    // fire related 
-    this.lastFireAnimTime = 0;
-    this.fireAnimInterval = 120;
+    
 
     this.displayAxis = true;
     this.displayNormals = false;
@@ -162,17 +159,11 @@ export class MyScene extends CGFscene {
     );
   }
   update(t) {
-    // Update lastT for shader animationsp
-    
-    // just for test the fire
+    // fire related
     if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
-
-    //if(this.gui.isKeyPressed("KeyU")) this.fire2.animateTextures();
-    if (t - this.lastFireAnimTime > this.fireAnimInterval) {
-        this.fire2.animateTextures();
-        this.lastFireAnimTime = t;
-    }
+    this.fire2.update(t);
     //
+    
 
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;

@@ -16,6 +16,9 @@ export class MyFire2 extends CGFobject {
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fireWave.vert", "shaders/fireWave.frag");
         this.fireShader.setUniformsValues({ timeFactor: 0 });
         
+        this.lastFireAnimTime = 0;
+        this.fireAnimInterval = 120;
+
         this.initFire();
     }
 
@@ -132,5 +135,12 @@ export class MyFire2 extends CGFobject {
                 clearInterval(removalInterval);
             }
         }, interval);
+    }
+
+    update(t) {
+        if (t - this.lastFireAnimTime > this.fireAnimInterval) {
+            this.animateTextures();
+            this.lastFireAnimTime = t;
+        }
     }
 }
