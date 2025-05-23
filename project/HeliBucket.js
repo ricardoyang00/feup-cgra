@@ -1,6 +1,6 @@
 import { CGFobject, CGFtexture } from '../lib/CGF.js';
 import { HeliBucketRing } from './HeliBucketRing.js';
-import { MyCylinder } from './MyCylinder.js';
+import { MyCylinder } from './primitives/MyCylinder.js';
 
 /**
  * HeliBucket

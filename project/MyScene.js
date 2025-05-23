@@ -2,10 +2,10 @@ import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance } from "../lib/
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyBuilding } from "./MyBuilding.js";
-import { MyCone } from "./MyCone.js";
+import { MyCone } from "./primitives/MyCone.js";
 import { MyPyramid } from "./MyPyramid.js"; 
-import { MyTree } from "./MyTree.js";
-import { MyForest } from "./MyForest.js";
+import { MyTree } from "./objects/forest/MyTree.js";
+import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
