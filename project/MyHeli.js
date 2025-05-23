@@ -5,7 +5,7 @@ import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
-import { MyQuad } from './MyQuad.js';
+import { MyCircle } from './MyCircle.js';
 
 /**
  * MyHeli
@@ -75,6 +75,9 @@ export class MyHeli extends CGFobject {
         this.bodyOuter = new HeliBodyOuter(scene);
         this.tail = new HeliTail(scene);
         this.landingSkids = new HeliLandingSkids(scene);
+
+        this.waterCircle = new MyCircle(scene, 32);
+        this.waterTexture = new CGFtexture(scene, "textures/lake/water.jpg");
     }
 
     getWorldPosition() {
@@ -400,7 +403,7 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "filling_bucket":
-                // TODO: Bucket filling logic
+                this.bucketIsEmpty = false;
                 break;
 
             default:
@@ -484,6 +487,17 @@ export class MyHeli extends CGFobject {
                 this.bucket.position[2] - this.position[2]
             );
             this.bucket.display();
+
+            if (!this.bucketIsEmpty) {
+                this.scene.pushMatrix();
+                this.scene.translate(0, this.bucket.bucketHeight / 1.5, 0);
+                const waterCircleScale = 0.92;
+                this.scene.scale(this.bucket.bucketRadius * waterCircleScale, 1, this.bucket.bucketRadius * waterCircleScale);
+                this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+                this.waterTexture.bind(0);
+                this.waterCircle.display();
+                this.scene.popMatrix();
+            }
         }
         this.scene.popMatrix();
 
