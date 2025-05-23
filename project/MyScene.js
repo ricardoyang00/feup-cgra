@@ -112,7 +112,8 @@ export class MyScene extends CGFscene {
       uMaskSampler: 0,
       uGrassSampler: 1,
       uWaterSampler: 2,
-      textureScale: 100
+      textureScale: 100,
+      time: 0,
     });
     this.maskImage = new Image();
     this.maskImage.src = 'textures/lake/lake_mask.png';
@@ -207,6 +208,7 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
+    this.maskShader.setUniformsValues({ time: t / 1000.0 % 1000 });
     // just for test the fire
     if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
 
