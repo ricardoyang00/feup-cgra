@@ -9,8 +9,7 @@ import { MyForest } from "./MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
-import { MyFire } from "./MyFire.js";
-import { MyFire2 } from "./MyFire2.js";
+import { MyFire } from "./objects/MyFire.js";
 
 /**
  * MyScene
@@ -104,8 +103,7 @@ export class MyScene extends CGFscene {
     this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
-    this.fire = new MyFire(this);
-    this.fire2 = new MyFire2(this);
+    //this.fire = new MyFire(this);
     
 
     this.displayAxis = true;
@@ -171,8 +169,8 @@ export class MyScene extends CGFscene {
     );
   }  update(t) {
     // fire related test
-    /*if(this.gui.isKeyPressed("KeyQ")) this.fire2.graduallyRemoveTriangles();
-    this.fire2.update(t);*/
+    /*if(this.gui.isKeyPressed("KeyQ")) this.fire.graduallyRemoveTriangles();
+    this.fire.update(t);*/
     
     // Fire(s) animation
     for (const fireInfo of this.fires) {
@@ -294,7 +292,7 @@ export class MyScene extends CGFscene {
       }
       
       if (!tooClose) {
-        const fire = new MyFire2(this);
+        const fire = new MyFire(this);
         
         this.fires.push({
           fire: fire,
@@ -433,7 +431,7 @@ export class MyScene extends CGFscene {
     this.scale(5,5,5);
     this.translate(2, 0, 4);
     //his.fire.display();
-    this.fire2.display();
+    this.fire.display();
     this.popMatrix();
     */
     // Display all dynamically created fires
