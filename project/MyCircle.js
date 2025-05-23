@@ -1,9 +1,24 @@
-import { CGFobject } from '../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../lib/CGF.js';
 
 export class MyCircle extends CGFobject {
-    constructor(scene, slices) {
+    constructor(scene, slices, bothSides = false, texture = null, color = [1, 1, 1, 1]) {
         super(scene);
         this.slices = slices;
+        this.bothSides = bothSides;
+        this.texture = texture;
+        if (texture || color) {
+            this.appearance = new CGFappearance(scene);
+            if (color) {
+                this.appearance.setAmbient(...color);
+                this.appearance.setDiffuse(...color);
+                this.appearance.setSpecular(0.1, 0.1, 0.1, 1.0);
+                this.appearance.setShininess(10.0);
+            }
+            if (texture) {
+                this.appearance.setTexture(texture);
+                this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+            }
+        }
         this.initBuffers();
     }
 
@@ -34,7 +49,34 @@ export class MyCircle extends CGFobject {
             }
         }
 
+        if (this.bothSides) {
+            const offset = this.vertices.length / 3;
+            // Center vertex for back face
+            this.vertices.push(0, 0, 0);
+            this.normals.push(0, 0, -1);
+            this.texCoords.push(0.5, 0.5);
+
+            for (let i = 0; i <= this.slices; i++) {
+                const angle = i * angleIncrement;
+                const x = Math.cos(angle);
+                const y = Math.sin(angle);
+
+                this.vertices.push(x, y, 0);
+                this.normals.push(0, 0, -1);
+                this.texCoords.push(0.5 + x * 0.5, 0.5 - y * 0.5);
+
+                if (i > 0) {
+                    this.indices.push(offset, offset + i + 1, offset + i);
+                }
+            }
+        }
+
         this.primitiveType = this.scene.gl.TRIANGLES;
         this.initGLBuffers();
+    }
+
+    display() {
+        if (this.appearance) this.appearance.apply();
+        super.display();
     }
 }

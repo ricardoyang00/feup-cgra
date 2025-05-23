@@ -76,7 +76,7 @@ export class MyHeli extends CGFobject {
         this.tail = new HeliTail(scene);
         this.landingSkids = new HeliLandingSkids(scene);
 
-        this.waterCircle = new MyCircle(scene, 32);
+        this.waterCircle = new MyCircle(scene, 16);
         this.waterTexture = new CGFtexture(scene, "textures/lake/water.jpg");
     }
 
