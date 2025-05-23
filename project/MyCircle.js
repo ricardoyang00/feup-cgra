@@ -1,24 +1,10 @@
 import { CGFobject, CGFappearance } from '../lib/CGF.js';
 
 export class MyCircle extends CGFobject {
-    constructor(scene, slices, bothSides = false, texture = null, color = [1, 1, 1, 1]) {
+    constructor(scene, slices, bothSides = false) {
         super(scene);
         this.slices = slices;
         this.bothSides = bothSides;
-        this.texture = texture;
-        if (texture || color) {
-            this.appearance = new CGFappearance(scene);
-            if (color) {
-                this.appearance.setAmbient(...color);
-                this.appearance.setDiffuse(...color);
-                this.appearance.setSpecular(0.1, 0.1, 0.1, 1.0);
-                this.appearance.setShininess(10.0);
-            }
-            if (texture) {
-                this.appearance.setTexture(texture);
-                this.appearance.setTextureWrap('REPEAT', 'REPEAT');
-            }
-        }
         this.initBuffers();
     }
 

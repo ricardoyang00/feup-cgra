@@ -274,10 +274,13 @@ export class MyScene extends CGFscene {
           break;
     }
 
-    if (this.gui.isKeyPressed("KeyO") && this.helicopter.getBucketIsEmpty()) {
-      this.helicopter.setBucketEmpty();
+    if (this.gui.isKeyPressed("KeyO")) {
       this.helicopter.bucket.openBottom();
-      // TODO: release water animation
+
+      if (!this.helicopter.getBucketIsEmpty()) {
+        this.helicopter.setBucketEmpty();
+        // TODO: release water animation
+      }
     }
 
     if (this.waterShader) {

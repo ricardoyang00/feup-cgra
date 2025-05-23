@@ -35,7 +35,7 @@ export class HeliBucket extends CGFobject {
         this.bucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture, false, false, 1, 1, 1, false);
         this.innerBucket = new MyCylinder(scene, 16, 1, [1, 1, 1, 1], this.metalTexture2, false, true, 1, 1, 1, false);
         this.bucketRing = new HeliBucketRing(scene, 16, this.bucketRadius - this.bucketThickness, this.bucketRadius);
-        this.bucketBottom = new MyCircle(scene, 16, true, this.metalTexture2, [1, 1, 1, 1]);
+        this.bucketBottom = new MyCircle(scene, 16, true);
     }
 
     setPosition(x, y, z) {
@@ -139,7 +139,7 @@ export class HeliBucket extends CGFobject {
         const hingeAngle = this.bottomHingeSide;
         const r = this.bucketRadius;
         this.scene.translate(r * Math.cos(hingeAngle), 0, r * Math.sin(hingeAngle));
-        this.scene.rotate(this.bottomOpenAngle, 0, 0, 1); // Open around Z axis
+        this.scene.rotate(this.bottomOpenAngle, 0, 0, 1);
         this.scene.translate(-r * Math.cos(hingeAngle), 0, -r * Math.sin(hingeAngle));
         this.scene.scale(this.bucketRadius, 1, this.bucketRadius);
         this.scene.rotate(-Math.PI / 2, 1, 0, 0);
