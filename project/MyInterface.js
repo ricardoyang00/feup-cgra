@@ -29,6 +29,8 @@ export class MyInterface extends CGFinterface {
             this.scene.setUpdatePeriod(1000 / value);
         });
         
+        this.gui.add(this.scene, 'setFire').name('Set a Fire 🔥');
+        
         return true;
     }
 
