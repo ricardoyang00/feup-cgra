@@ -12,8 +12,6 @@ uniform float uTurbulence;
 uniform float heightScale;
 uniform float waterDisturbance;
 
-attribute float aIsWater;
-
 varying vec2 vTextureCoord;
 
 void main() {
@@ -35,7 +33,7 @@ void main() {
     float fade = 1.0 - smoothstep(0.0, radius, dist);  // 1 at center, 0 at radius
     
     // displacement calculation, weak at center, stronger at radius
-    float displacement = uTurbulence * waterDisturbance * fade * wave * heightScale * aIsWater;
+    float displacement = uTurbulence * waterDisturbance * fade * wave * heightScale;
 
     vec3 displacedPosition = aVertexPosition + vec3(0.0, 0.0, displacement);
 
