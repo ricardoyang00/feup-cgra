@@ -224,9 +224,7 @@ export class MyScene extends CGFscene {
 
   update(t) {
     const heliWorldPos = this.helicopter.getWorldPosition();
-    const turbulenceStrength = 
-      (this.helicopter.state === "descending_to_lake" || this.helicopter.state === "ascending_from_lake" || this.helicopter.state === "filling_bucket") 
-      ? 1.0 : 0.0;
+    let turbulenceStrength = this.helicopter.getLakeTransitionProgress();
 
     this.maskShader.setUniformsValues({
       uHeliPos: [heliWorldPos[0], heliWorldPos[2]],

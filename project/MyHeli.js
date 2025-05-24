@@ -82,6 +82,8 @@ export class MyHeli extends CGFobject {
         this.waterfallCylinder = new MyCylinder(scene, 16, 3, [1,1,1,1], this.waterTexture, true, false, 0.3, 0.3, 1, false);
         this.waterFallDuration = 1200; // ms
         this.awaitingPour = false;
+        this.turbulenceFade = 0;
+        this.turbulenceFadeDuration = 2.0;
     }
 
     getWorldPosition() {
@@ -114,6 +116,7 @@ export class MyHeli extends CGFobject {
 
         this.awaitingPour = false;
         this.bucketIsEmpty = true;
+        this.turbulenceFade = 0;
     }
 
     turn(v) {
@@ -163,26 +166,20 @@ export class MyHeli extends CGFobject {
         }
     }
 
-    getWaterfallProgress() {
-        if (this.state !== "pouring_water" || !this.pouringStartTime) return 0;
-        const duration = 1200; // ms, same as in updatePouringWater
-        const elapsed = performance.now() - this.pouringStartTime;
-        return Math.max(0, 1 - elapsed / duration);
-    }
-
     // function to keep track of the helicopter approaching or leaving the lake Y
     getLakeTransitionProgress() {
         if (this.state === "descending_to_lake") {
-            // from bucket Y to lake Y
             const total = this.bucket.position[1] - this.bucketTouchWaterY;
             const range = this.cruisingAltitude - this.bucketTouchWaterY;
-            return Math.min(Math.max(1 - (total / range), 0), 1);
+            this.turbulenceFade = Math.min(Math.max(1 - (total / range), 0), 1);
+            return this.turbulenceFade;
         } else if (this.state === "ascending_from_lake") {
-            // from lake Y to bucket Y
-            const total = this.bucket.position[1] - this.bucketTouchWaterY;
-            const range = this.cruisingAltitude - this.bucketTouchWaterY;
-            return Math.min(Math.max((total / range), 0), 1);
+            return this.turbulenceFade; // use the fading turbulence value
+        } else if (this.state === "filling_bucket") {
+            this.turbulenceFade = 1.0; // full turbulence when filling
+            return 1.0;
         }
+        this.turbulenceFade = 0; // no turbulence in other states
         return 0;
     }
 
@@ -242,6 +239,13 @@ export class MyHeli extends CGFobject {
             this.pouringStartTime = performance.now();
             this.awaitingPour = false;
         }
+
+        if (this.state === "ascending_from_lake") {
+            this.turbulenceFade = Math.max(this.turbulenceFade - dt / this.turbulenceFadeDuration, 0);
+        } else if (this.state !== "filling_bucket" && this.state !== "descending_to_lake") {
+            this.turbulenceFade = 0; // Reset in other states
+        }
+
         //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":
@@ -572,20 +576,25 @@ export class MyHeli extends CGFobject {
             }
 
             if (this.pouringStartTime) {
-                const streamLength = 1;  // water cylinder height
+                const waterCylinderHeight = 1;
                 const r = this.bucket.bucketRadius * waterCircleScale;
                 const elapsed = performance.now() - this.pouringStartTime;
                 const t = Math.min(elapsed / this.waterFallDuration, 1);
             
-                const startY = -this.bucket.bucketHeight / 2 - streamLength / 2;
-                const endY = -this.bucket.position[1] - streamLength / 2;
+                const widthFactor = 1 + 10 * t; // grows up to 11x of the initial width
+                const heightFactor = 1 - 0.9 * t; // shrinks to 10% of initial height
+                const dynamicHeight = waterCylinderHeight * heightFactor;
+                const dynamicRadius = r * widthFactor;
+                
+                const startY = -this.bucket.bucketHeight / 2 - waterCylinderHeight / 2;
+                const endY = -this.bucket.position[1] - waterCylinderHeight / 2;
                 const fallY = startY + (endY - startY) * t;
             
                 // Only display if above ground
-                if (fallY + streamLength / 2 > -this.bucket.position[1]) {
+                if (fallY + dynamicHeight / 2 > -this.bucket.position[1]) {
                     this.scene.pushMatrix();
                     this.scene.translate(0, fallY, 0);
-                    this.scene.scale(r, streamLength, r);
+                    this.scene.scale(dynamicRadius, dynamicHeight, dynamicRadius);
                     this.scene.setActiveShader(this.scene.waterfallShader);
                     this.waterfallCylinder.display();
                     this.scene.setActiveShader(this.scene.defaultShader);
