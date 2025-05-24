@@ -540,20 +540,11 @@ export class MyScene extends CGFscene {
     this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
     this.popMatrix();
-
-    // Render glass texture in FPV mode
+    
     if (this.firstPersonView) {
-      this.gl.enable(this.gl.BLEND);
-      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-      
-      this.pushMatrix();
-      this.loadIdentity();
-      this.glassAppearance.apply();
-      this.fullscreenQuad.display();
-      this.popMatrix();
-      
-      this.gl.disable(this.gl.BLEND);
+      this.helicopter.displayCockpit();
     }
+    
     // Fire
     /*
     this.pushMatrix();
