@@ -8,7 +8,6 @@ import { MyTree } from "./objects/forest/MyTree.js";
 import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./MyHeli.js";
 import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
-import { MyFullscreenQuad } from "./MyFullscreenQuad.js";
 import { MyFire } from "./objects/MyFire.js";
 
 /**
@@ -149,16 +148,6 @@ export class MyScene extends CGFscene {
     //this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
     //this.planeMaterial.setShininess(10.0);
 
-    this.fullscreenQuad = new MyFullscreenQuad(this);
-    this.glassTexture = new CGFtexture(this, "textures/helicopter/transparent_glass.png");
-    this.glassAppearance = new CGFappearance(this);
-    this.glassAppearance.setTexture(this.glassTexture);
-    this.glassAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
-    this.glassAppearance.setAmbient(0.5, 0.5, 0.5, 1);
-    this.glassAppearance.setDiffuse(0, 0, 0, 1);
-    this.glassAppearance.setSpecular(1, 1, 1, 1);
-    this.glassAppearance.setShininess(10.0);
-
     this.waterShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
 
@@ -224,7 +213,8 @@ export class MyScene extends CGFscene {
     const index = (pixelY * this.maskWidth + pixelX) * 4;
     const lakePoint = this.maskData[index];
 
-    return lakePoint === 0;
+    const LAKE_THRESHOLD = 50;
+    return lakePoint < LAKE_THRESHOLD;
   }
 
   isOverFire(position) {
@@ -485,12 +475,15 @@ export class MyScene extends CGFscene {
 
 
     // Display the building
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.pushMatrix();
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.translate(0, 10, 0);
     this.scale(5, 5, 5);
     this.building.display();
     this.popMatrix();
+    this.gl.disable(this.gl.BLEND);
     
 
     //// FOREST
