@@ -6,6 +6,7 @@ import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
 import { MyCircle } from './primitives/MyCircle.js';
+import { MyCylinder } from './primitives/MyCylinder.js';
 
 /**
  * MyHeli
@@ -78,6 +79,9 @@ export class MyHeli extends CGFobject {
 
         this.waterTexture = new CGFtexture(scene, "textures/lake/water.jpg");
         this.waterCircle = new MyCircle(scene, 16);
+        this.waterfallCylinder = new MyCylinder(scene, 16, 3, [1,1,1,1], this.waterTexture, true, false, 0.3, 0.3, 1, false);
+        this.waterFallDuration = 1200; // ms
+        this.awaitingPour = false;
     }
 
     getWorldPosition() {
@@ -107,6 +111,9 @@ export class MyHeli extends CGFobject {
             this.bucketInitialY,
             this.position[2]
         );
+
+        this.awaitingPour = false;
+        this.bucketIsEmpty = true;
     }
 
     turn(v) {
@@ -137,6 +144,30 @@ export class MyHeli extends CGFobject {
 
     setBucketEmpty() {
         this.bucketIsEmpty = true;
+    }
+
+    startPouringWater() {
+        if (!this.bucketIsEmpty && this.state !== "pouring_water") {
+            this.bucket.openBottom();
+            this.awaitingPour = true;
+        }
+    }
+    
+    updatePouringWater() {
+        if (this.state === "pouring_water" && this.pouringStartTime) {
+            if (performance.now() - this.pouringStartTime > this.waterFallDuration) {
+                this.waterfallStartTime = performance.now();
+                this.pouringStartTime = null;
+                this.state = "flying";
+            }
+        }
+    }
+
+    getWaterfallProgress() {
+        if (this.state !== "pouring_water" || !this.pouringStartTime) return 0;
+        const duration = 1200; // ms, same as in updatePouringWater
+        const elapsed = performance.now() - this.pouringStartTime;
+        return Math.max(0, 1 - elapsed / duration);
     }
 
     bucketFollowMovement() {
@@ -189,6 +220,12 @@ export class MyHeli extends CGFobject {
 
     update(dt) {
         this.bucket.update(dt);
+        if (this.awaitingPour && this.bucket.bottomOpenAngle >= (Math.PI * 3) / 4 && !this.bucket.bottomOpening) {
+            this.setBucketEmpty();
+            this.state = "pouring_water";
+            this.pouringStartTime = performance.now();
+            this.awaitingPour = false;
+        }
         //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":
@@ -242,6 +279,7 @@ export class MyHeli extends CGFobject {
                 break;
 
             case "flying":
+            case "pouring_water":
                 const vx = this.speed * Math.sin(this.orientation);
                 const vz = this.speed * Math.cos(this.orientation);
                 this.position[0] += vx * dt;
@@ -432,6 +470,7 @@ export class MyHeli extends CGFobject {
             case "reorienting_to_land":
             case "releasing_bucket":
             case "retracting_bucket":
+            case "pouring_water":
                 this.upperPropSpeed = this.maxPropSpeed * this.scene.speedFactor;
                 break;
 
@@ -499,11 +538,11 @@ export class MyHeli extends CGFobject {
             );
             this.bucket.display();
 
-            //if (this.state === "flying") {
+            const waterCircleScale = 0.92;
+
             if (!this.bucketIsEmpty) {
                 this.scene.pushMatrix();
                 this.scene.translate(0, this.bucket.bucketHeight / 1.5, 0);
-                const waterCircleScale = 0.92;
                 this.scene.scale(this.bucket.bucketRadius * waterCircleScale, 1, this.bucket.bucketRadius * waterCircleScale);
                 this.scene.rotate(this.leanAngle * 0.5, 1, 0, 0);
                 this.scene.rotate(-Math.PI / 2, 1, 0, 0);
@@ -515,6 +554,29 @@ export class MyHeli extends CGFobject {
                 this.scene.setActiveShader(this.scene.defaultShader);
                 this.scene.popMatrix();
             }
+
+            if (this.pouringStartTime) {
+                const streamLength = 1;  // water cylinder height
+                const r = this.bucket.bucketRadius * waterCircleScale;
+                const elapsed = performance.now() - this.pouringStartTime;
+                const t = Math.min(elapsed / this.waterFallDuration, 1);
+            
+                const startY = -this.bucket.bucketHeight / 2 - streamLength / 2;
+                const endY = -this.bucket.position[1] - streamLength / 2;
+                const fallY = startY + (endY - startY) * t;
+            
+                // Only display if above ground
+                if (fallY + streamLength / 2 > -this.bucket.position[1]) {
+                    this.scene.pushMatrix();
+                    this.scene.translate(0, fallY, 0);
+                    this.scene.scale(r, streamLength, r);
+                    this.scene.setActiveShader(this.scene.waterfallShader);
+                    this.waterfallCylinder.display();
+                    this.scene.setActiveShader(this.scene.defaultShader);
+                    this.scene.popMatrix();
+                }
+            }
+
         }
         this.scene.popMatrix();
 

@@ -58,9 +58,9 @@ export class HeliBucket extends CGFobject {
 
     update(dt) {
         if (this.bottomOpening) {
-            this.bottomOpenAngle += dt * 2;
-            if (this.bottomOpenAngle >= Math.PI / 2) {
-                this.bottomOpenAngle = Math.PI / 2;
+            this.bottomOpenAngle += dt * 6;
+            if (this.bottomOpenAngle >= (Math.PI * 3) / 4) {
+                this.bottomOpenAngle = (Math.PI * 3) / 4;
                 this.bottomOpening = false;
                 this.bottomClosing = true;
             }

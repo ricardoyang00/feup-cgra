@@ -91,11 +91,11 @@ export class MyScene extends CGFscene {
       this.buildingColor
     );
                     
-    this.cone = new MyCone(this);
-    this.pyramid = new MyPyramid(this);
-    this.tree = new MyTree(this);
-    this.forest = new MyForest(this, 7, 7, 10, 10);
-    this.forestSmall = new MyForest(this, 4, 4, 4, 4);
+    //this.cone = new MyCone(this);
+    //this.pyramid = new MyPyramid(this);
+    //this.tree = new MyTree(this);
+    //this.forest = new MyForest(this, 7, 7, 10, 10);
+    //this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
@@ -105,7 +105,7 @@ export class MyScene extends CGFscene {
     this.fireAnimInterval = 120;
     
 
-    this.displayAxis = true;
+    this.displayAxis = false;
     this.displayNormals = false;
     this.displayForest = false;
     this.fpsRate = 24;
@@ -160,6 +160,9 @@ export class MyScene extends CGFscene {
 
     this.waterShader = new CGFshader(this.gl, "shaders/water.vert", "shaders/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
+
+    this.waterfallShader = new CGFshader(this.gl, "shaders/water.vert", "shaders/water.frag");
+    this.waterfallShader.setUniformsValues({ uTime: 0, uSampler: 0 });
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -241,7 +244,7 @@ export class MyScene extends CGFscene {
     this.lastT = t;
     const dt = this.deltaT / 1000;
 
-    const movementAllowed = this.helicopter.state == "flying";
+    const movementAllowed = this.helicopter.state == "flying" || this.helicopter.state == "pouring_water";
 
     switch (true) {
       case this.gui.isKeyPressed("KeyW") && movementAllowed:
@@ -291,21 +294,21 @@ export class MyScene extends CGFscene {
     }
 
     if (this.gui.isKeyPressed("KeyO")) {
-      this.helicopter.bucket.openBottom();
-
-      if (!this.helicopter.getBucketIsEmpty()) {
-        this.helicopter.setBucketEmpty();
-        // TODO: release water animation
-      }
+      this.helicopter.startPouringWater();
     }
 
     if (this.waterShader) {
-        this.waterShader.setUniformsValues({ 
-          uTime: (t / 2000.0) % 1.0 
-        });
+      this.waterShader.setUniformsValues({ 
+        uTime: (t / 2000.0) % 1.0 
+      });
+    }
+
+    if (this.waterfallShader) {
+      this.waterfallShader.setUniformsValues({ uTime: (t / 2000.0) % 1.0 });
     }
 
     this.helicopter.update(dt);
+    this.helicopter.updatePouringWater();
 
     if (this.cameraView === 'First Person') {
       this.firstPersonView = true;
