@@ -22,9 +22,9 @@ export class MyHeli extends CGFobject {
         this.state = "ground";
         this.cruisingAltitude = 12;
         this.groundLevel = 1;
-        this.verticalSpeed = 2;
+        this.verticalSpeed = 4;
         this.targetPosition = null; // position to automatically fly to
-        this.bucketIsEmpty = false;
+        this.bucketIsEmpty = true;
         this.bucketRelativePosition;
 
         this.upperPropRotation = 0;
@@ -159,6 +159,7 @@ export class MyHeli extends CGFobject {
     updatePouringWater() {
         if (this.state === "pouring_water" && this.pouringStartTime) {
             if (performance.now() - this.pouringStartTime > this.waterFallDuration) {
+                this.scene.extinguishFireAt(this.getWorldPosition());
                 this.waterfallStartTime = performance.now();
                 this.pouringStartTime = null;
                 this.state = "flying";

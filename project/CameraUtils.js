@@ -69,7 +69,7 @@ export function updateCameraThirdPerson(camera, helicopter, scaleFactor = 6 * 0.
         -heliPos[0] * scaleFactor
     );
 
-    const localOffset = vec3.fromValues(12, 5, 0);
+    const localOffset = vec3.fromValues(30, 10, 0);
     vec3.scale(localOffset, localOffset, scaleFactor);
 
     const oriCos = Math.cos(heliOrientation);

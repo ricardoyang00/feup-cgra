@@ -117,7 +117,7 @@ export class MyFire extends CGFobject {
     }
 
     graduallyRemoveTriangles() {
-        const totalDuration = 6000;
+        const totalDuration = 1200;
         const interval = totalDuration / this.fireTriangles.length;
         const removalInterval = setInterval(() => {
             if (this.fireTriangles.length > 0) {

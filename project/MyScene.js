@@ -222,6 +222,41 @@ export class MyScene extends CGFscene {
     return lakePoint === 0;
   }
 
+  isOverFire(position) {
+    const radius = 5; // radius to check for fire
+    const x = position[0];
+    const z = position[2];
+    for (const fireInfo of this.fires) {
+        const fx = fireInfo.position[0];
+        const fz = fireInfo.position[2];
+        const distSq = (x - fx) * (x - fx) + (z - fz) * (z - fz);
+        if (distSq <= radius * radius) {
+            return true;
+        }
+    }
+    return false;
+  }
+
+  extinguishFireAt(position) {
+    const radius = 10; // radius to extinguish fire
+    for (const fireInfo of this.fires) {
+        const fx = fireInfo.position[0];
+        const fz = fireInfo.position[2];
+        const x = position[0];
+        const z = position[2];
+        const distSq = (x - fx) * (x - fx) + (z - fz) * (z - fz);
+        if (distSq <= radius * radius) {
+            fireInfo.fire.graduallyRemoveTriangles();
+            // remove fire from array
+            setTimeout(() => {
+              const idx = this.fires.indexOf(fireInfo);
+              if (idx !== -1) this.fires.splice(idx, 1);
+            }, 1500);
+            break;
+        }
+    }
+  }
+
   update(t) {
     const heliWorldPos = this.helicopter.getWorldPosition();
     let turbulenceStrength = this.helicopter.getLakeTransitionProgress();
@@ -241,7 +276,6 @@ export class MyScene extends CGFscene {
       fireInfo.fire.update(t);
     }
     //
-    
 
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
@@ -300,7 +334,7 @@ export class MyScene extends CGFscene {
           break;
     }
 
-    if (this.gui.isKeyPressed("KeyO")) {
+    if (this.gui.isKeyPressed("KeyO") && this.isOverFire(heliWorldPos) && movementAllowed) {
       this.helicopter.startPouringWater();
     }
 
