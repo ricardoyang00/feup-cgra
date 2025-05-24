@@ -29,7 +29,7 @@ export class MyScene extends CGFscene {
     this.deceleration = 4;
     this.turnSpeed = 1;
 
-    this.speedFactor = 1;
+    this.speedFactor = 3;
 
     this.heliportPosition = [0, 0, 0];
     this.heliportRadius = 1;
@@ -91,11 +91,11 @@ export class MyScene extends CGFscene {
       this.buildingColor
     );
                     
-    //this.cone = new MyCone(this);
-    //this.pyramid = new MyPyramid(this);
-    //this.tree = new MyTree(this);
-    //this.forest = new MyForest(this, 7, 7, 10, 10);
-    //this.forestSmall = new MyForest(this, 4, 4, 4, 4);
+    this.cone = new MyCone(this);
+    this.pyramid = new MyPyramid(this);
+    this.tree = new MyTree(this);
+    this.forest = new MyForest(this, 7, 7, 10, 10);
+    this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
     this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
 
@@ -223,7 +223,16 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
-    this.maskShader.setUniformsValues({ time: t / 1000.0 % 1000 });
+    const heliWorldPos = this.helicopter.getWorldPosition();
+    const turbulenceStrength = 
+      (this.helicopter.state === "descending_to_lake" || this.helicopter.state === "ascending_from_lake" || this.helicopter.state === "filling_bucket") 
+      ? 1.0 : 0.0;
+
+    this.maskShader.setUniformsValues({
+      uHeliPos: [heliWorldPos[0], heliWorldPos[2]],
+      uTurbulence: turbulenceStrength,
+      time: t / 1000.0 % 1000
+    });
 
     // fire related test
     /*if(this.gui.isKeyPressed("KeyQ")) this.fire.graduallyRemoveTriangles();
@@ -244,7 +253,7 @@ export class MyScene extends CGFscene {
     this.lastT = t;
     const dt = this.deltaT / 1000;
 
-    const movementAllowed = this.helicopter.state == "flying" || this.helicopter.state == "pouring_water";
+    const movementAllowed = this.helicopter.state === "flying" || this.helicopter.state == "pouring_water";
 
     switch (true) {
       case this.gui.isKeyPressed("KeyW") && movementAllowed:

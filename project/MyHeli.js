@@ -24,7 +24,7 @@ export class MyHeli extends CGFobject {
         this.groundLevel = 1;
         this.verticalSpeed = 2;
         this.targetPosition = null; // position to automatically fly to
-        this.bucketIsEmpty = true;
+        this.bucketIsEmpty = false;
         this.bucketRelativePosition;
 
         this.upperPropRotation = 0;
@@ -168,6 +168,22 @@ export class MyHeli extends CGFobject {
         const duration = 1200; // ms, same as in updatePouringWater
         const elapsed = performance.now() - this.pouringStartTime;
         return Math.max(0, 1 - elapsed / duration);
+    }
+
+    // function to keep track of the helicopter approaching or leaving the lake Y
+    getLakeTransitionProgress() {
+        if (this.state === "descending_to_lake") {
+            // from bucket Y to lake Y
+            const total = this.bucket.position[1] - this.bucketTouchWaterY;
+            const range = this.cruisingAltitude - this.bucketTouchWaterY;
+            return Math.min(Math.max(1 - (total / range), 0), 1);
+        } else if (this.state === "ascending_from_lake") {
+            // from lake Y to bucket Y
+            const total = this.bucket.position[1] - this.bucketTouchWaterY;
+            const range = this.cruisingAltitude - this.bucketTouchWaterY;
+            return Math.min(Math.max((total / range), 0), 1);
+        }
+        return 0;
     }
 
     bucketFollowMovement() {
