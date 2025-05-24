@@ -1,8 +1,8 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 import { HeliBodyTriangularPrism } from './HeliBodyTriangularPrism.js';
 import { HeliPropellerSupport } from './HeliPropellerSupport.js';
-import { MyQuad } from './primitives/MyQuad.js';
+import { MyQuad } from '../../primitives/MyQuad.js';
 
 export class HeliBodyOuter extends CGFobject {
     constructor(scene) {

@@ -1,14 +1,14 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance, CGFshader } from "../lib/CGF.js";
-import { MyPlane } from "./MyPlane.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFshader } from "../lib/CGF.js";
+import { MyPlane } from "./primitives/MyPlane.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyBuilding } from "./objects/building/MyBuilding.js";
 import { MyCone } from "./primitives/MyCone.js";
-import { MyPyramid } from "./MyPyramid.js"; 
+import { MyPyramid } from "./primitives/MyPyramid.js"; 
 import { MyTree } from "./objects/forest/MyTree.js";
 import { MyForest } from "./objects/forest/MyForest.js";
-import { MyHeli } from "./MyHeli.js";
-import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
+import { MyHeli } from "./objects/helicopter/MyHeli.js";
 import { MyFire } from "./objects/MyFire.js";
+import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
 
 /**
  * MyScene
@@ -96,8 +96,6 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 7, 7, 10, 10);
     this.forestSmall = new MyForest(this, 4, 4, 4, 4);
     this.helicopter = new MyHeli(this);
-    this.lakeModel = new MyPlane(this, 64, 0, 10, 0, 10);
-
     
     // fire related 
     this.lastFireAnimTime = 0;

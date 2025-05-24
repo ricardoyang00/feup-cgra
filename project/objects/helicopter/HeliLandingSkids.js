@@ -1,4 +1,4 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
 import { HeliBodyRectangularPrism } from './HeliBodyRectangularPrism.js';
 
 export class HeliLandingSkids extends CGFobject {

@@ -1,5 +1,5 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
-import { MyCylinder } from './primitives/MyCylinder.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
+import { MyCylinder } from '../../primitives/MyCylinder.js';
 
 /**
  * HeliPropeller

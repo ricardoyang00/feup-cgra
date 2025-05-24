@@ -1,5 +1,5 @@
 import { CGFappearance } from '../lib/CGF.js';
-import { MySphere } from "./MySphere.js"
+import { MySphere } from "./primitives/MySphere.js"
 
 export class MyPanorama {
     constructor(scene, texture) {

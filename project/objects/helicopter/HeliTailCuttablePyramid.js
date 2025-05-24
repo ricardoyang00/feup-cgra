@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance } from '../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../../../lib/CGF.js';
 
 /**
  * A right pyramid with its apex at the midpoint of the front edge of the base (Y = 0).

@@ -1,5 +1,5 @@
-import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
-import { MyQuad } from './primitives/MyQuad.js';
+import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
+import { MyQuad } from '../../primitives/MyQuad.js';
 
 /**
  * HeliCockpit

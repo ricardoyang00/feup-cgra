@@ -2,7 +2,7 @@ import { CGFobject, CGFtexture, CGFappearance } from '../../../lib/CGF.js';
 import { MyModule } from './MyModule.js';
 import { MyQuad } from '../../primitives/MyQuad.js';
 import { MyWindow } from './MyWindow.js';
-import { MySphere } from '../../MySphere.js';
+import { MySphere } from '../../primitives/MySphere.js';
 
 export class MyBuilding extends CGFobject {
     constructor(scene, totalWidth, totalDepth, numFloorsSide, numWindowsPerFloor, windowType, buildingColor) {
@@ -58,7 +58,7 @@ export class MyBuilding extends CGFobject {
         this.neutralAppearance.setEmission(0, 0, 0, 1);
 
         this.glassAppearance = new CGFappearance(scene);
-        this.glassAppearance.setTexture(new CGFtexture(scene, 'textures/helicopter/transparent_glass.png'));
+        this.glassAppearance.setTexture(new CGFtexture(scene, 'textures/building/transparent_glass.png'));
         this.glassAppearance.setAmbient(0.1, 0.1, 0.1, 1);
         this.glassAppearance.setDiffuse(0.3, 0.3, 0.3, 0.5);
         this.glassAppearance.setSpecular(0.9, 0.9, 0.9, 1);

@@ -1,12 +1,12 @@
-import { CGFobject, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFtexture } from '../../../lib/CGF.js';
 import { HeliPropeller } from './HeliPropeller.js';
 import { HeliBucket } from './HeliBucket.js';
 import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
-import { MyCircle } from './primitives/MyCircle.js';
-import { MyCylinder } from './primitives/MyCylinder.js';
+import { MyCircle } from '../../primitives/MyCircle.js';
+import { MyCylinder } from '../../primitives/MyCylinder.js';
 import { HeliCockpit } from './HeliCockpit.js';
 
 /**

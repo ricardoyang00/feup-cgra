@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
+import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
 
 export class HeliBodyCore extends CGFobject {
     constructor(scene, width, depth, height, color = [0.5, 0.5, 0.5, 1], texture = null) {
