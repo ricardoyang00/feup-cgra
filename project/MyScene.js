@@ -268,7 +268,9 @@ export class MyScene extends CGFscene {
     this.maskShader.setUniformsValues({
       uHeliPos: [heliWorldPos[0], heliWorldPos[2]],
       uTurbulence: turbulenceStrength,
-      time: t / 1000.0 % 1000
+      time: t / 1000.0 % 1000,
+      heightScale: 0.001,
+      waterDisturbance: 0.1
     });
 
     // fire related test
