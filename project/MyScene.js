@@ -118,7 +118,8 @@ export class MyScene extends CGFscene {
 
     this.grassTexture = new CGFtexture(this, "textures/grass/grass3.jpg");
     this.waterTexture = new CGFtexture(this, "textures/lake/water.jpg");
-    this.lakeMaskTexture = new CGFtexture(this, 'textures/lake/lake_mask.png');
+    let lakeTexturePath = 'textures/lake/lake_mask2.png';
+    this.lakeMaskTexture = new CGFtexture(this, lakeTexturePath);
     this.maskShader = new CGFshader(this.gl, "shaders/lake/lake.vert", "shaders/lake/lake.frag");
     this.maskShader.setUniformsValues({
       uMaskSampler: 0,
@@ -128,7 +129,7 @@ export class MyScene extends CGFscene {
       time: 0,
     });
     this.maskImage = new Image();
-    this.maskImage.src = 'textures/lake/lake_mask.png';
+    this.maskImage.src = lakeTexturePath;
     this.maskImage.onload = () => {
         const canvas = document.createElement('canvas');
         canvas.width = this.maskImage.width;
