@@ -31,8 +31,8 @@ export class MyBuilding extends CGFobject {
 
         // Create heliport
         this.heliportTextureH = new CGFtexture(scene, 'textures/building/heliport.png');
-        this.heliportTextureUP = new CGFtexture(scene, 'textures/building/up.png');
-        this.heliportTextureDOWN = new CGFtexture(scene, 'textures/building/down.png');
+        this.heliportTextureUP = new CGFtexture(scene, 'textures/building/heliport-up.png');
+        this.heliportTextureDOWN = new CGFtexture(scene, 'textures/building/heliport-down.png');
         this.heliport = new MyQuad(scene);
 
         // Create windows
