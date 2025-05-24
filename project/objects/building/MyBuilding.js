@@ -115,13 +115,14 @@ export class MyBuilding extends CGFobject {
         let textureToUse = this.heliportTextureH;
         const state = this.scene.helicopter.state;
         const time = performance.now() / 500;
+        const blink = (Math.sin(time * Math.PI) > 0);
 
         if (state === "taking_off") {
             // Alternate between H and UP
-            textureToUse = (Math.floor(time) % 2 === 0) ? this.heliportTextureH : this.heliportTextureUP;
+            textureToUse = blink ? this.heliportTextureH : this.heliportTextureUP;
         } else if (state === "landing") {
             // Alternate between H and DOWN
-            textureToUse = (Math.floor(time) % 2 === 0) ? this.heliportTextureH : this.heliportTextureDOWN;
+            textureToUse = blink ? this.heliportTextureH : this.heliportTextureDOWN;
         }
 
         textureToUse.bind();
