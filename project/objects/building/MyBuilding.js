@@ -30,7 +30,9 @@ export class MyBuilding extends CGFobject {
         this.centralModule = new MyModule(scene, buildingColor, this.brickTexture);
 
         // Create heliport
-        this.heliportTexture = new CGFtexture(scene, 'textures/building/heliport.png');
+        this.heliportTextureH = new CGFtexture(scene, 'textures/building/heliport.png');
+        this.heliportTextureUP = new CGFtexture(scene, 'textures/building/up.png');
+        this.heliportTextureDOWN = new CGFtexture(scene, 'textures/building/down.png');
         this.heliport = new MyQuad(scene);
 
         // Create windows
@@ -90,9 +92,23 @@ export class MyBuilding extends CGFobject {
             (this.numFloorsCentral * this.floorHeight) + 0.01
         );
         this.scene.scale(2, 2, 1);
-        this.heliportTexture.bind();
+
+        let textureToUse = this.heliportTextureH;
+        const state = this.scene.helicopter.state;
+        const time = performance.now() / 400;
+
+        if (state === "taking_off") {
+            // Alternate between H and UP
+            textureToUse = (Math.floor(time) % 2 === 0) ? this.heliportTextureH : this.heliportTextureUP;
+        } else if (state === "landing") {
+            // Alternate between H and DOWN
+            textureToUse = (Math.floor(time) % 2 === 0) ? this.heliportTextureH : this.heliportTextureDOWN;
+        }
+
+        textureToUse.bind();
         this.heliport.display();
-        this.heliportTexture.unbind();
+        textureToUse.unbind();
+
         this.scene.popMatrix();
     }
 
