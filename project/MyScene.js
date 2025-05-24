@@ -119,7 +119,7 @@ export class MyScene extends CGFscene {
     this.grassTexture = new CGFtexture(this, "textures/grass/grass3.jpg");
     this.waterTexture = new CGFtexture(this, "textures/lake/water.jpg");
     this.lakeMaskTexture = new CGFtexture(this, 'textures/lake/lake_mask.png');
-    this.maskShader = new CGFshader(this.gl, "shaders/lake.vert", "shaders/lake.frag");
+    this.maskShader = new CGFshader(this.gl, "shaders/lake/lake.vert", "shaders/lake/lake.frag");
     this.maskShader.setUniformsValues({
       uMaskSampler: 0,
       uGrassSampler: 1,
@@ -158,10 +158,10 @@ export class MyScene extends CGFscene {
     this.glassAppearance.setSpecular(1, 1, 1, 1);
     this.glassAppearance.setShininess(10.0);
 
-    this.waterShader = new CGFshader(this.gl, "shaders/water.vert", "shaders/water.frag");
+    this.waterShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
 
-    this.waterfallShader = new CGFshader(this.gl, "shaders/water.vert", "shaders/water.frag");
+    this.waterfallShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterfallShader.setUniformsValues({ uTime: 0, uSampler: 0 });
   }
   initLights() {
