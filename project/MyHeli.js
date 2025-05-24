@@ -7,7 +7,7 @@ import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
 import { MyCircle } from './primitives/MyCircle.js';
 import { MyCylinder } from './primitives/MyCylinder.js';
-import { HeliCockpit } from './HeliCockPit.js';
+import { HeliCockpit } from './HeliCockpit.js';
 
 /**
  * MyHeli
