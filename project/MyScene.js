@@ -478,20 +478,19 @@ export class MyScene extends CGFscene {
     this.scale(0.22, 0.22, 0.22);
     this.rotate(Math.PI / 2, 0, 1, 0);
     this.helicopter.display();
-    this.popMatrix();
-
-    // Render glass texture in FPV mode
+    this.popMatrix();    // Render glass texture in FPV mode
     if (this.firstPersonView) {
-      this.gl.enable(this.gl.BLEND);
-      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+      // Save the current shader
+      const currentShader = this.activeShader;
       
-      this.pushMatrix();
-      this.loadIdentity();
-      this.glassAppearance.apply();
-      this.fullscreenQuad.display();
-      this.popMatrix();
+      // Switch to the default shader for rendering the cockpit
+      this.setActiveShader(this.defaultShader);
       
-      this.gl.disable(this.gl.BLEND);
+      // Display the cockpit
+      this.helicopter.displayCockpit();
+      
+      // Restore the previous shader
+      this.setActiveShader(currentShader);
     }
     // Fire
     /*

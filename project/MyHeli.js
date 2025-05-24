@@ -7,6 +7,7 @@ import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
 import { MyCircle } from './primitives/MyCircle.js';
 import { MyQuad } from './primitives/MyQuad.js';
+import { HeliCockpit } from './HeliCockPit.js';
 
 /**
  * MyHeli
@@ -79,6 +80,8 @@ export class MyHeli extends CGFobject {
 
         this.waterTexture = new CGFtexture(scene, "textures/lake/water.jpg");
         this.waterCircle = new MyCircle(scene, 16);
+
+        this.cockpit = new HeliCockpit(scene);
     }
 
     getWorldPosition() {
@@ -520,5 +523,9 @@ export class MyHeli extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.popMatrix();
+    }
+
+    displayCockpit() {
+        this.cockpit.display();
     }
 }
