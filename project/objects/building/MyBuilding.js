@@ -2,6 +2,7 @@ import { CGFobject, CGFtexture, CGFappearance } from '../../../lib/CGF.js';
 import { MyModule } from './MyModule.js';
 import { MyQuad } from '../../primitives/MyQuad.js';
 import { MyWindow } from './MyWindow.js';
+import { MySphere } from '../../MySphere.js';
 
 export class MyBuilding extends CGFobject {
     constructor(scene, totalWidth, totalDepth, numFloorsSide, numWindowsPerFloor, windowType, buildingColor) {
@@ -45,6 +46,24 @@ export class MyBuilding extends CGFobject {
         // Create sign
         this.signTexture = new CGFtexture(scene, 'textures/building/firefighter.jpg');
         this.sign = new MyQuad(scene);
+
+        // Create heliport light
+        this.heliportLight = new MySphere(scene, 64, 16);
+        this.lightAppearance = new CGFappearance(scene);
+
+        this.neutralAppearance = new CGFappearance(scene);
+        this.neutralAppearance.setAmbient(0.2, 0.2, 0.2, 1);
+        this.neutralAppearance.setDiffuse(0.8, 0.8, 0.8, 1);
+        this.neutralAppearance.setSpecular(0, 0, 0, 1);
+        this.neutralAppearance.setEmission(0, 0, 0, 1);
+
+        this.glassAppearance = new CGFappearance(scene);
+        this.glassAppearance.setTexture(new CGFtexture(scene, 'textures/helicopter/transparent_glass.png'));
+        this.glassAppearance.setAmbient(0.1, 0.1, 0.1, 1);
+        this.glassAppearance.setDiffuse(0.3, 0.3, 0.3, 0.5);
+        this.glassAppearance.setSpecular(0.9, 0.9, 0.9, 1);
+        this.glassAppearance.setEmission(0, 0, 0, 1);
+        this.glassAppearance.setShininess(120);
     }
 
     display() {
@@ -95,7 +114,7 @@ export class MyBuilding extends CGFobject {
 
         let textureToUse = this.heliportTextureH;
         const state = this.scene.helicopter.state;
-        const time = performance.now() / 400;
+        const time = performance.now() / 500;
 
         if (state === "taking_off") {
             // Alternate between H and UP
@@ -108,6 +127,77 @@ export class MyBuilding extends CGFobject {
         textureToUse.bind();
         this.heliport.display();
         textureToUse.unbind();
+
+        // Corner lights
+        const intensity = (Math.sin(time * Math.PI) + 1) / 2;
+        const emission = Math.min(1.0, intensity);
+
+        if (state === "taking_off") {
+            this.lightAppearance.setDiffuse(0.2, 0.2, 0.2, 1);
+            this.lightAppearance.setAmbient(0.1, 0.1, 0.1, 1);
+            this.lightAppearance.setEmission(0, emission, 0, 1); // green
+        } else if (state === "landing") {
+            this.lightAppearance.setDiffuse(0.2, 0.2, 0.2, 1);
+            this.lightAppearance.setAmbient(0.1, 0.1, 0.1, 1);
+            this.lightAppearance.setEmission(emission, 0, 0, 1); // red
+        } else {
+            this.lightAppearance.setDiffuse(0.2, 0.2, 0.2, 1);
+            this.lightAppearance.setAmbient(0.1, 0.1, 0.1, 1);
+            this.lightAppearance.setEmission(0, 0, 0, 1);
+        }
+
+        // Top left
+        this.scene.pushMatrix();
+        this.scene.translate(-0.5, 0.5, -0.01);
+        this.scene.scale(0.02, 0.02, 0.02);
+        this.lightAppearance.apply();
+        this.heliportLight.display();
+        this.scene.pushMatrix();
+        this.scene.scale(1.2, 1.2, 1.2);
+        this.glassAppearance.apply();
+        this.heliportLight.display();
+        this.scene.popMatrix();
+        this.neutralAppearance.apply();
+        this.scene.popMatrix();
+        // Top right
+        this.scene.pushMatrix();
+        this.scene.translate(0.5, 0.5, -0.01);
+        this.scene.scale(0.02, 0.02, 0.02);
+        this.lightAppearance.apply();
+        this.heliportLight.display();
+        this.scene.pushMatrix();
+        this.scene.scale(1.2, 1.2, 1.2);
+        this.glassAppearance.apply();
+        this.heliportLight.display();
+        this.scene.popMatrix();
+        this.neutralAppearance.apply();
+        this.scene.popMatrix();
+        // Bottom left
+        this.scene.pushMatrix();
+        this.scene.translate(-0.5, -0.5, -0.01);
+        this.scene.scale(0.02, 0.02, 0.02);
+        this.lightAppearance.apply();
+        this.heliportLight.display();
+        this.scene.pushMatrix();
+        this.scene.scale(1.2, 1.2, 1.2);
+        this.glassAppearance.apply();
+        this.heliportLight.display();
+        this.scene.popMatrix();
+        this.neutralAppearance.apply();
+        this.scene.popMatrix();
+        // Bottom right
+        this.scene.pushMatrix();
+        this.scene.translate(0.5, -0.5, -0.01);
+        this.scene.scale(0.02, 0.02, 0.02);
+        this.lightAppearance.apply();
+        this.heliportLight.display();
+        this.scene.pushMatrix();
+        this.scene.scale(1.2, 1.2, 1.2);
+        this.glassAppearance.apply();
+        this.heliportLight.display();
+        this.scene.popMatrix();
+        this.neutralAppearance.apply();
+        this.scene.popMatrix();
 
         this.scene.popMatrix();
     }
