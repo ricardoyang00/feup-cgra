@@ -1,4 +1,3 @@
-
 import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
 import { MyQuad } from './primitives/MyQuad.js';
 
@@ -76,6 +75,77 @@ export class HeliCockpit extends CGFobject {
         this.sideAppearance.setDiffuse(1.0, 1.0, 1.0, 1.0);
         this.sideAppearance.setSpecular(0.0, 0.0, 0.0, 1.0);
         this.sideAppearance.setShininess(1.0);
+        
+        // Status indicator configuration
+        this.indicatorQuad = new MyQuad(scene);
+        this.indicatorSize = 0.25; // Size of the indicator quad
+        this.indicatorX = 0.215;    // X position (left side of cockpit)
+        this.indicatorY = -0.43;   // Y position (just above bottom of screen)
+        this.indicatorZ = -0.98;   // Z position (in front of cockpit)
+        
+        // Load indicator textures
+        this.indicatorTextures = {
+            takeoff: new CGFtexture(this.scene, "textures/helicopter/icon-up.png"),
+            landing: new CGFtexture(this.scene, "textures/helicopter/icon-down.png"),
+            lake: new CGFtexture(this.scene, "textures/helicopter/icon-lake.png"),
+            nowater: new CGFtexture(this.scene, "textures/helicopter/icon-nowater.png"),
+            fire: new CGFtexture(this.scene, "textures/helicopter/icon-fire.png")
+        };
+        
+        // Create appearance for indicators
+        this.indicatorAppearance = new CGFappearance(this.scene);
+        this.indicatorAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+        this.indicatorAppearance.setAmbient(1.0, 1.0, 1.0, 1.0);
+        this.indicatorAppearance.setDiffuse(1.0, 1.0, 1.0, 1.0);
+        this.indicatorAppearance.setSpecular(0.0, 0.0, 0.0, 1.0);
+        this.indicatorAppearance.setShininess(1.0);
+        this.indicatorAppearance.setEmission(0.5, 0.5, 0.5, 1.0);
+        
+        // Animation for blinking indicators
+        this.animationTime = 0;
+        this.blinkPeriod = 1.0; // 1 second for a complete blink cycle
+        this.isBlinking = false;
+        this.activeIndicator = null;
+        
+        // Set default indicator
+        this.setIndicator(null);
+    }
+    
+    /**
+     * Set the active indicator based on helicopter state
+     * @param {string} helicopterState - The current state of the helicopter
+     */
+    setIndicator(helicopterState) {
+        // Map helicopter state to indicator
+        if (helicopterState === "taking_off" || helicopterState === "ascending_from_lake") {
+            this.activeIndicator = "takeoff";
+            this.isBlinking = true;
+        } else if (helicopterState === "landing" || helicopterState === "reorienting_to_land" || 
+                  helicopterState === "descending_to_lake" || helicopterState === "retracting_bucket") {
+            this.activeIndicator = "landing";
+            this.isBlinking = true;
+        } else if (helicopterState === "filling_bucket") {
+            this.activeIndicator = "lake";
+            this.isBlinking = true;
+        } else if (helicopterState === "flying" || helicopterState === "moving_to_heliport" || 
+                  helicopterState === "releasing_bucket" || helicopterState === "automatic_braking") {
+            this.activeIndicator = "nowater";
+            this.isBlinking = false;
+        } else if (helicopterState === "ground") {
+            this.activeIndicator = null;
+            this.isBlinking = false;
+        }
+    }
+    
+    /**
+     * Update animation for blinking indicators
+     * @param {number} deltaTime - The time elapsed since the last update
+     */
+    update(deltaTime) {
+        this.animationTime += deltaTime;
+        if (this.animationTime > this.blinkPeriod) {
+            this.animationTime = 0;
+        }
     }
     
     
@@ -83,80 +153,86 @@ export class HeliCockpit extends CGFobject {
      * Displays the cockpit in first-person view
      * This should be called after loading identity in the scene
      */
-
     display() {
-        // Instead of disabling depth testing completely, we'll use a better approach
-        // that keeps the cockpit in front of other objects
-        
-        // Enable transparency
+        // Cockpit
         this.scene.gl.enable(this.scene.gl.BLEND);
         this.scene.gl.blendFunc(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA);
-        
-        // Save current depth function
+
         const originalDepthFunc = this.scene.gl.getParameter(this.scene.gl.DEPTH_FUNC);
-        
-        // Use ALWAYS depth function to ensure cockpit is drawn on top of everything
         this.scene.gl.depthFunc(this.scene.gl.ALWAYS);
         
         this.scene.pushMatrix();
         this.scene.loadIdentity();
-        
-        // Position the cockpit at the bottom portion of the screen
-        // Move it closer to the bottom and adjust the z position for proper depth
         this.cockpitAppearance.apply();
-        
-        // Adjust position
-        //this.scene.translate(0, -0.6, -1);
         this.scene.translate(0, -0.7, -1);
         
-        // Scale to maintain the exact aspect ratio of the texture (2000x666)
-        const screenScale = 3; // Overall scale of the cockpit on screen
+        // cockpit texture (2000x666)
+        const screenScale = 3;
         const width = screenScale;
-        const height = width / this.aspectRatio; // Preserves the exact 2000:666 ratio
+        const height = width / this.aspectRatio;        // ratio
+
         this.scene.scale(width, height, 1);
-        
         this.cockpitQuad.display();
-        
         this.scene.popMatrix();
-        
+
         this.scene.gl.disable(this.scene.gl.BLEND);
-        
-        // Restore original depth function
         this.scene.gl.depthFunc(originalDepthFunc);
 
-        // Render side panels
-        // Get the depth function again for side panels
+        // cockpit side red metal
         const sideDepthFunc = this.scene.gl.getParameter(this.scene.gl.DEPTH_FUNC);
         
-        // Use ALWAYS depth function to ensure side panels are drawn on top of everything
         this.scene.gl.depthFunc(this.scene.gl.ALWAYS);
         this.scene.gl.enable(this.scene.gl.BLEND);
         
-        // Left side panel
+        // left side
         this.scene.pushMatrix();
         this.scene.loadIdentity();
         this.sideAppearance.apply();
-        // Position on the left side of the screen using the constant
         this.scene.translate(-this.sidePanelDistance, 0, -0.99);
-        // Rotate to be vertical
         this.scene.rotate(Math.PI/2, 0, 0, 1);
-        // Scale to fit the side of the screen using constants
         this.scene.scale(this.sidePanelHeight, this.sidePanelWidth, 1);
         this.leftSideQuad.display();
         this.scene.popMatrix();
         
-        // Right side panel
+        // right side
         this.scene.pushMatrix();
         this.scene.loadIdentity();
         this.sideAppearance.apply();
-        // Position on the right side of the screen using the constant
         this.scene.translate(this.sidePanelDistance, 0, -0.99);
-        // Rotate to be vertical
         this.scene.rotate(-Math.PI/2, 0, 0, 1);
-        // Scale to fit the side of the screen using constants
         this.scene.scale(this.sidePanelHeight, this.sidePanelWidth, 1);
         this.rightSideQuad.display();
         this.scene.popMatrix();
+        
+        
+        // indicator icon
+        if (this.activeIndicator) {
+            // Calculate visibility for blinking effect
+            let visible = true;
+            if (this.isBlinking) {
+                // Create blinking effect using sine wave
+                const blinkPhase = Math.sin(this.animationTime / this.blinkPeriod * 2 * Math.PI);
+                visible = blinkPhase > 0;
+            }
+            
+            if (visible) {
+                this.scene.pushMatrix();
+                this.scene.loadIdentity();
+                
+                // Set the indicator texture based on active state
+                this.indicatorAppearance.setTexture(this.indicatorTextures[this.activeIndicator]);
+                this.indicatorAppearance.apply();
+                
+                // Position and scale the indicator
+                this.scene.translate(this.indicatorX, this.indicatorY, this.indicatorZ);
+                this.scene.scale(this.indicatorSize, this.indicatorSize, 1);
+                
+                // Display the indicator
+                this.indicatorQuad.display();
+                
+                this.scene.popMatrix();
+            }
+        }
         
         this.scene.gl.disable(this.scene.gl.BLEND);
         // Restore original depth function
