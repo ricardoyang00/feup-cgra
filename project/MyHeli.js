@@ -7,6 +7,7 @@ import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
 import { MyCircle } from './primitives/MyCircle.js';
 import { MyCylinder } from './primitives/MyCylinder.js';
+import { HeliCockpit } from './HeliCockPit.js';
 
 /**
  * MyHeli
@@ -84,6 +85,8 @@ export class MyHeli extends CGFobject {
         this.awaitingPour = false;
         this.turbulenceFade = 0;
         this.turbulenceFadeDuration = 2.0;
+
+        this.cockpit = new HeliCockpit(scene);
     }
 
     getWorldPosition() {
@@ -247,6 +250,7 @@ export class MyHeli extends CGFobject {
             this.turbulenceFade = 0; // Reset in other states
         }
 
+        this.cockpit.update(dt);
         //console.log("HELI STATE: " + this.state, "ORIENTATION: " + this.orientation);
         switch (this.state) {
             case "taking_off":
@@ -608,5 +612,38 @@ export class MyHeli extends CGFobject {
         this.scene.popMatrix();
 
         this.scene.popMatrix();
+    }
+
+    displayCockpit() {
+        let heliState = null;
+        let waterState;
+        
+        // Set helicopter status indicator
+        if (this.state === "taking_off" || this.state === "ascending_from_lake") {
+            heliState = "up";
+        } else if (this.state === "landing" || this.state === "reorienting_to_land" || 
+                  this.state === "descending_to_lake" || this.state === "retracting_bucket") {
+            heliState = "down";
+        }
+        // All other states have no indicator (null)
+        
+        // TODO : lake/fire detection
+        // if (this.scene.isOverLake(this.getWorldPosition())) {
+        //     heliState = "over_lake";
+        // } else if (this.scene.isOverFire(this.getWorldPosition())) {
+        //     heliState = "over_fire";
+        // }
+        
+        // Set water status indicator
+        if (this.bucketIsEmpty) {
+            waterState = "no_water";
+        } else {
+            waterState = "water";
+        }
+        if (this.state === "ground") {
+            waterState = null;
+        }
+        
+        this.cockpit.display(waterState, heliState);
     }
 }
