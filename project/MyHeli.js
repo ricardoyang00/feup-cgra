@@ -5,7 +5,7 @@ import { HeliBodyCore } from './HeliBodyCore.js';
 import { HeliBodyOuter } from './HeliBodyOuter.js';
 import { HeliTail } from './HeliTail.js';
 import { HeliLandingSkids } from './HeliLandingSkids.js';
-import { MyCircle } from './MyCircle.js';
+import { MyCircle } from './primitives/MyCircle.js';
 
 /**
  * MyHeli

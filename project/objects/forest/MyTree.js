@@ -1,8 +1,7 @@
-import { CGFobject, CGFtexture, CGFappearance } from '../lib/CGF.js';
-import { MyCone } from './MyCone.js';
-import { MyCylinder } from './MyCylinder.js';
-import { MyQuad } from './MyQuad.js';
-import { MyCircle } from './MyCircle.js';
+import { CGFobject, CGFtexture, CGFappearance } from '../../../lib/CGF.js';
+import { MyCone } from '../../primitives/MyCone.js';
+import { MyCylinder } from '../../primitives/MyCylinder.js';
+import { MyCircle } from '../../primitives/MyCircle.js';
 
 /**
  * MyTree

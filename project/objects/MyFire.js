@@ -1,7 +1,7 @@
-import { CGFobject, CGFappearance, CGFtexture } from '../lib/CGF.js';
-import { MyTriangleDoubleFaced } from './MyTriangleDoubleFaced.js';
+import { CGFobject, CGFappearance, CGFtexture, CGFshader } from '../../lib/CGF.js';
+import { MyTriangleDoubleFaced } from '../primitives/MyTriangleDoubleFaced.js';
 
-export class MyFire2 extends CGFobject {
+export class MyFire extends CGFobject {
     constructor(scene) {
         super(scene);
         this.fireTriangles = [];
@@ -11,6 +11,12 @@ export class MyFire2 extends CGFobject {
             new CGFtexture(this.scene, "textures/fire/fire3.png")
         ];
         this.currentTextureIndex = 0;
+        this.lastFireAnimTime = 0;
+        this.fireAnimInterval = 120;
+        
+        this.fireShader = new CGFshader(this.scene.gl, "shaders/fire/fireWave.vert", "shaders/fire/fireWave.frag");
+        this.fireShader.setUniformsValues({ timeFactor: 0 });        
+
         this.initFire();
     }
 
@@ -33,10 +39,14 @@ export class MyFire2 extends CGFobject {
             appearance.setSpecular(0.2, 0.1, 0.05, 0.8);
             appearance.setShininess(10);
 
-            // Assign a random texture from the array
+            // random texture in the list
             const textureIndex = Math.floor(Math.random() * this.textures.length);
             appearance.setTexture(this.textures[textureIndex]);
             appearance.setTextureWrap('REPEAT', 'REPEAT');
+
+            // random animation (time)
+            const timeOffset = Math.random() * 100;
+            const waveFactor = 1.0 + Math.random() * 0.6;
 
             const scaleX = 0.7 + Math.random() * 0.5;
             const scaleY = 1.0 + Math.random() * 0.8;
@@ -51,7 +61,9 @@ export class MyFire2 extends CGFobject {
             this.fireTriangles.push({
                 triangle,
                 appearance,
-                textureIndex, // Save the index for animation
+                textureIndex,
+                timeOffset,
+                waveFactor,
                 scaleX,
                 scaleY,
                 scaleZ,
@@ -65,11 +77,10 @@ export class MyFire2 extends CGFobject {
         }
     }
 
-    // Call this method to animate (alternate) the textures
+    // alter the textures (flipbook)
     animateTextures() {
         this.currentTextureIndex = (this.currentTextureIndex + 1) % this.textures.length;
         for (const tri of this.fireTriangles) {
-            // Cycle each triangle's texture index
             tri.textureIndex = (tri.textureIndex + 1) % this.textures.length;
             tri.appearance.setTexture(this.textures[tri.textureIndex]);
         }
@@ -79,7 +90,17 @@ export class MyFire2 extends CGFobject {
         this.scene.gl.enable(this.scene.gl.BLEND);
         this.scene.gl.blendFuncSeparate(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA, this.scene.gl.ONE, this.scene.gl.ONE);
         this.scene.gl.depthMask(false);
-        for (const { triangle, appearance, scaleX, scaleY, scaleZ, positionX, positionY, positionZ, rotationY, tiltX, tiltZ } of this.fireTriangles) {
+        
+        for (const { triangle, appearance, timeOffset, waveFactor, scaleX, scaleY, scaleZ, positionX, positionY, positionZ, rotationY, tiltX, tiltZ } of this.fireTriangles) {
+            const individualTimeFactor = this.scene.lastT ? (this.scene.lastT / 100.0 + timeOffset) % 1000 : timeOffset;
+            
+            this.fireShader.setUniformsValues({ 
+                timeFactor: individualTimeFactor,
+                waveFactor: waveFactor
+            });
+            
+            this.scene.setActiveShader(this.fireShader);
+            
             this.scene.pushMatrix();
             this.scene.translate(positionX, positionY, positionZ);
             this.scene.rotate(rotationY * Math.PI / 180, 0, 1, 0);
@@ -90,6 +111,9 @@ export class MyFire2 extends CGFobject {
             triangle.display();
             this.scene.popMatrix();
         }
+        
+        this.scene.setActiveShader(this.scene.defaultShader);
+        this.scene.gl.depthMask(true);
     }
 
     graduallyRemoveTriangles() {
@@ -103,5 +127,12 @@ export class MyFire2 extends CGFobject {
                 clearInterval(removalInterval);
             }
         }, interval);
+    }
+
+    update(t) {
+        if (t - this.lastFireAnimTime > this.fireAnimInterval) {
+            this.animateTextures();
+            this.lastFireAnimTime = t;
+        }
     }
 }
