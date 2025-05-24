@@ -19,7 +19,7 @@ export class MyInterface extends CGFinterface {
 
         this.initKeys();
 
-        this.gui.add(this.scene, 'cameraView', ['First Person', 'Third Person', 'Default']).name('Camera View');
+        this.gui.add(this.scene, 'cameraView', ['0: Default', '1: First Person', '2: Third Person']).name('Camera View');
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
         //this.gui.add(this.scene, 'displayBuilding').name('Display Building');
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');

@@ -18,7 +18,7 @@ import { MyFire } from "./objects/MyFire.js";
 export class MyScene extends CGFscene {
   constructor() {
     super();
-    this.cameraView = 'Default';
+    this.cameraView = '0: Default';
     this.firstPersonView = false;
     this.thirdPersonView = false;
 
@@ -365,11 +365,11 @@ export class MyScene extends CGFscene {
     this.helicopter.update(dt);
     this.helicopter.updatePouringWater();
 
-    if (this.cameraView === 'First Person') {
+    if (this.cameraView === '1: First Person') {
       this.firstPersonView = true;
       this.thirdPersonView = false;
       updateCameraFromHelicopter(this.camera, this.helicopter);
-    } else if (this.cameraView === 'Third Person') {
+    } else if (this.cameraView === '2: Third Person') {
         this.firstPersonView = false;
         this.thirdPersonView = true;
         updateCameraThirdPerson(this.camera, this.helicopter);
