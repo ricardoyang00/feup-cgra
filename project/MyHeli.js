@@ -145,8 +145,8 @@ export class MyHeli extends CGFobject {
         return this.bucketIsEmpty;
     }
 
-    setBucketEmpty() {
-        this.bucketIsEmpty = true;
+    setBucketEmpty(isEmpty = true) {
+        this.bucketIsEmpty = isEmpty;
     }
 
     startPouringWater() {

@@ -30,6 +30,7 @@ export class MyInterface extends CGFinterface {
         });
         
         this.gui.add(this.scene, 'setFire').name('Set a Fire 🔥');
+        this.gui.add(this.scene, 'fillBucket').name('Fill Bucket');
         
         return true;
     }

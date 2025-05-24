@@ -197,6 +197,10 @@ export class MyScene extends CGFscene {
     );
   }
 
+  fillBucket() {
+    this.helicopter.setBucketEmpty(false);
+  }
+
   isOverLake(position) {
     if (!this.maskLoaded) {
       return false;
@@ -346,6 +350,14 @@ export class MyScene extends CGFscene {
 
     if (this.waterfallShader) {
       this.waterfallShader.setUniformsValues({ uTime: (t / 2000.0) % 1.0 });
+    }
+
+    if (this.gui.isKeyPressed("KeyF")) {
+      this.setFire();
+    }
+
+    if (this.gui.isKeyPressed("KeyB")) {
+      this.fillBucket();
     }
 
     this.helicopter.update(dt);
