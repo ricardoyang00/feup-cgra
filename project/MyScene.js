@@ -149,9 +149,6 @@ export class MyScene extends CGFscene {
 
     this.waterShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
-
-    this.waterfallShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
-    this.waterfallShader.setUniformsValues({ uTime: 0, uSampler: 0 });
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -338,10 +335,6 @@ export class MyScene extends CGFscene {
       this.waterShader.setUniformsValues({ 
         uTime: (t / 2000.0) % 1.0 
       });
-    }
-
-    if (this.waterfallShader) {
-      this.waterfallShader.setUniformsValues({ uTime: (t / 2000.0) % 1.0 });
     }
 
     if (this.gui.isKeyPressed("KeyF")) {

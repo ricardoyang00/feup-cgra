@@ -601,7 +601,7 @@ export class MyHeli extends CGFobject {
                     this.scene.pushMatrix();
                     this.scene.translate(0, fallY, 0);
                     this.scene.scale(dynamicRadius, dynamicHeight, dynamicRadius);
-                    this.scene.setActiveShader(this.scene.waterfallShader);
+                    this.scene.setActiveShader(this.scene.waterShader);
                     this.waterfallCylinder.display();
                     this.scene.setActiveShader(this.scene.defaultShader);
                     this.scene.popMatrix();
