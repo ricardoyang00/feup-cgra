@@ -172,7 +172,8 @@ export class MyFire extends CGFobject {
     }
     
     updateParticles(dt) {
-        if (this.scene.lastT - this.lastParticleTime > this.particleInterval) {
+        // create new particles if the toggle is enabled
+        if (this.scene.showFireParticles && this.scene.lastT - this.lastParticleTime > this.particleInterval) {
             
             // create multiple particles at once for a denser effect
             const particlesToCreate = Math.min(3, this.maxParticles - this.particles.length);
@@ -291,8 +292,10 @@ export class MyFire extends CGFobject {
         
         this.scene.setActiveShader(this.scene.defaultShader);
         
-        // particles
-        this.displayParticles();
+        // particles if the toggle is enabled
+        if (this.scene.showFireParticles) {
+            this.displayParticles();
+        }
         
         this.scene.gl.depthMask(true);
         this.scene.gl.disable(this.scene.gl.BLEND);
@@ -308,13 +311,17 @@ export class MyFire extends CGFobject {
                 
 
                 // increase particle emission rate as fire dies out
-                this.particleInterval = Math.max(30, this.particleInterval * 0.9);
+                if (this.scene.showFireParticles) {
+                    this.particleInterval = Math.max(30, this.particleInterval * 0.9);
+                }
             } else {
 
                 // gradually reduce particles when fire goes
-                setTimeout(() => {
-                    this.maxParticles = 0;
-                }, 1000);
+                if (this.scene.showFireParticles) {
+                    setTimeout(() => {
+                        this.maxParticles = 0;
+                    }, 1000);
+                }
                 clearInterval(removalInterval);
             }
         }, interval);
