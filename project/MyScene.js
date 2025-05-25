@@ -47,6 +47,7 @@ export class MyScene extends CGFscene {
     
     this.fires = [];
     this.maxFires = 3;
+    this.showFireParticles = true;
 
     this.maskLoaded = false;
     this.maskData = null;
