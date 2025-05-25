@@ -1,8 +1,7 @@
-#ifdef GL_ES
+#version 300 es
 precision highp float;
-#endif
 
-varying vec2 vTextureCoord;
+in vec2 vTextureCoord;
 uniform sampler2D uMaskSampler;
 uniform sampler2D uGrassSampler;
 uniform sampler2D uWaterSampler;
@@ -10,6 +9,8 @@ uniform float textureScale;
 uniform float time;
 uniform vec2 uHeliPos;
 uniform float uTurbulence;
+
+out vec4 fragColor;
 
 void main() {
     vec2 scaledTexCoord = vTextureCoord * textureScale;
@@ -42,7 +43,7 @@ void main() {
     float turbulenceMod = 1.0 + uTurbulence * 0.5 * sin(time * 2.0 + dist * 0.2);
     float wave = baseWave * turbulenceMod;
 
-    float mask = texture2D(uMaskSampler, vTextureCoord).r;
+    float mask = texture(uMaskSampler, vTextureCoord).r;
     float turbulence = uTurbulence * fade * wave * 0.015 * (1.0 - mask);
 
     // some randomness to turbulence direction
@@ -51,10 +52,10 @@ void main() {
     waterTexCoord += dir * turbulence;
 
     // color variation for water
-    vec4 waterColor = texture2D(uWaterSampler, waterTexCoord);
+    vec4 waterColor = texture(uWaterSampler, waterTexCoord);
     waterColor.rgb += vec3(0.00, -0.01, 0.04) * sin(time + vTextureCoord.xyx * 20.0) * 0.7;
 
-    vec4 grassColor = texture2D(uGrassSampler, grassTexCoord);
+    vec4 grassColor = texture(uGrassSampler, grassTexCoord);
 
-    gl_FragColor = mix(waterColor, grassColor, mask);
+    fragColor = mix(waterColor, grassColor, mask);
 }

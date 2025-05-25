@@ -121,7 +121,7 @@ export class HeliCockpit extends CGFobject {
             this.isBlinking = false;
         } else if (heliState === "over_lake") {
             this.activeIndicator = "lake";
-            this.isBlinking = true;
+            this.isBlinking = false;
         } else {
             // No indicator for null state
             this.activeIndicator = null;
