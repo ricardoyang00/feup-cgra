@@ -6,19 +6,23 @@ varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
 uniform float timeFactor;
 
+// color flickering effect
+
 void main() {
-    // Sample the texture at the current coordinates
     vec4 color = texture2D(uSampler, vTextureCoord);
     
-    // Create a more dynamic pulsing effect
-    float pulseBase = sin(timeFactor * 0.1) * 0.5 + 0.5; // 0.0 to 1.0 range
-    float pulseVariation = sin(timeFactor * 0.05 + vTextureCoord.y * 5.0) * 0.3; // Variation based on Y texture coordinate
-    float pulseEffect = 0.05 * (pulseBase + pulseVariation);
+    // dynamic flickering effect for realistic fire
+    float flicker = sin(timeFactor * 0.15) * 0.5 + 0.5; // Base flicker
+    flicker += sin(timeFactor * 0.3 + vTextureCoord.y * 8.0) * 0.2;
+    flicker *= 0.07; // Scale down the effect
+
+    // reds more intense near the bottom, yellows more intense at the top
+    float yFactor = vTextureCoord.y; // Higher = closer to top
     
-    // Enhance reds and yellows for the fire effect, varying with time
-    color.r = min(1.0, color.r * (1.0 + pulseEffect * 1.2));
-    color.g = min(1.0, color.g * (1.0 + pulseEffect * 0.8));
+    // enhance colors based on vertical position and flicker
+    color.r = min(1.0, color.r * (1.0 + flicker * 1.2));
+    color.g = min(1.0, color.g * (1.0 + flicker * (0.8 + yFactor * 0.3)));
+    color.b = min(1.0, color.b * 0.8);
     
-    // Preserve the alpha channel for proper blending
     gl_FragColor = color;
 }
