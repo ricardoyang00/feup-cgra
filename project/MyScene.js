@@ -441,10 +441,26 @@ export class MyScene extends CGFscene {
     console.log("Could not find a suitable position for new fire after multiple attempts");
     return false;
   }
-
   display() {
+    // Limit camera position
     if (this.camera.position[1] < 0.2) {
       this.camera.position[1] = 0.2;
+    }
+    
+    // Limit camera distance from origin
+    const maxDistance = 220;
+    const distanceSquared = 
+      this.camera.position[0] * this.camera.position[0] + 
+      this.camera.position[1] * this.camera.position[1] + 
+      this.camera.position[2] * this.camera.position[2];
+    
+    if (distanceSquared > maxDistance * maxDistance) {
+      const currentDistance = Math.sqrt(distanceSquared);
+      const scaleFactor = maxDistance / currentDistance;
+      
+      this.camera.position[0] *= scaleFactor;
+      this.camera.position[1] *= scaleFactor;
+      this.camera.position[2] *= scaleFactor;
     }
 
     // ---- BEGIN Background, camera and axis setup
