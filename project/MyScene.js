@@ -21,6 +21,10 @@ export class MyScene extends CGFscene {
     this.firstPersonView = false;
     this.thirdPersonView = false;
 
+    // Store initial camera settings for reset
+    this.initialCameraPosition = vec3.fromValues(30, 30, 30);
+    this.initialCameraTarget = vec3.fromValues(0, 15, 0);
+
     this.lastT = null;
     this.deltaT = null;
 
@@ -178,9 +182,25 @@ export class MyScene extends CGFscene {
       1.1,
       0.1,
       500,
-      vec3.fromValues(30, 30, 30),
-      vec3.fromValues(0, 15, 0)
+      this.initialCameraPosition,
+      this.initialCameraTarget
     );
+  }
+
+  resetCamera() {
+    this.cameraView = '0: Default';
+    this.firstPersonView = false;
+    this.thirdPersonView = false;
+
+    vec3.copy(this.camera.position, this.initialCameraPosition);
+    vec3.copy(this.camera.target, this.initialCameraTarget);
+
+    for (const controller of this.gui.gui.__controllers) {
+      if (controller.property === 'cameraView') {
+        controller.setValue('0: Default');
+        break;
+      }
+    }
   }
 
   fillBucket() {
