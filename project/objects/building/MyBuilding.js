@@ -44,7 +44,7 @@ export class MyBuilding extends CGFobject {
         this.door = new MyQuad(scene);
 
         // Create sign
-        this.signTexture = new CGFtexture(scene, 'textures/building/firefighter.jpg');
+        this.signTexture = new CGFtexture(scene, 'textures/building/firefighter.png');
         this.sign = new MyQuad(scene);
 
         // Create heliport light
@@ -210,7 +210,7 @@ export class MyBuilding extends CGFobject {
             -this.centralDepth - 0.01,
             this.floorHeight / 2 + 0.5
         );
-        this.scene.scale(1, 1, 0.2);
+        this.scene.scale(1, 1, 0.5);
         this.scene.rotate(Math.PI / 2, 1, 0, 0);
         this.signTexture.bind();
         this.sign.display();
