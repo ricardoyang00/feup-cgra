@@ -98,8 +98,9 @@ export class MyScene extends CGFscene {
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
     this.tree = new MyTree(this);
+    //this.forestLarge = new MyForest(this, 20, 20, 40, 40);
     this.forest = new MyForest(this, 7, 7, 10, 10);
-    this.forestSmall = new MyForest(this, 4, 4, 4, 4);
+    this.forestSmall = new MyForest(this, 2, 2, 2, 2);
     this.helicopter = new MyHeli(this);
     
     // fire related 
@@ -109,7 +110,7 @@ export class MyScene extends CGFscene {
 
     this.displayAxis = false;
     this.displayNormals = false;
-    this.displayForest = false;
+    this.displayForest = true;
     this.fpsRate = 24;
 
     this.setUpdatePeriod(1000/this.fpsRate);
@@ -520,9 +521,128 @@ export class MyScene extends CGFscene {
       this.scale(6, 6, 6);
       this.translate(0, -0.05, 0);    /// !! this y-offset is important to make sure the trunk is "inside" the plane
       
-      this.translate(0, 0, -12.5); 
+
+      this.translate(-12, 0, -13.5); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
       this.forest.display();
 
+      this.translate(-55, 0, -5.5);
+      this.forest.display();
+      this.translate(0, 0, -11);
+      this.forest.display();
+      this.translate(11, 0, 5);
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+      this.translate(11, 0, 0); 
+      this.forest.display();
+
+      this.translate(-5, 0, -11);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(-6, 0, 11);
+      this.forest.display();
+
+      // side
+      this.translate(43, 0, 23);
+      this.forest.display();
+      this.translate(11, 0, 0);
+      this.forest.display();
+      this.translate(11, 0, 0);
+      this.forest.display();
+
+      // front
+      this.translate(-8, 0, 11);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(-11, 0, 0);
+      this.forest.display();
+      this.translate(0, 0, 11);
+      this.forest.display();
+      this.translate(11, 0, 0);
+      this.forest.display();
+      this.popMatrix();
+
+      // details 
+      this.pushMatrix();
+      this.scale(6,6,6);
+      this.translate(0,-0.05,0);
+
+      this.translate(-9, 0, -1);
+      this.forestSmall.display();
+      this.translate(-7, 0, -7);
+      this.forestSmall.display();
+      this.translate(-11, 0, -6);
+      this.forestSmall.display();
+      this.translate(-5, 0, 0);
+      this.forestSmall.display();
+
+      this.translate(0, 0, -15);
+      this.forestSmall.display();
+      this.translate(0, 0, -6);
+      this.forestSmall.display();
+      this.translate(60, 0, 5.5);
+      this.forestSmall.display();
+      this.translate(5, 0, 6.5);
+      this.forestSmall.display();
+      this.translate(0, 0, 5);
+      this.forestSmall.display();
+      this.translate(5, 0, 0);
+      this.forestSmall.display();
+
+      this.translate(-2.5, 0, 28);
+      this.forestSmall.display();
+
+      this.translate(-6, 0, 11);
+      this.forestSmall.display();
+      this.translate(-5, 0, 0);
+      this.forestSmall.display();
+      this.translate(0, 0, 3);
+      this.forestSmall.display();
+
+      this.popMatrix();
+
+      
+      this.pushMatrix();
+      this.scale(6, 6, 6);
+      this.translate(0, -0.05, 0);
+
+      //this.rotate(-Math.PI/2, 0, 1);
+      //this.translate(0, 10, 0);
+      
+
+      this.translate(6.5, 0, -2);
+      this.forestSmall.display();
+
+      this.translate(0, 0, 8);
+      this.forestSmall.display();
+
+      this.translate(-9, 0, 4);
+      this.forestSmall.display();
+
+      this.translate(1, 0, 3);
+      this.forestSmall.display();
+
+      this.popMatrix();
+
+      /*
       this.translate(-11, 0, 0);
       this.forest.display();
 
@@ -533,9 +653,9 @@ export class MyScene extends CGFscene {
       this.forest.display();
 
       this.translate(22.5, 0, 0);
-      this.forest.display();
-      this.popMatrix();
-
+      this.forest.display();*/
+      
+/*
       // Trees, smaller area for details
       this.pushMatrix();
       this.scale(6,6,6);
@@ -551,9 +671,10 @@ export class MyScene extends CGFscene {
 
       this.translate(0,0,-5);
       this.forestSmall.display();
-      this.popMatrix();
+      this.popMatrix();*/
     }
 
+    this.setDefaultAppearance();
     // Helicopter
     const baseHeight = 15.1;
     this.pushMatrix();
