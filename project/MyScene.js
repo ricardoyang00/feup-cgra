@@ -469,6 +469,11 @@ export class MyScene extends CGFscene {
     console.log("Could not find a suitable position for new fire after multiple attempts");
     return false;
   }
+
+  resetFires() {
+    this.fires = [];
+  }
+
   display() {
     // Limit camera position
     if (this.camera.position[1] < 0.2) {
