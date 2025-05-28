@@ -12,9 +12,10 @@ import { MyCircle } from '../../primitives/MyCircle.js';
  * @param trunkRadius - Radius of the trunk base
  * @param treeHeight - Total height of the tree
  * @param treeType - 0 for green, 1 for yellow, 2 for orange
+ * @param textures - Preloaded textures from MyScene
  */
 export class MyTree extends CGFobject {
-    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.1, treeHeight = 2, treeType = 0) {
+    constructor(scene, rotation = 0, axis = 'X', trunkRadius = 0.1, treeHeight = 2, treeType = 0, textures = null) {
         super(scene);
 
         this.rotation = rotation;
@@ -26,39 +27,73 @@ export class MyTree extends CGFobject {
         this.numPyramids = Math.ceil(this.foliageHeight / 0.5);
         this.pyramidBaseRadius = this.trunkRadius * 3;
 
-        this.shadowTexture = new CGFtexture(scene, 'textures/tree/shadow.png');
-        this.shadowQuad = new MyCircle(scene, 32);
-        this.shadowMaterial = new CGFappearance(scene);
-        this.shadowMaterial.setDiffuse(0, 0, 0, 1);
-        this.shadowMaterial.setTexture(this.shadowTexture);
+        // preloaded textures if available, otherwise load them directly
+        if (textures) {
+            this.shadowTexture = textures.shadowTexture;
+            this.shadowQuad = new MyCircle(scene, 32);
+            this.shadowMaterial = new CGFappearance(scene);
+            this.shadowMaterial.setDiffuse(0, 0, 0, 1);
+            this.shadowMaterial.setTexture(this.shadowTexture);
 
-        const trunkTexture = new CGFtexture(scene, 'textures/tree/trunk.png');
-        const darkerTone = 0.7;
+            const darkerTone = 0.7;
+            let foliageColor;
+            let typeTextures;
 
-        // type
-        let textureFolder, foliageColor;
-        if (treeType === 0) {           // green / original
-            textureFolder = 'textures/tree/leaves/original/';
-            foliageColor = [0, 0.8*darkerTone, 0]; 
-        } else if (treeType === 1) {    // yellow
-            textureFolder = 'textures/tree/leaves/yellow/';
-            foliageColor = [1*darkerTone, 1*darkerTone, 0]; 
-        } else if (treeType === 2) {    // orange
-            textureFolder = 'textures/tree/leaves/orange/';
-            foliageColor = [1*darkerTone, 0.5*darkerTone, 0]; 
+            if (treeType === 0) {           // green / original
+                foliageColor = [0, 0.8*darkerTone, 0];
+                typeTextures = textures.green;
+            } else if (treeType === 1) {    // yellow
+                foliageColor = [1*darkerTone, 1*darkerTone, 0];
+                typeTextures = textures.yellow;
+            } else if (treeType === 2) {    // orange
+                foliageColor = [1*darkerTone, 0.5*darkerTone, 0];
+                typeTextures = textures.orange;
+            } else {
+                throw new Error('Invalid treeType. Must be 0 (green), 1 (yellow), or 2 (orange).');
+            }
+
+            this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], textures.trunkTexture, 2);
+            this.foliage = [];
+            for (let i = 0; i < this.numPyramids; i++) {
+                const sideTexture = i === this.numPyramids - 1 ? typeTextures.sideTextureTop : typeTextures.sideTextureShadow;
+                this.foliage.push(new MyCone(scene, 16, 4, [...foliageColor, 1], sideTexture, typeTextures.baseTexture, 2));
+            }
         } else {
-            throw new Error('Invalid treeType. Must be 0 (green), 1 (yellow), or 2 (orange).');
-        }
+            // old implementation : textures are not provided
+            this.shadowTexture = new CGFtexture(scene, 'textures/tree/shadow.png');
+            this.shadowQuad = new MyCircle(scene, 32);
+            this.shadowMaterial = new CGFappearance(scene);
+            this.shadowMaterial.setDiffuse(0, 0, 0, 1);
+            this.shadowMaterial.setTexture(this.shadowTexture);
 
-        const baseTexture = new CGFtexture(scene, `${textureFolder}leaves-base.png`);
-        const sideTextureShadow = new CGFtexture(scene, `${textureFolder}leaves-shadow.png`);
-        const sideTextureTop = new CGFtexture(scene, `${textureFolder}leaves.png`);
+            const trunkTexture = new CGFtexture(scene, 'textures/tree/trunk.png');
+            const darkerTone = 0.7;
 
-        this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture, 2);
-        this.foliage = [];
-        for (let i = 0; i < this.numPyramids; i++) {
-            const sideTexture = i === this.numPyramids - 1 ? sideTextureTop : sideTextureShadow;
-            this.foliage.push(new MyCone(scene, 16, 4, [...foliageColor, 1], sideTexture, baseTexture, 2));
+            // type
+            let textureFolder, foliageColor;
+            if (treeType === 0) {           // green / original
+                textureFolder = 'textures/tree/leaves/original/';
+                foliageColor = [0, 0.8*darkerTone, 0]; 
+            } else if (treeType === 1) {    // yellow
+                textureFolder = 'textures/tree/leaves/yellow/';
+                foliageColor = [1*darkerTone, 1*darkerTone, 0]; 
+            } else if (treeType === 2) {    // orange
+                textureFolder = 'textures/tree/leaves/orange/';
+                foliageColor = [1*darkerTone, 0.5*darkerTone, 0]; 
+            } else {
+                throw new Error('Invalid treeType. Must be 0 (green), 1 (yellow), or 2 (orange).');
+            }
+
+            const baseTexture = new CGFtexture(scene, `${textureFolder}leaves-base.png`);
+            const sideTextureShadow = new CGFtexture(scene, `${textureFolder}leaves-shadow.png`);
+            const sideTextureTop = new CGFtexture(scene, `${textureFolder}leaves.png`);
+
+            this.trunk = new MyCylinder(scene, 16, 4, [0.55, 0.27, 0.07, 1], trunkTexture, 2);
+            this.foliage = [];
+            for (let i = 0; i < this.numPyramids; i++) {
+                const sideTexture = i === this.numPyramids - 1 ? sideTextureTop : sideTextureShadow;
+                this.foliage.push(new MyCone(scene, 16, 4, [...foliageColor, 1], sideTexture, baseTexture, 2));
+            }
         }
     }
 

@@ -9,15 +9,17 @@ import { MyTree } from './MyTree.js';
  * @param cols - Number of columns in the forest (default: 4)
  * @param width - Width of the forest area (default: 20)
  * @param height - Height of the forest area (default: 20)
+ * @param treeTextures - Preloaded tree textures from MyScene
  */
 export class MyForest extends CGFobject {
-    constructor(scene, rows = 5, cols = 4, width = 20, height = 20) {
+    constructor(scene, rows = 5, cols = 4, width = 20, height = 20, treeTextures = null) {
         super(scene);
 
         this.rows = rows;
         this.cols = cols;
         this.width = width;
         this.height = height;
+        this.treeTextures = treeTextures;
         this.trees = [];
 
         for (let i = 0; i < rows; i++) {
@@ -61,13 +63,10 @@ export class MyForest extends CGFobject {
         // 2 to 4
         const treeHeight = 2 + Math.random() * 2;
 
-        // greenish colors
-        //const foliageColor = [Math.random() * 0.1, 0.5 + Math.random() * 0.4, Math.random() * 0.1];
-
         // tree type
         const type = Math.floor(Math.random() * 3);
 
         
-        return new MyTree(scene, rotation, axis, trunkRadius, treeHeight, type);
+        return new MyTree(scene, rotation, axis, trunkRadius, treeHeight, type, this.treeTextures);
     }
 }

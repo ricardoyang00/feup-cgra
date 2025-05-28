@@ -78,6 +78,27 @@ export class MyScene extends CGFscene {
     this.axis = new CGFaxis(this, 50, 1);
     this.plane = new MyPlane(this, 64, 0, 1, 0, 1);
     
+    // Tree textures
+    this.treeTextures = {
+      trunkTexture: new CGFtexture(this, "textures/tree/trunk.png"),
+      shadowTexture: new CGFtexture(this, "textures/tree/shadow.png"),
+      green: {
+        baseTexture: new CGFtexture(this, "textures/tree/leaves/original/leaves-base.png"),
+        sideTextureShadow: new CGFtexture(this, "textures/tree/leaves/original/leaves-shadow.png"),
+        sideTextureTop: new CGFtexture(this, "textures/tree/leaves/original/leaves.png"),
+      },
+      yellow: {
+        baseTexture: new CGFtexture(this, "textures/tree/leaves/yellow/leaves-base.png"),
+        sideTextureShadow: new CGFtexture(this, "textures/tree/leaves/yellow/leaves-shadow.png"),
+        sideTextureTop: new CGFtexture(this, "textures/tree/leaves/yellow/leaves.png"),
+      },
+      orange: {
+        baseTexture: new CGFtexture(this, "textures/tree/leaves/orange/leaves-base.png"),
+        sideTextureShadow: new CGFtexture(this, "textures/tree/leaves/orange/leaves-shadow.png"),
+        sideTextureTop: new CGFtexture(this, "textures/tree/leaves/orange/leaves.png"),
+      }
+    };
+    
     this.buildingWidth = 15;
     this.buildingDepth = 12;
     this.numFloorsSide = 2;
@@ -96,10 +117,10 @@ export class MyScene extends CGFscene {
                     
     this.cone = new MyCone(this);
     this.pyramid = new MyPyramid(this);
-    this.tree = new MyTree(this);
+    this.tree = new MyTree(this, 0, 'X', 0.1, 2, 0, this.treeTextures);
     //this.forestLarge = new MyForest(this, 20, 20, 40, 40);
-    this.forest = new MyForest(this, 7, 7, 10, 10);
-    this.forestSmall = new MyForest(this, 2, 2, 2, 2);
+    this.forest = new MyForest(this, 7, 7, 10, 10, this.treeTextures);
+    this.forestSmall = new MyForest(this, 2, 2, 2, 2, this.treeTextures);
     this.helicopter = new MyHeli(this);
     
     // fire related 
