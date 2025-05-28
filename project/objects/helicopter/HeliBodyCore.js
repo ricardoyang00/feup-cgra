@@ -1,4 +1,5 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../../../lib/CGF.js';
+import { MyQuad } from '../../primitives/MyQuad.js';
 
 export class HeliBodyCore extends CGFobject {
     constructor(scene, width, depth, height, color = [0.5, 0.5, 0.5, 1], texture = null) {
@@ -17,6 +18,9 @@ export class HeliBodyCore extends CGFobject {
             this.appearance.setTexture(texture);
             this.appearance.setTextureWrap('REPEAT', 'REPEAT');
         }
+
+        this.sticker1 = new MyQuad(scene);
+        this.sticker1Texture = new CGFtexture(scene, "textures/helicopter/sticker_1.png");
     }
 
     display() {
@@ -72,5 +76,33 @@ export class HeliBodyCore extends CGFobject {
         this.scene.scale(this.width, this.depth, 1);
         this.scene.quad.display();
         this.scene.popMatrix();
+
+        // Sticker
+        this.scene.gl.enable(this.scene.gl.BLEND);
+        this.scene.gl.blendFuncSeparate(this.scene.gl.SRC_ALPHA, this.scene.gl.ONE_MINUS_SRC_ALPHA, this.scene.gl.ONE, this.scene.gl.ONE);
+        this.scene.gl.depthMask(false);
+
+        this.scene.pushMatrix();
+        this.scene.scale(0.5, 0.5, 0.5);
+        this.scene.rotate(Math.PI / 2, 0, 1, 0);
+        this.scene.translate(-0.75, 0, 2.01);
+        this.scene.scale(4, 2, 2);
+        this.sticker1Texture.bind();
+        this.sticker1.display();
+        this.sticker1Texture.unbind();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.scale(0.5, 0.5, 0.5);
+        this.scene.rotate(-Math.PI / 2, 0, 1, 0);
+        this.scene.translate(0.75, 0, 2.01);
+        this.scene.scale(4, 2, 2);
+        this.sticker1Texture.bind();
+        this.sticker1.display();
+        this.sticker1Texture.unbind();
+        this.scene.popMatrix();
+
+        this.scene.gl.depthMask(true);
+        this.scene.gl.disable(this.scene.gl.BLEND);
     }
 }
