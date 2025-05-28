@@ -8,7 +8,7 @@ import { MyTree } from "./objects/forest/MyTree.js";
 import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./objects/helicopter/MyHeli.js";
 import { MyFire } from "./objects/MyFire.js";
-import { updateCameraFromHelicopter, updateCameraThirdPerson } from "./CameraUtils.js";
+import { updateCameraFromHelicopter, updateCameraThirdPerson, findControllerByProperty } from "./CameraUtils.js";
 
 /**
  * MyScene
@@ -32,7 +32,7 @@ export class MyScene extends CGFscene {
     this.deceleration = 4;
     this.turnSpeed = 1;
 
-    this.speedFactor = 3;
+    this.speedFactor = 1;
 
     this.heliportPosition = [0, 0, 0];
     this.heliportRadius = 1;
@@ -171,13 +171,6 @@ export class MyScene extends CGFscene {
         this.maskHeight = canvas.height;
         this.maskLoaded = true;
     };
-    //this.planeMaterial = new CGFappearance(this);
-    //this.planeMaterial.setTexture(this.grassTexture);
-    //this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
-    //this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
-    //this.planeMaterial.setDiffuse(0.63, 0.55, 0.26, 1.0); 
-    //this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
-    //this.planeMaterial.setShininess(10.0);
 
     this.waterShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
@@ -223,11 +216,9 @@ export class MyScene extends CGFscene {
     vec3.copy(this.camera.position, this.initialCameraPosition);
     vec3.copy(this.camera.target, this.initialCameraTarget);
 
-    for (const controller of this.gui.gui.__controllers) {
-      if (controller.property === 'cameraView') {
-        controller.setValue('0: Default');
-        break;
-      }
+    if (this.gui && this.gui.gui) {
+      const camViewController = findControllerByProperty(this.gui.gui, 'cameraView');
+      if (camViewController) camViewController.setValue('0: Default');
     }
   }
 
@@ -308,15 +299,10 @@ export class MyScene extends CGFscene {
       waterDisturbance: 0.1
     });
 
-    // fire related test
-    /*if(this.gui.isKeyPressed("KeyQ")) this.fire.graduallyRemoveTriangles();
-    this.fire.update(t);*/
-
     // Fire(s) animation
     for (const fireInfo of this.fires) {
       fireInfo.fire.update(t);
     }
-    //
 
     if (this.lastT != null) {
         this.deltaT = t - this.lastT;
@@ -325,6 +311,33 @@ export class MyScene extends CGFscene {
     }
     this.lastT = t;
     const dt = this.deltaT / 1000;
+
+    // Camera controls
+    if (this.gui.isKeyPressed("Digit0")) {
+      if (this.cameraView !== '0: Default') {
+        this.cameraView = '0: Default';
+        if (this.gui && this.gui.gui) {
+          const camViewController = findControllerByProperty(this.gui.gui, 'cameraView');
+          if (camViewController) camViewController.setValue('0: Default');
+        }
+      }
+    } else if (this.gui.isKeyPressed("Digit1")) {
+      if (this.cameraView !== '1: First Person') {
+        this.cameraView = '1: First Person';
+        if (this.gui && this.gui.gui) {
+          const camViewController = findControllerByProperty(this.gui.gui, 'cameraView');
+          if (camViewController) camViewController.setValue('1: First Person');
+        }
+      }
+    } else if (this.gui.isKeyPressed("Digit2")) {
+      if (this.cameraView !== '2: Third Person') {
+        this.cameraView = '2: Third Person';
+        if (this.gui && this.gui.gui) {
+          const camViewController = findControllerByProperty(this.gui.gui, 'cameraView');
+          if (camViewController) camViewController.setValue('2: Third Person');
+        }
+      }
+    }
 
     const movementAllowed = this.helicopter.state === "flying" || this.helicopter.state == "pouring_water";
 
@@ -346,7 +359,7 @@ export class MyScene extends CGFscene {
           break;
 
       case this.gui.isKeyPressed("KeyR"):
-          this.helicopter.resetHelicopter();
+          this.resetHelicopter();
           break;
 
       default:
@@ -415,6 +428,11 @@ export class MyScene extends CGFscene {
     this.setDiffuse(0.5, 0.5, 0.5, 1.0);
     this.setSpecular(0.5, 0.5, 0.5, 1.0);
     this.setShininess(10.0);
+  }
+
+  resetHelicopter() {
+    this.helicopter.resetHelicopter();
+    this.resetCamera();
   }
 
   // Create a new fire in a random position within one of the defined fire areas
