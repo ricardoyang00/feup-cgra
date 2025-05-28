@@ -19,22 +19,24 @@ export class MyInterface extends CGFinterface {
 
         this.initKeys();
 
-        this.gui.add(this.scene, 'cameraView', ['0: Default', '1: First Person', '2: Third Person']).name('Camera View');
-        this.gui.add(this.scene, 'resetCamera').name('Reset Camera');
+        let displays = this.gui.addFolder('Displays')
+        displays.add(this.scene, 'displayAxis').name('Display Axis');
+        displays.add(this.scene, 'displayForest').name('Display Forest');
+        displays.add(this.scene, 'showFireParticles').name('Display Particles');
 
-        this.gui.add(this.scene, 'displayAxis').name('Display Axis');
-        //this.gui.add(this.scene, 'displayBuilding').name('Display Building');
+        let camera = this.gui.addFolder('Camera/POV');
+        camera.add(this.scene, 'resetCamera').name('Reset Camera');
+        camera.add(this.scene, 'cameraView', ['0: Default', '1: First Person', '2: Third Person']).name('Camera View');
+
+        let controls = this.gui.addFolder('Controls');
+        controls.add(this.scene, 'resetHelicopter').name('Reset Helicopter (R key)');
+        controls.add(this.scene, 'setFire').name('Set a Fire (F key)');
+        controls.add(this.scene, 'fillBucket').name('Fill Bucket (B key)');
+        
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
-        this.gui.add(this.scene, 'displayForest').name('Display Forest');
-
         this.gui.add(this.scene, 'fpsRate', [24, 30, 60, 120]).name('FPS Rate').onChange((value) => {
             this.scene.setUpdatePeriod(1000 / value);
         });
-        
-        this.gui.add(this.scene, 'setFire').name('Set a Fire 🔥');
-        this.gui.add(this.scene, 'showFireParticles').name('Fire Particles');
-        this.gui.add(this.scene, 'fillBucket').name('Fill Bucket');
-
         
         return true;
     }

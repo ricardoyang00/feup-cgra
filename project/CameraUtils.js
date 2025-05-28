@@ -89,3 +89,19 @@ export function updateCameraThirdPerson(camera, helicopter, scaleFactor = 6 * 0.
     camera.setPosition(cameraPos);
     camera.setTarget(target);
 }
+
+// Helper to recursively find a dat.GUI controller by property name
+export function findControllerByProperty(gui, propertyName) {
+    if (gui.__controllers) {
+        for (const controller of gui.__controllers) {
+            if (controller.property === propertyName) return controller;
+        }
+    }
+    if (gui.__folders) {
+        for (const folderName in gui.__folders) {
+            const result = findControllerByProperty(gui.__folders[folderName], propertyName);
+            if (result) return result;
+        }
+    }
+    return null;
+}
