@@ -99,6 +99,13 @@ export class MyScene extends CGFscene {
       }
     };
     
+    // fire textures
+    this.fireTextures = [
+      new CGFtexture(this, "textures/fire/fire1.png"),
+      new CGFtexture(this, "textures/fire/fire2.png"),
+      new CGFtexture(this, "textures/fire/fire3.png")
+    ];
+    
     this.buildingWidth = 15;
     this.buildingDepth = 12;
     this.numFloorsSide = 2;
@@ -439,11 +446,11 @@ export class MyScene extends CGFscene {
         if (distanceSquared < minDistanceBetweenFires * minDistanceBetweenFires) {
           tooClose = true;
           break;
-        }
-      }
+        }      }
       
       if (!tooClose) {
-        const fire = new MyFire(this);
+        // Use preloaded textures when creating a new fire
+        const fire = new MyFire(this, this.fireTextures);
         
         this.fires.push({
           fire: fire,

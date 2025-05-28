@@ -3,14 +3,21 @@ import { MyTriangleDoubleFaced } from '../primitives/MyTriangleDoubleFaced.js';
 import { MyCircle } from '../primitives/MyCircle.js';
 
 export class MyFire extends CGFobject {
-    constructor(scene) {
+    constructor(scene, preloadedTextures = null) {
         super(scene);
         this.fireTriangles = [];
-        this.textures = [
-            new CGFtexture(this.scene, "textures/fire/fire1.png"),
-            new CGFtexture(this.scene, "textures/fire/fire2.png"),
-            new CGFtexture(this.scene, "textures/fire/fire3.png")
-        ];
+        
+        // Use preloaded textures if available, otherwise load them
+        if (preloadedTextures) {
+            this.textures = preloadedTextures;
+        } else {                        // old implementation
+            this.textures = [
+                new CGFtexture(this.scene, "textures/fire/fire1.png"),
+                new CGFtexture(this.scene, "textures/fire/fire2.png"),
+                new CGFtexture(this.scene, "textures/fire/fire3.png")
+            ];
+        }
+        
         this.currentTextureIndex = 0;
         this.lastFireAnimTime = 0;
         this.fireAnimInterval = 120;
