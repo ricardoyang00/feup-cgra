@@ -31,6 +31,7 @@ export class MyInterface extends CGFinterface {
         let controls = this.gui.addFolder('Controls');
         controls.add(this.scene, 'resetHelicopter').name('Reset Helicopter (R key)');
         controls.add(this.scene, 'setFire').name('Set a Fire (F key)');
+        controls.add(this.scene, 'resetFires').name('Reset Fires');
         controls.add(this.scene, 'fillBucket').name('Fill Bucket (B key)');
         
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
