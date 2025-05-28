@@ -43,10 +43,9 @@ export class MyScene extends CGFscene {
     // Fire Areas
     // areas as rectangles [x1, z1, x2, z2]
     this.fireAreas = [
-      [-20, -20, -10, -10],  
-      [10, 10, 20, 20],
-      [10, -20, 20, -10],
-      [-20, 10, -10, 20]
+      [-60, -100, 150, -20],
+      [176, -55, 62, 60],
+      [140, 130, 8, 53]
     ];
     
     this.fires = [];
