@@ -143,13 +143,6 @@ export class MyScene extends CGFscene {
         this.maskHeight = canvas.height;
         this.maskLoaded = true;
     };
-    //this.planeMaterial = new CGFappearance(this);
-    //this.planeMaterial.setTexture(this.grassTexture);
-    //this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
-    //this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1.0); 
-    //this.planeMaterial.setDiffuse(0.63, 0.55, 0.26, 1.0); 
-    //this.planeMaterial.setSpecular(0.0, 0.0, 0.0, 1.0); 
-    //this.planeMaterial.setShininess(10.0);
 
     this.waterShader = new CGFshader(this.gl, "shaders/water/water.vert", "shaders/water/water.frag");
     this.waterShader.setUniformsValues({ uTime: 0 });
@@ -319,6 +312,7 @@ export class MyScene extends CGFscene {
 
       case this.gui.isKeyPressed("KeyR"):
           this.helicopter.resetHelicopter();
+          this.resetCamera();
           break;
 
       default:
