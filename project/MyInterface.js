@@ -29,7 +29,8 @@ export class MyInterface extends CGFinterface {
         camera.add(this.scene, 'cameraView', ['0: Default', '1: First Person', '2: Third Person']).name('Camera View');
 
         let controls = this.gui.addFolder('Controls');
-        controls.add(this.scene, 'resetHelicopter').name('Reset Helicopter (R key)');
+        controls.add(this.scene, 'resetScene').name('Reset Scene (R key)');
+        controls.add(this.scene, 'resetHelicopter').name('Reset Helicopter');
         controls.add(this.scene, 'setFire').name('Set a Fire (F key)');
         controls.add(this.scene, 'resetFires').name('Reset Fires');
         controls.add(this.scene, 'toggleBucketFill').name('Toggle Bucket Fill (B key)');

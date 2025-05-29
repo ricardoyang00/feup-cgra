@@ -15,7 +15,7 @@ The project applies computer graphics techniques learned throughout the course, 
 | S           | Decelerate (brake) helicopter                                          |
 | A           | Turn helicopter left                                                   |
 | D           | Turn helicopter right                                                  |
-| R           | Reset helicopter position and camera (to heliport, at rest)            |
+| R           | Reset scene : helicopter position, camera and fires         |
 | P           | Ascend helicopter (take off or rise from lake)                         |
 | L           | If above the lake and the bucket is empty, lower the bucket into the lake. Otherwise (if the bucket is empty and the helicopter is not above the lake), automatically fly and land at the heliport. |
 | O           | Drop water on fire (when over fire with water in bucket)               |

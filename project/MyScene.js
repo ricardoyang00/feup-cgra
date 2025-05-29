@@ -359,7 +359,7 @@ export class MyScene extends CGFscene {
           break;
 
       case this.gui.isKeyPressed("KeyR"):
-          this.resetHelicopter();
+          this.resetScene();
           break;
 
       default:
@@ -490,6 +490,11 @@ export class MyScene extends CGFscene {
 
   resetFires() {
     this.fires = [];
+  }
+
+  resetScene() {
+    this.resetHelicopter();
+    this.resetFires();
   }
 
   display() {
