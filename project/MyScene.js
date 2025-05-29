@@ -222,8 +222,8 @@ export class MyScene extends CGFscene {
     }
   }
 
-  fillBucket() {
-    this.helicopter.setBucketEmpty(false);
+  toggleBucketFill() {
+    this.helicopter.setBucketEmpty(!this.helicopter.getBucketIsEmpty());
   }
 
   isOverLake(position) {
@@ -369,7 +369,7 @@ export class MyScene extends CGFscene {
           if (currentP && !this.prevP) {
               this.helicopter.initiateTakeoff();
           }
-          if (currentL && !this.prevL) {
+          if (currentL && !this.prevL && this.helicopter.getBucketIsEmpty()) {
               this.helicopter.initiateLanding();
           }
 
@@ -403,7 +403,7 @@ export class MyScene extends CGFscene {
     }
 
     if (this.gui.isKeyPressed("KeyB")) {
-      this.fillBucket();
+      this.toggleBucketFill();
     }
 
     this.helicopter.update(dt);

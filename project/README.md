@@ -17,9 +17,9 @@ The project applies computer graphics techniques learned throughout the course, 
 | D           | Turn helicopter right                                                  |
 | R           | Reset helicopter position and camera (to heliport, at rest)            |
 | P           | Ascend helicopter (take off or rise from lake)                         |
-| L           | If above the lake and the bucket is empty, lower the bucket into the lake. Otherwise (if the bucket has water or the helicopter is not above the lake), automatically fly and land at the heliport. |
+| L           | If above the lake and the bucket is empty, lower the bucket into the lake. Otherwise (if the bucket is empty and the helicopter is not above the lake), automatically fly and land at the heliport. |
 | O           | Drop water on fire (when over fire with water in bucket)               |
-| B           | Fill the bucket with water                                             |
+| B           | Toggle the bucket's water state (fill if empty, empty if full)         |
 | F           | Set a fire in the forest (max. 3)                                      |
 | 0           | Switch to Default camera view                                          |
 | 1           | Switch to First Person camera view                                     |
@@ -35,7 +35,7 @@ The project applies computer graphics techniques learned throughout the course, 
 - **Reset Helicopter**: Instantly reset the helicopter to its initial position and state (same as R key).
 - **Set a Fire**: Manually set a fire in the forest (same as F key).
 - **Reset Fires**: Extinguish all fires in the forest.
-- **Fill Bucket**: Instantly fill the helicopter's bucket with water (same as B key).
+- **Toggle Bucket Fill**: Toggle the helicopter's bucket water state (fill if empty, empty if full) (same as B key).
 - **Speed Factor**: Adjust the sensitivity of helicopter acceleration and rotation (range: 0.1 to 3).
 - **FPS Rate**: Set the simulation's frame rate (24, 30, 60, or 120 FPS).
 
