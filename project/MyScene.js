@@ -268,7 +268,7 @@ export class MyScene extends CGFscene {
   }
 
   extinguishFireAt(position) {
-    const radius = 10; // radius to extinguish fire
+    const radius = 15; // radius to extinguish fire
     for (const fireInfo of this.fires) {
         const fx = fireInfo.position[0];
         const fz = fireInfo.position[2];
