@@ -1,6 +1,11 @@
 # FEUP Fire Department
 Group T07G02, CG 2024/2025
 
+| Student Number | Name          |
+|----------------|---------------|
+| up202207517    | Bruno Huang   |
+| up202208465    | Ricardo Yang  |
+
 ## Project Description
 
 This project presents an interactive 3D scene simulating a fire department environment. The scene features a panoramic sky, a grassy terrain, a detailed fire station building with a rooftop heliport, a controllable and animated helicopter, a lake, and a procedurally generated forest with trees of varying sizes, colors, and positions. 
